@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ClerkRouteRouteImport } from './routes/clerk/route'
+import { Route as MesAgentRouteImport } from './routes/mes-agent'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
@@ -29,7 +30,6 @@ import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
-import { Route as AuthenticatedMesAgentIndexRouteImport } from './routes/_authenticated/mes-agent/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
@@ -48,6 +48,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
   path: '/clerk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MesAgentRoute = MesAgentRouteImport.update({
+  id: '/mes-agent',
+  path: '/mes-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
@@ -141,12 +146,6 @@ const AuthenticatedHelpCenterIndexRoute =
     path: '/help-center/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMesAgentIndexRoute =
-  AuthenticatedMesAgentIndexRouteImport.update({
-    id: '/mes-agent/',
-    path: '/mes-agent/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
@@ -207,6 +206,7 @@ const ClerkAuthenticatedUserManagementRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/clerk': typeof ClerkauthRouteRouteWithChildren
+  '/mes-agent': typeof MesAgentRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
@@ -229,13 +229,13 @@ export interface FileRoutesByFullPath {
   '/apps/': typeof AuthenticatedAppsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
   '/help-center/': typeof AuthenticatedHelpCenterIndexRoute
-  '/mes-agent/': typeof AuthenticatedMesAgentIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/clerk': typeof ClerkauthRouteRouteWithChildren
+  '/mes-agent': typeof MesAgentRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
@@ -258,7 +258,6 @@ export interface FileRoutesByTo {
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/mes-agent': typeof AuthenticatedMesAgentIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -267,6 +266,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/clerk': typeof ClerkRouteRouteWithChildren
+  '/mes-agent': typeof MesAgentRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/clerk/(auth)': typeof ClerkauthRouteRouteWithChildren
   '/clerk/_authenticated': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -292,7 +292,6 @@ export interface FileRoutesById {
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
-  '/_authenticated/mes-agent/': typeof AuthenticatedMesAgentIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -302,6 +301,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/clerk'
+    | '/mes-agent'
     | '/settings'
     | '/forgot-password'
     | '/otp'
@@ -324,13 +324,13 @@ export interface FileRouteTypes {
     | '/apps/'
     | '/chats/'
     | '/help-center/'
-    | '/mes-agent/'
     | '/settings/'
     | '/tasks/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/clerk'
+    | '/mes-agent'
     | '/forgot-password'
     | '/otp'
     | '/sign-in'
@@ -353,7 +353,6 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
-    | '/mes-agent'
     | '/settings'
     | '/tasks'
     | '/users'
@@ -361,6 +360,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/clerk'
+    | '/mes-agent'
     | '/_authenticated/settings'
     | '/clerk/(auth)'
     | '/clerk/_authenticated'
@@ -386,7 +386,6 @@ export interface FileRouteTypes {
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
-    | '/_authenticated/mes-agent/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
@@ -395,6 +394,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ClerkRouteRoute: typeof ClerkRouteRouteWithChildren
+  MesAgentRoute: typeof MesAgentRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
@@ -421,6 +421,13 @@ declare module '@tanstack/react-router' {
       path: '/clerk'
       fullPath: '/clerk'
       preLoaderRoute: typeof ClerkRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mes-agent': {
+      id: '/mes-agent'
+      path: '/mes-agent'
+      fullPath: '/mes-agent'
+      preLoaderRoute: typeof MesAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/forgot-password': {
@@ -549,13 +556,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/mes-agent/': {
-      id: '/_authenticated/mes-agent/'
-      path: '/mes-agent'
-      fullPath: '/mes-agent/'
-      preLoaderRoute: typeof AuthenticatedMesAgentIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -659,7 +659,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
-  AuthenticatedMesAgentIndexRoute: typeof AuthenticatedMesAgentIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
@@ -671,7 +670,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
-  AuthenticatedMesAgentIndexRoute: AuthenticatedMesAgentIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
@@ -725,6 +723,7 @@ const ClerkRouteRouteWithChildren = ClerkRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ClerkRouteRoute: ClerkRouteRouteWithChildren,
+  MesAgentRoute: MesAgentRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,
