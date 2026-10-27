@@ -2,7 +2,7 @@
 
 Admin Dashboard UI crafted with Fluent UI and Vite. Built with responsiveness and accessibility in mind.
 
-![alt text](public/images/shadcn-admin.png)
+![alt text](public/images/fluent-admin.png)
 
 I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from the original template's examples.
 
