@@ -23,6 +23,15 @@ const useStyles = makeStyles({
     gap: '8px',
     // Same geometry as the MES page: no top padding (the screen's
     // own HeaderBlock touches the top edge), 8px on the other sides.
+    // The 8px side padding applies to the content BELOW the header
+    // only: HeaderBlock escapes it with -8px side margins (see
+    // header-block.tsx), so the header is flush with the sidebar
+    // on the left and the viewport on the right, while the main
+    // content card below keeps its normal 8px inset. Do not
+    // remove the side padding here — that would flush the content
+    // card too — and do not "fix" the header edge by changing the
+    // canvas colour, which would still leave a grey bar against
+    // the white header below.
     padding: '0px 8px 8px 8px',
     backgroundColor: CANVAS,
     overflow: 'hidden',
