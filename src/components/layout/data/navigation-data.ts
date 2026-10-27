@@ -41,10 +41,10 @@ import {
   Wrench24Regular,
 } from '@fluentui/react-icons'
 import { ClerkLogo } from '@/assets/clerk-logo'
-import { type SidebarData } from '../types'
+import { type NavigationData } from '../types'
 
-// Group 1 icons: sidebar icons are Fluent bundles — Regular at rest,
-// Filled when the item is the current route (app-sidebar passes
+// Group 1 icons: navigation icons are Fluent bundles — Regular at rest,
+// Filled when the item is the current route (navigation-pane passes
 // filled={pathname === item.url} for leaves). Same 24px size and
 // position; only the glyph weight changes on selection. ClerkLogo
 // is a brand mark, not a UI icon, so it stays unbundled.
@@ -79,7 +79,7 @@ const QuestionCircleIcon = bundleIcon(
   QuestionCircle24Regular
 )
 
-export const sidebarData: SidebarData = {
+export const navigationData: NavigationData = {
   user: {
     name: 'satnaing',
     email: 'satnaingdev@gmail.com',

@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { Card } from '@/components/ui/card'
-import HeaderBlock from '@/components/layout/header-block'
+import PageTop from '@/components/layout/page-top'
 
 const useStyles = makeStyles({
   root: {
@@ -36,15 +36,15 @@ export function Settings() {
 
   return (
     <div className={styles.root}>
-      <HeaderBlock
+      <PageTop
         title='Settings'
         objectTabs={SETTINGS_TABS}
         objectTab={pathname}
         onObjectTabChange={(value) => navigate({ to: value })}
-        // No ribbon: the settings screens have no Refresh/Save/Reset
+        // No action bar: the settings screens have no Refresh/Save/Reset
         // action — each form keeps its own Update submit button, so no
-        // ribbon row is rendered rather than inventing an action.
-        ribbon={undefined}
+        // action bar row is rendered rather than inventing an action.
+        actionBar={undefined}
       />
       <Card
         className={styles.card}

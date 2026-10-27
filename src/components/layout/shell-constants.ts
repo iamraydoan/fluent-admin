@@ -13,9 +13,9 @@
 // the same light grey as every other card gap (below the header,
 // around the main card) — normal card separation, not a bar through
 // the header. The tab strip itself is untouched (HEADER_GREY
-// unchanged, document-tab-bar.tsx untouched); only the surrounding
+// unchanged, header.tsx untouched); only the surrounding
 // canvas colour changed. Dark mode mirrors this in
-// authenticated-layout.tsx: the dark canvas becomes the dark
+// screen-layout.tsx: the dark canvas becomes the dark
 // tab-strip colour (Background2) instead of Background3.
 export const CANVAS = '#e6e8eb'
 export const HEADER_GREY = '#e6e8eb'

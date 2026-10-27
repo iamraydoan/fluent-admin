@@ -37,7 +37,7 @@ function RootComponent() {
           CommandMenu renders exactly once and the Search button /
           Ctrl/Cmd+K work on every route — including /mes-agent,
           which previously had no provider and whose Search button
-          did nothing. It was removed from AuthenticatedLayout. */}
+          did nothing. It was removed from ScreenLayout. */}
       <SearchProvider>
         <Outlet />
       </SearchProvider>

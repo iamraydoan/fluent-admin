@@ -1,31 +1,33 @@
+// PageTop is generic glue, NOT a vendor area: it renders Header +
+// PageTabs + ActionBar + PageTitle, in that screen-layout order.
 import type { ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { useShellStore } from '@/stores/shell-store'
 import { Divider } from '@/components/ui/divider'
-import { Tab, TabList } from '@/components/ui/tabs'
-import DocumentTabBar from './document-tab-bar'
-import TitleStrip from './title-strip'
+import Header from './header'
+import PageTabs, { type PageTab } from './page-tabs'
+import PageTitle from './page-title'
 
 const useStyles = makeStyles({
-  // Header-border refactor (2026-10-27, user suggestion: "remove
-  // the border of the header block and only border the white
+  // Page-top-border refactor (2026-10-27, user suggestion: "remove
+  // the border of the page top and only border the white
   // inside"): the outer block is NO LONGER a card at all — no
   // background, no boxShadow, no border, no radius. The grey
-  // document-tab strip therefore sits free on the page background
+  // tab strip therefore sits free on the page background
   // (page CANVAS equals the strip colour since 564a74b, light and
   // dark), blending seamlessly left/right like Chrome tabs on a
   // grey strip, not inside a bordered card. Only the white rows
   // below the strip are grouped into their own bordered card
-  // (whiteCard below). Page padding in authenticated-layout.tsx
+  // (whiteCard below). Page padding in screen-layout.tsx
   // is unchanged ('0px 8px 8px 8px'), so the header still sits
   // 8px inset from the sidebar — separate from the sidebar, just
   // not one outer bordered card.
-  headerBlock: {
+  pageTop: {
     flexShrink: 0,
   },
-  // The white inside card: object tabs (if present), ribbon (if
-  // present) and title strip, touching the tab strip with 0 gap.
+  // The white inside card: object tabs (if present), action bar (if
+  // present) and page title, touching the tab strip with 0 gap.
   // Border is left/right/bottom ONLY, no top border, top corners
   // square: this is merge solution (a). The active document tab
   // is a white Chrome shape whose bottom edge merges into the
@@ -51,58 +53,45 @@ const useStyles = makeStyles({
     borderRadius: `0px 0px ${tokens.borderRadiusXLarge} ${tokens.borderRadiusXLarge}`,
     overflow: 'hidden',
   },
-  objectTabs: {
-    backgroundColor: tokens.colorNeutralBackground1,
-    paddingLeft: tokens.spacingHorizontalL,
-    // Reference selected tab text is brand blue, not black bold.
-    '& [aria-selected="true"]': {
-      color: tokens.colorBrandForeground1,
-    },
-  },
 })
 
-export type ObjectTab = {
-  value: string
-  label: string
-}
-
-export type HeaderBlockProps = {
+export type PageTopProps = {
   title: string
-  // Optional state, rendered as "title (state)" in the title strip.
+  // Optional state, rendered as "title (state)" in the page title.
   titleState?: string
-  // Ribbon row, passed as a node by the caller (e.g.
-  // <Ribbon notify={notify} /> for the MES default groups, or
-  // <Ribbon groups={...} /> for a screen's own groups). When
-  // undefined, the ribbon row AND its trailing divider are omitted.
-  ribbon?: ReactNode
+  // ActionBar row, passed as a node by the caller (e.g.
+  // <ActionBar notify={notify} /> for the MES default groups, or
+  // <ActionBar groups={...} /> for a screen's own groups). When
+  // undefined, the action bar row AND its trailing divider are omitted.
+  actionBar?: ReactNode
   // Object-tab row. When undefined or empty, the object-tab row AND
   // its trailing divider are omitted — no empty row is left behind.
-  objectTabs?: ObjectTab[]
+  objectTabs?: PageTab[]
   objectTab?: string
   onObjectTabChange?: (value: string) => void
   headerCollapsed?: boolean
   onCollapseHeader?: () => void
   onExpandHeader?: () => void
-  // Optional account slot, passed straight through to DocumentTabBar
+  // Optional account slot, passed straight through to Header
   // (Phase 2F): e.g. the Clerk user-management page passes its
   // Clerk UserButton here so it sits in the tab strip instead of the
   // unified avatar. Absent everywhere else, so other screens are
-  // untouched. HeaderBlock itself never imports Clerk.
+  // untouched. PageTop itself never imports Clerk.
   accountAction?: ReactNode
   // NOTE (Phase 1 deviation from the brief's prop list): the brief
-  // listed notify? here, but the ribbon is now a ReactNode owned by
-  // the caller, so notify lives on Ribbon, not on HeaderBlock. MES
-  // passes ribbon={<Ribbon notify={notify} />}.
+  // listed notify? here, but the action bar is now a ReactNode owned by
+  // the caller, so notify lives on ActionBar, not on PageTop. MES
+  // passes actionBar={<ActionBar notify={notify} />}.
 }
 
-// Generalised MES header block. The document-tab strip is NOT a prop:
+// Generalised MES page top. The tab strip is NOT a prop:
 // it always reads tabs/activeUrl from the shell store, so every
-// screen that renders HeaderBlock gets the same multi-tab strip for
+// screen that renders PageTop gets the same multi-tab strip for
 // free, and tab select/close/back navigate through the router.
-export default function HeaderBlock({
+export default function PageTop({
   title,
   titleState,
-  ribbon,
+  actionBar,
   objectTabs,
   objectTab,
   onObjectTabChange,
@@ -110,7 +99,7 @@ export default function HeaderBlock({
   onCollapseHeader,
   onExpandHeader,
   accountAction,
-}: HeaderBlockProps) {
+}: PageTopProps) {
   const styles = useStyles()
   const navigate = useNavigate()
   const tabs = useShellStore((state) => state.tabs)
@@ -141,8 +130,8 @@ export default function HeaderBlock({
   const showObjectTabs = !!objectTabs && objectTabs.length > 0
 
   return (
-    <div className={styles.headerBlock}>
-      <DocumentTabBar
+    <div className={styles.pageTop}>
+      <Header
         tabs={tabs}
         activeUrl={activeUrl}
         onSelectTab={handleSelectTab}
@@ -155,32 +144,19 @@ export default function HeaderBlock({
       {!headerCollapsed && (
         <div className={styles.whiteCard}>
           {showObjectTabs && (
+            <PageTabs
+              tabs={objectTabs}
+              selected={objectTab}
+              onChange={onObjectTabChange}
+            />
+          )}
+          {actionBar !== undefined && (
             <>
-              <div className={styles.objectTabs}>
-                <TabList
-                  size='small'
-                  selectedValue={objectTab}
-                  onTabSelect={(_, data) =>
-                    onObjectTabChange?.(String(data.value))
-                  }
-                >
-                  {objectTabs.map((tab) => (
-                    <Tab key={tab.value} value={tab.value}>
-                      {tab.label}
-                    </Tab>
-                  ))}
-                </TabList>
-              </div>
+              {actionBar}
               <Divider />
             </>
           )}
-          {ribbon !== undefined && (
-            <>
-              {ribbon}
-              <Divider />
-            </>
-          )}
-          <TitleStrip
+          <PageTitle
             title={title}
             state={titleState}
             onCollapse={onCollapseHeader}

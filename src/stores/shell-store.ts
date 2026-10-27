@@ -1,19 +1,19 @@
 import { create } from 'zustand'
-// Title lookup uses the standard sidebar-data (single source,
-// shared with AppSidebar and command-menu). The old
+// Title lookup uses the standard navigation-data (single source,
+// shared with NavigationPane and command-menu). The old
 // mes-agent/menu-data.ts MENU_GROUPS copy was deleted; titles and
-// urls come from sidebar-data.navGroups directly, teams are not
+// urls come from navigation-data.navGroups directly, teams are not
 // involved here.
-import { sidebarData } from '@/components/layout/data/sidebar-data'
+import { navigationData } from '@/components/layout/data/navigation-data'
 
 // Shared shell state for the unified (MES-standard) shell: the
-// multi-document tab strip and the AppSidebar expanded state. The
+// multi-tab strip and the NavigationPane expanded state. The
 // menu must NOT reset when moving between /mes-agent (its own
 // top-level route) and the _authenticated screens, so this state
 // lives outside both shells, in one store both read.
 //
 // In-memory only: no cookie / localStorage persistence, on purpose
-// (the old sidebar's cookie state is gone with AppSidebar).
+// (the old sidebar's cookie state is gone with NavigationPane).
 
 export type ShellTab = {
   id: string
@@ -25,7 +25,7 @@ export type ShellTab = {
 // Account / Appearance / Notifications / Display) are sub-routes
 // under /settings, but they must NOT each open a document tab.
 // Every registration path (layout registerRoute on route change,
-// AppSidebar openTab on menu click) funnels through this store, so
+// NavigationPane openTab on menu click) funnels through this store, so
 // the canonicalisation lives here: any /settings* route collapses
 // to the single '/settings' document tab titled 'Settings'.
 // (The layout and menu files themselves are owned by other workers,
@@ -44,11 +44,11 @@ function canonicalTab(tab: ShellTab): ShellTab {
 
 // Two levels only, matching the real data shape: navGroups ->
 // items -> sub-items (sub-items are leaves, no grandchildren in
-// sidebar-data). This replaces the old recursive walk over
+// navigation-data). This replaces the old recursive walk over
 // MENU_GROUPS with the same result, without a recursive type.
 function flattenTitles(): { title: string; url: string }[] {
   const out: { title: string; url: string }[] = []
-  for (const group of sidebarData.navGroups) {
+  for (const group of navigationData.navGroups) {
     for (const item of group.items) {
       if (item.url) out.push({ title: item.title, url: item.url })
       if (item.items) {
@@ -62,7 +62,7 @@ function flattenTitles(): { title: string; url: string }[] {
 }
 
 // Title for a route, by exact url match against the flattened
-// sidebar-data.navGroups. Settings is special-cased BEFORE the
+// navigation-data.navGroups. Settings is special-cased BEFORE the
 // flatten lookup: the menu lists '/settings' as the 'Profile'
 // child, so the flatten match would title the document tab
 // 'Profile'; every /settings* route is the single 'Settings'

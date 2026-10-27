@@ -6,8 +6,8 @@ import { Open20Regular } from '@fluentui/react-icons'
 import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
-import HeaderBlock from '@/components/layout/header-block'
+import PageTop from '@/components/layout/page-top'
+import { ScreenLayout } from '@/components/layout/screen-layout'
 
 export const Route = createFileRoute('/clerk')({
   component: RouteComponent,
@@ -120,13 +120,13 @@ const useStyles = makeStyles({
 function MissingClerkPubKey() {
   const styles = useStyles()
   return (
-    <AuthenticatedLayout>
-      {/* Unified shell: AuthenticatedLayout already renders AppSidebar;
-          HeaderBlock adds the multi-tab document strip + title strip,
+    <ScreenLayout>
+      {/* Unified shell: ScreenLayout already renders NavigationPane;
+          PageTop adds the multi-tab strip + page title,
           replacing the old standalone top bar (ThemeSwitch +
           ConfigDrawer) and Main wrapper. Guard logic above (the
           PUBLISHABLE_KEY check and ClerkProvider) is untouched. */}
-      <HeaderBlock title='Clerk' />
+      <PageTop title='Clerk' />
       <div className={styles.content}>
         <div className={styles.inner}>
           <MessageBar intent='warning'>
@@ -208,6 +208,6 @@ function MissingClerkPubKey() {
           </MessageBar>
         </div>
       </div>
-    </AuthenticatedLayout>
+    </ScreenLayout>
   )
 }

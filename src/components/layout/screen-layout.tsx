@@ -5,7 +5,7 @@ import { useShellStore } from '@/stores/shell-store'
 import { LayoutProvider } from '@/context/layout-provider'
 import { useTheme } from '@/context/theme-provider'
 import { SkipToMain } from '@/components/skip-to-main'
-import AppSidebar from './app-sidebar'
+import NavigationPane from './navigation-pane'
 import { CANVAS } from './shell-constants'
 
 const useStyles = makeStyles({
@@ -22,28 +22,28 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
     // Same geometry as the MES page: no top padding (the screen's
-    // own HeaderBlock touches the top edge), 8px on the other sides.
+    // own PageTop touches the top edge), 8px on the other sides.
     padding: '0px 8px 8px 8px',
     backgroundColor: CANVAS,
     overflow: 'hidden',
   },
 })
 
-type AuthenticatedLayoutProps = {
+type ScreenLayoutProps = {
   children?: React.ReactNode
 }
 
-// Unified shell (Phase 1): the MES-standard AppSidebar + canvas page
-// column, directly — no AppSidebar, no layout/header, no SearchProvider
-// (now at the root). HeaderBlock is NOT rendered here: each screen
-// renders its own HeaderBlock at the top of its content, exactly like
+// Unified shell (Phase 1): the MES-standard NavigationPane + canvas page
+// column, directly — no NavigationPane, no layout/header, no SearchProvider
+// (now at the root). PageTop is NOT rendered here: each screen
+// renders its own PageTop at the top of its content, exactly like
 // the MES page does, so the tab strip sits above that screen's
-// object tabs / ribbon / title strip. LayoutProvider is kept because
+// object tabs / action bar / page title. LayoutProvider is kept because
 // screens (e.g. settings via config-drawer) still read it; SkipToMain
 // is kept, pointing at the page column below.
 // Direct URL navigation registers the route as a document tab, so
 // opening /tasks by URL also shows a Tasks tab.
-export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
+export function ScreenLayout({ children }: ScreenLayoutProps) {
   const styles = useStyles()
   const { pathname } = useLocation()
   const menuExpanded = useShellStore((state) => state.menuExpanded)
@@ -57,7 +57,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   // Canvas: light keeps the exact CANVAS (#e6e8eb, now equal to the
   // tab-strip HEADER_GREY — see shell-constants.ts) from the class;
   // dark swaps it for the dark tab-strip colour
-  // (colorNeutralBackground2, the dark strip in DocumentTabBar)
+  // (colorNeutralBackground2, the dark strip in Header)
   // instead of the previous Background3, so the dark 8px gap at the
   // header's left edge blends with the dark tab strip exactly as
   // light does, while the dark header surface (Background1) still
@@ -73,7 +73,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     <LayoutProvider>
       <div className={styles.root} style={canvasStyle}>
         <SkipToMain />
-        <AppSidebar expanded={menuExpanded} onToggle={toggleMenu} />
+        <NavigationPane expanded={menuExpanded} onToggle={toggleMenu} />
         <div id='content' className={styles.page} style={canvasStyle}>
           {children ?? <Outlet />}
         </div>

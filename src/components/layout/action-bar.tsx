@@ -21,20 +21,20 @@ import {
 } from '@/components/ui/toolbar'
 
 const useStyles = makeStyles({
-  ribbon: {
+  actionBar: {
     display: 'flex',
     gap: tokens.spacingHorizontalXXXL,
     alignItems: 'flex-start',
     backgroundColor: tokens.colorNeutralBackground1,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL} ${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
   },
-  ribbonGroup: {
+  actionBarGroup: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: '0px',
   },
-  ribbonLabel: {
+  actionBarLabel: {
     // Kept at 11px: equidistant between Base100 (10px) and Base200
     // (12px); tokenising would change the label size.
     fontSize: '11px',
@@ -43,7 +43,7 @@ const useStyles = makeStyles({
   },
 })
 
-export type RibbonAction = {
+export type ActionBarAction = {
   label: string
   // Icon element (e.g. <ArrowClockwise24Regular />), rendered inside
   // the button.
@@ -54,20 +54,22 @@ export type RibbonAction = {
   menuItems?: { label: string; onClick?: () => void }[]
 }
 
-export type RibbonGroup = {
+export type ActionBarGroup = {
   label: string
-  actions: RibbonAction[]
+  actions: ActionBarAction[]
 }
 
-export type RibbonProps = {
+export type ActionBarProps = {
   notify?: (message: string) => void
   // When omitted, the MES default groups are kept (General:
   // Refresh/Edit, Actions: More with Save/Reset/Publish To Runtime),
   // so MES renders unchanged without passing groups.
-  groups?: RibbonGroup[]
+  groups?: ActionBarGroup[]
 }
 
-const DEFAULT_GROUPS = (notify?: (message: string) => void): RibbonGroup[] => [
+const DEFAULT_GROUPS = (
+  notify?: (message: string) => void
+): ActionBarGroup[] => [
   {
     label: 'General',
     actions: [
@@ -102,14 +104,14 @@ const DEFAULT_GROUPS = (notify?: (message: string) => void): RibbonGroup[] => [
   },
 ]
 
-export default function Ribbon({ notify, groups }: RibbonProps) {
+export default function ActionBar({ notify, groups }: ActionBarProps) {
   const styles = useStyles()
   const resolved = groups ?? DEFAULT_GROUPS(notify)
   return (
-    <Toolbar className={styles.ribbon}>
+    <Toolbar className={styles.actionBar}>
       {resolved.map((group) => (
         <Fragment key={group.label}>
-          <div className={styles.ribbonGroup}>
+          <div className={styles.actionBarGroup}>
             <ToolbarGroup>
               {group.actions.map((action) =>
                 action.menuItems ? (
@@ -146,12 +148,12 @@ export default function Ribbon({ notify, groups }: RibbonProps) {
                 )
               )}
             </ToolbarGroup>
-            <Text size={200} className={styles.ribbonLabel}>
+            <Text size={200} className={styles.actionBarLabel}>
               {group.label}
             </Text>
           </div>
           {/* Vertical divider between groups, as in the reference:
-              tall, spanning most of the ribbon band, not the
+              tall, spanning most of the action bar band, not the
               short default ToolbarDivider. A trailing divider after
               the last group, as in the reference. */}
           <ToolbarDivider

@@ -7,8 +7,8 @@ import {
   ArrowDownload24Regular,
 } from '@fluentui/react-icons'
 import { Card } from '@/components/ui/card'
-import HeaderBlock from '@/components/layout/header-block'
-import Ribbon from '@/components/layout/ribbon'
+import ActionBar from '@/components/layout/action-bar'
+import PageTop from '@/components/layout/page-top'
 import { TasksDialogs } from './components/tasks-dialogs'
 import { TasksProvider, useTasks } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   // List full-height chain (see tasks-table): the page itself must
   // never scroll — only the table body scrolls. So this content
   // column is overflow hidden (not auto), and the card below fills
-  // exactly the remaining viewport height after the header block.
+  // exactly the remaining viewport height after the page top.
   content: {
     flex: '1',
     minHeight: 0,
@@ -53,7 +53,7 @@ function TasksScreen() {
   const styles = useStyles()
   const { setOpen } = useTasks()
   const navigate = route.useNavigate()
-  // Bumped on ribbon Refresh so the table remounts (local sorting /
+  // Bumped on action bar Refresh so the table remounts (local sorting /
   // selection / column visibility reset) together with the URL
   // filter reset below.
   const [refreshKey, setRefreshKey] = useState(0)
@@ -74,10 +74,10 @@ function TasksScreen() {
 
   return (
     <>
-      <HeaderBlock
+      <PageTop
         title='Tasks'
-        ribbon={
-          <Ribbon
+        actionBar={
+          <ActionBar
             groups={[
               {
                 label: 'General',

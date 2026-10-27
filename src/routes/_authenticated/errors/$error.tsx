@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { Card } from '@/components/ui/card'
-import HeaderBlock from '@/components/layout/header-block'
+import PageTop from '@/components/layout/page-top'
 import { ForbiddenError } from '@/features/errors/forbidden'
 import { GeneralError } from '@/features/errors/general-error'
 import { MaintenanceError } from '@/features/errors/maintenance-error'
@@ -29,9 +29,9 @@ const useStyles = makeStyles({
 
 // In-app error screens (inside the authenticated shell). The standalone
 // error routes under (errors)/ and the error components themselves are
-// untouched: only this shell route gets the unified HeaderBlock. The
+// untouched: only this shell route gets the unified PageTop. The
 // error screens keep their own Go Back / Back to Home buttons, so no
-// ribbon row is rendered.
+// action bar row is rendered.
 const ERROR_TITLES: Record<string, string> = {
   unauthorized: 'Unauthorized',
   forbidden: 'Forbidden',
@@ -56,9 +56,9 @@ function RouteComponent() {
 
   return (
     <div className={styles.root}>
-      <HeaderBlock
+      <PageTop
         title={ERROR_TITLES[error] ?? 'Not Found'}
-        ribbon={undefined}
+        actionBar={undefined}
       />
       <Card
         className={styles.card}

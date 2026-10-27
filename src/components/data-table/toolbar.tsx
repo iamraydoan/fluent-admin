@@ -77,7 +77,7 @@ type DataTableToolbarProps<TData> = {
    * 2026-10-27 ~14:34, reversing the 2026-10-27 ~14:05 removal:
    * the list filter row holds single-select dropdowns, field
    * filters, the Search box, then Reset, in that order. The header
-   * Search icon button in the document tab strip is separate and
+   * Search icon button in the tab strip is separate and
    * unchanged: it opens the command menu (command/page search),
    * not table-row search.
    *

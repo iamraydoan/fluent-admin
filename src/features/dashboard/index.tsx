@@ -5,8 +5,8 @@ import { formatCurrency, formatNumber } from '@/lib/format'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Tab, TabList } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
-import HeaderBlock from '@/components/layout/header-block'
-import Ribbon from '@/components/layout/ribbon'
+import ActionBar from '@/components/layout/action-bar'
+import PageTop from '@/components/layout/page-top'
 import { Analytics } from './components/analytics'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
@@ -93,18 +93,18 @@ const stats = [
 export function Dashboard() {
   const styles = useStyles()
   const [tab, setTab] = useState('overview')
-  // Bumped on ribbon Refresh so the tab content remounts and the tab
+  // Bumped on action bar Refresh so the tab content remounts and the tab
   // resets to Overview. The old heading-row Download button had no
   // onClick handler, so it is dropped rather than carried into the
-  // ribbon as a dead action (see report).
+  // action bar as a dead action (see report).
   const [refreshKey, setRefreshKey] = useState(0)
 
   return (
     <>
-      <HeaderBlock
+      <PageTop
         title='Dashboard'
-        ribbon={
-          <Ribbon
+        actionBar={
+          <ActionBar
             groups={[
               {
                 label: 'General',

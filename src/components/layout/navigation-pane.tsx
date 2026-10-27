@@ -11,24 +11,24 @@ import { Button } from '@/components/ui/button'
 import { Nav, NavItem, NavSectionHeader } from '@/components/ui/nav'
 import { Text } from '@/components/ui/text'
 import { Tooltip } from '@/components/ui/tooltip'
-// Menu data is the standard sidebar-data (single source, shared
+// Menu data is the standard navigation-data (single source, shared
 // with command-menu): the old mes-agent/menu-data.ts parallel copy
-// was deleted. sidebar-data.navGroups is used directly — teams
+// was deleted. navigation-data.navGroups is used directly — teams
 // are NOT rendered here, as before (account lives only in the
-// header avatar, see DocumentTabBar), only navGroups + their
+// header avatar, see Header), only navGroups + their
 // titles/urls/badges/icons.
-import { sidebarData } from '@/components/layout/data/sidebar-data'
-import type { NavItem as SidebarNavItem } from '@/components/layout/types'
+import { navigationData } from '@/components/layout/data/navigation-data'
+import type { NavigationItem } from '@/components/layout/types'
 
 // Fluent Nav menu, in demo style. This replaces the
 // shadcn sidebar on this page only: no shadcn, Radix, lucide or
 // Tailwind classes are used here, and there is no team/user footer
-// (account lives in the header avatar only, see DocumentTabBar).
-// Menu items come from sidebar-data.navGroups (the standard source);
+// (account lives in the header avatar only, see Header).
+// Menu items come from navigation-data.navGroups (the standard source);
 // the old menu-data MENU_GROUPS copy was deleted, so titles, urls,
-// badges, order and groups must stay identical to sidebar-data —
+// badges, order and groups must stay identical to navigation-data —
 // the only intentional change vs the old copy is icons, which now
-// follow sidebar-data (e.g. Secured by Clerk uses the local
+// follow navigation-data (e.g. Secured by Clerk uses the local
 // ClerkLogo SVG, Errors/Settings sub-items use their specific
 // Fluent icons instead of the generic ones the copy used).
 //
@@ -159,12 +159,15 @@ const useStyles = makeStyles({
   },
 })
 
-type AppSidebarProps = {
+type NavigationPaneProps = {
   expanded: boolean
   onToggle: () => void
 }
 
-export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
+export default function NavigationPane({
+  expanded,
+  onToggle,
+}: NavigationPaneProps) {
   const styles = useStyles()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -193,7 +196,7 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
     }
   }
 
-  const renderLeaf = (item: SidebarNavItem, indent: boolean) => {
+  const renderLeaf = (item: NavigationItem, indent: boolean) => {
     const Icon = item.icon
     const label = (
       <span className={styles.labelRow}>
@@ -209,7 +212,7 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
     // Clicking a leaf navigates AND opens (or activates) its
     // document tab in the shell store; selection follows the current
     // route, never a hardcoded url.
-    // Group 1 icons: bundled sidebar icons render Filled only for the
+    // Group 1 icons: bundled navigation icons render Filled only for the
     // current route; every other leaf stays Regular. Same size and
     // position either way (bundleIcon hides the inactive variant).
     return (
@@ -235,7 +238,7 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
     )
   }
 
-  const renderParent = (item: SidebarNavItem) => {
+  const renderParent = (item: NavigationItem) => {
     const Icon = item.icon
     const isOpen = openParents[item.title] ?? false
     const ExpandIcon = isOpen ? ChevronDown20Regular : ChevronRight20Regular
@@ -292,7 +295,7 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
         aria-label='Main navigation'
         selectedValue={pathname}
       >
-        {sidebarData.navGroups.map((group) => (
+        {navigationData.navGroups.map((group) => (
           <div key={group.title}>
             {expanded && (
               <NavSectionHeader className={styles.sectionHeader}>

@@ -6,7 +6,7 @@ import { Text } from '@/components/ui/text'
 import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
-  titleStrip: {
+  pageTitle: {
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
@@ -36,23 +36,23 @@ const useStyles = makeStyles({
   },
 })
 
-export type TitleStripProps = {
+export type PageTitleProps = {
   title: string
-  // Optional state, rendered as "title (state)", e.g. "CM MES Agent (Active)".
+  // Optional state, rendered as "title (state)", e.g. "Title (State)".
   state?: string
   // When omitted, no collapse button is rendered.
   onCollapse?: () => void
 }
 
-export default function TitleStrip({
+export default function PageTitle({
   title,
   state,
   onCollapse,
-}: TitleStripProps) {
+}: PageTitleProps) {
   const styles = useStyles()
   return (
     <CardHeader
-      className={styles.titleStrip}
+      className={styles.pageTitle}
       image={
         <span className={styles.titleIcon} aria-hidden='true'>
           <Settings20Regular />

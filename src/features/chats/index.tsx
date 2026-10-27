@@ -29,8 +29,8 @@ import {
 } from '@/components/ui/message-bar'
 import { Text } from '@/components/ui/text'
 import { Tooltip } from '@/components/ui/tooltip'
-import HeaderBlock from '@/components/layout/header-block'
-import Ribbon from '@/components/layout/ribbon'
+import ActionBar from '@/components/layout/action-bar'
+import PageTop from '@/components/layout/page-top'
 import { NewChat } from './components/new-chat'
 import { type ChatUser, type Convo } from './data/chat-types'
 // Fake Data
@@ -253,7 +253,7 @@ export function Chats() {
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
   const [createConversationDialogOpened, setCreateConversationDialog] =
     useState(false)
-  // Ribbon Refresh has no live data source behind it (the list is the
+  // ActionBar Refresh has no live data source behind it (the list is the
   // static demo JSON), so like the MES mock it only shows a notice.
   const [notice, setNotice] = useState('')
 
@@ -283,11 +283,11 @@ export function Chats() {
 
   return (
     <div className={styles.root}>
-      <HeaderBlock
+      <PageTop
         title='Chats'
         // No object tabs for Chats.
-        ribbon={
-          <Ribbon
+        actionBar={
+          <ActionBar
             groups={[
               {
                 label: 'General',

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { Tooltip } from '@/components/ui/tooltip'
-import { sidebarData } from './layout/data/sidebar-data'
+import { navigationData } from './layout/data/navigation-data'
 
 const useStyles = makeStyles({
   overlay: {
@@ -86,7 +86,7 @@ export function CommandMenu() {
 
   const entries = React.useMemo<CommandEntry[]>(() => {
     const list: CommandEntry[] = []
-    for (const group of sidebarData.navGroups) {
+    for (const group of navigationData.navGroups) {
       for (const navItem of group.items) {
         if (navItem.url) {
           list.push({

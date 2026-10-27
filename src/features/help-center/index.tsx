@@ -1,7 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { Card } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import HeaderBlock from '@/components/layout/header-block'
+import PageTop from '@/components/layout/page-top'
 
 const useStyles = makeStyles({
   root: {
@@ -46,10 +46,10 @@ export function HelpCenter() {
   const styles = useStyles()
   return (
     <div className={styles.root}>
-      <HeaderBlock
+      <PageTop
         title='Help Center'
-        // No object tabs and no ribbon for the placeholder screen.
-        ribbon={undefined}
+        // No object tabs and no action bar for the placeholder screen.
+        actionBar={undefined}
       />
       <Card
         className={styles.card}

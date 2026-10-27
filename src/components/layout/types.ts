@@ -5,7 +5,7 @@ type User = {
   email: string
   avatar: string
   // Optional initials fallback for the header avatar. Added when
-  // menu-data.ts was retired into sidebar-data: the old ACCOUNT
+  // menu-data.ts was retired into navigation-data: the old ACCOUNT
   // carried initials 'SN', and deriving from the single-word name
   // 'satnaing' would give only 'S', so the standard user record
   // keeps 'SN' explicitly instead of re-deriving it at each use.
@@ -24,27 +24,33 @@ type BaseNavItem = {
   icon?: React.ElementType
 }
 
-type NavLink = BaseNavItem & {
+type NavigationLink = BaseNavItem & {
   url: LinkProps['to'] | (string & {})
   items?: never
 }
 
-type NavCollapsible = BaseNavItem & {
+type NavigationCollapsible = BaseNavItem & {
   items: (BaseNavItem & { url: LinkProps['to'] | (string & {}) })[]
   url?: never
 }
 
-type NavItem = NavCollapsible | NavLink
+type NavigationItem = NavigationCollapsible | NavigationLink
 
-type NavGroup = {
+type NavigationGroup = {
   title: string
-  items: NavItem[]
+  items: NavigationItem[]
 }
 
-type SidebarData = {
+type NavigationData = {
   user: User
   teams: Team[]
-  navGroups: NavGroup[]
+  navGroups: NavigationGroup[]
 }
 
-export type { SidebarData, NavGroup, NavItem, NavCollapsible, NavLink }
+export type {
+  NavigationData,
+  NavigationGroup,
+  NavigationItem,
+  NavigationCollapsible,
+  NavigationLink,
+}

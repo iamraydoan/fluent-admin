@@ -8,8 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import HeaderBlock from '@/components/layout/header-block'
-import Ribbon from '@/components/layout/ribbon'
+import ActionBar from '@/components/layout/action-bar'
+import PageTop from '@/components/layout/page-top'
 import { apps } from './data/apps'
 
 const route = getRouteApi('/_authenticated/apps/')
@@ -154,10 +154,10 @@ export function Apps() {
 
   return (
     <>
-      <HeaderBlock
+      <PageTop
         title='Apps'
-        ribbon={
-          <Ribbon
+        actionBar={
+          <ActionBar
             groups={[
               {
                 label: 'General',
