@@ -9,10 +9,10 @@ const useStyles = makeStyles({
   card: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
     width: '100%',
     maxWidth: '384px',
-    padding: '24px',
+    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
     boxSizing: 'border-box',
   },
   description: {
@@ -26,8 +26,8 @@ const useStyles = makeStyles({
   footer: {
     textAlign: 'center',
     color: tokens.colorNeutralForeground2,
-    paddingLeft: '32px',
-    paddingRight: '32px',
+    paddingLeft: tokens.spacingHorizontalXXXL,
+    paddingRight: tokens.spacingHorizontalXXXL,
   },
 })
 

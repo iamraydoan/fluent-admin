@@ -7,11 +7,11 @@ const useStyles = makeStyles({
   stack: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   statGrid: {
     display: 'grid',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     gridTemplateColumns: 'repeat(4, 1fr)',
     '@media (max-width: 1024px)': {
       gridTemplateColumns: 'repeat(2, 1fr)',
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   statCard: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
   statValue: {
     fontSize: tokens.fontSizeHero700,
@@ -34,7 +34,7 @@ const useStyles = makeStyles({
   },
   splitGrid: {
     display: 'grid',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     gridTemplateColumns: '4fr 3fr',
     '@media (max-width: 1024px)': {
       gridTemplateColumns: '1fr',
@@ -43,7 +43,7 @@ const useStyles = makeStyles({
   list: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: tokens.spacingVerticalM,
     listStyleType: 'none',
     margin: '0',
     padding: '0',
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
   },
   barTrack: {
     height: '10px',
@@ -73,7 +73,7 @@ const useStyles = makeStyles({
   },
   barLabel: {
     color: tokens.colorNeutralForeground3,
-    marginBottom: '4px',
+    marginBottom: tokens.spacingVerticalXS,
   },
 })
 

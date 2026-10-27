@@ -43,7 +43,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '16px',
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
   },
   inner: {
     width: '100%',
@@ -52,16 +52,16 @@ const useStyles = makeStyles({
   messageTitle: {
     fontWeight: 600,
     display: 'block',
-    marginBottom: '4px',
+    marginBottom: tokens.spacingVerticalXS,
   },
   heading: {
-    marginTop: '16px',
+    marginTop: tokens.spacingVerticalL,
   },
   body: {
-    marginTop: '16px',
+    marginTop: tokens.spacingVerticalL,
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
     color: tokens.colorNeutralForeground2,
   },
   steps: {
@@ -90,10 +90,10 @@ const useStyles = makeStyles({
   sample: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: '#1e293b',
-    padding: '12px 12px',
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalM}`,
     fontSize: '14px',
     color: '#e2e8f0',
   },
@@ -101,18 +101,18 @@ const useStyles = makeStyles({
     overflowX: 'auto',
     borderRadius: tokens.borderRadiusSmall,
     backgroundColor: '#0f172a',
-    padding: '4px 8px',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
     fontSize: '12px',
     marginTop: '0px',
     marginBottom: '0px',
   },
   separator: {
-    marginTop: '16px',
-    marginBottom: '16px',
+    marginTop: tokens.spacingVerticalL,
+    marginBottom: tokens.spacingVerticalL,
     width: '100%',
   },
   note: {
-    marginTop: '8px',
+    marginTop: tokens.spacingVerticalS,
     fontSize: '14px',
   },
 })

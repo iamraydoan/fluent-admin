@@ -1,5 +1,5 @@
 import { type Column } from '@tanstack/react-table'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ArrowDown20Regular,
   ArrowSort20Regular,
@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   row: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
 })
 

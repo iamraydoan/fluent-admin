@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { type Column } from '@tanstack/react-table'
+import { tokens } from '@fluentui/react-components'
 import { Filter20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,7 +50,7 @@ export function DataTableFieldFilter<TData, TValue>({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: tokens.spacingHorizontalS,
       }}
     >
       <Text size={300}>{`${label}:`}</Text>

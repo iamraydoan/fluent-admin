@@ -21,18 +21,18 @@ const useStyles = makeStyles({
   cardBody: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-    padding: '16px',
+    gap: tokens.spacingVerticalL,
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
     minHeight: 0,
   },
   tabContent: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   statGrid: {
     display: 'grid',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     gridTemplateColumns: 'repeat(4, 1fr)',
     '@media (max-width: 1024px)': {
       gridTemplateColumns: 'repeat(2, 1fr)',
@@ -44,7 +44,7 @@ const useStyles = makeStyles({
   statCard: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
   statValue: {
     fontSize: tokens.fontSizeHero700,
@@ -55,7 +55,7 @@ const useStyles = makeStyles({
   },
   mainGrid: {
     display: 'grid',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     gridTemplateColumns: '4fr 3fr',
     '@media (max-width: 1024px)': {
       gridTemplateColumns: '1fr',
@@ -64,7 +64,7 @@ const useStyles = makeStyles({
   chartCard: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
   },
 })
 

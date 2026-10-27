@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Dismiss20Regular } from '@fluentui/react-icons'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   title: {
     margin: '0',
@@ -31,17 +31,17 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px',
+    gap: tokens.spacingVerticalXXL,
   },
   radioGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
   footer: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
 })
 

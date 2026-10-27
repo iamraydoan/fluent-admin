@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     minWidth: 0,
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
     // Same geometry as the MES page: no top padding (the screen's
     // own HeaderBlock touches the top edge), 8px on the other sides.
     padding: '0px 8px 8px 8px',

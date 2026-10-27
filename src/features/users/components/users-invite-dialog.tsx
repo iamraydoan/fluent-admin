@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   Dismiss20Regular,
   MailAdd20Regular,
@@ -28,7 +28,7 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   description: {
     margin: '0',
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   titleIcon: {
     display: 'inline-flex',
     verticalAlign: 'middle',
-    marginRight: '8px',
+    marginRight: tokens.spacingHorizontalS,
   },
 })
 

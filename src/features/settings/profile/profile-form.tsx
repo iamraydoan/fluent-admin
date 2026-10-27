@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import { Field } from '@/components/ui/field'
@@ -15,20 +15,20 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: tokens.spacingVerticalXXXL,
   },
   urls: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   urlRow: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
   },
   addButton: {
-    marginTop: '8px',
+    marginTop: tokens.spacingVerticalS,
   },
 })
 

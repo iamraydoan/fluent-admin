@@ -23,10 +23,10 @@ import {
 const useStyles = makeStyles({
   ribbon: {
     display: 'flex',
-    gap: '32px',
+    gap: tokens.spacingHorizontalXXXL,
     alignItems: 'flex-start',
     backgroundColor: tokens.colorNeutralBackground1,
-    padding: '8px 16px 8px 16px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL} ${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
   },
   ribbonGroup: {
     display: 'flex',

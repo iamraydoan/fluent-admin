@@ -6,12 +6,12 @@ const useStyles = makeStyles({
   list: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: tokens.spacingVerticalXXXL,
   },
   row: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
   },
   info: {
     display: 'flex',
@@ -19,12 +19,12 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   meta: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
   email: {
     color: tokens.colorNeutralForeground3,

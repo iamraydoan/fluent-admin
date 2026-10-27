@@ -18,26 +18,26 @@ import { PasswordInput } from '@/components/password-input'
 const useStyles = makeStyles({
   form: {
     display: 'grid',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
   },
   passwordField: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
   error: {
     color: tokens.colorPaletteRedForeground1,
   },
   submit: {
-    marginTop: '8px',
+    marginTop: tokens.spacingVerticalS,
     width: '100%',
   },
   dividerRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    marginTop: '8px',
-    marginBottom: '8px',
+    gap: tokens.spacingHorizontalS,
+    marginTop: tokens.spacingVerticalS,
+    marginBottom: tokens.spacingVerticalS,
   },
   dividerLine: {
     flexGrow: 1,
@@ -49,7 +49,7 @@ const useStyles = makeStyles({
   socialRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   socialButton: {
     width: '100%',

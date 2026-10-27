@@ -17,21 +17,21 @@ const useStyles = makeStyles({
     },
   },
   left: {
-    padding: '32px',
+    padding: `${tokens.spacingVerticalXXXL} ${tokens.spacingHorizontalXXXL}`,
     boxSizing: 'border-box',
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '8px',
-    marginBottom: '16px',
+    gap: tokens.spacingHorizontalS,
+    marginBottom: tokens.spacingVerticalL,
   },
   formColumn: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
     width: '100%',
     maxWidth: '384px',
     marginLeft: 'auto',
@@ -40,7 +40,7 @@ const useStyles = makeStyles({
   heading: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
   },
   description: {
     color: tokens.colorNeutralForeground2,
@@ -54,8 +54,8 @@ const useStyles = makeStyles({
   footer: {
     textAlign: 'center',
     color: tokens.colorNeutralForeground2,
-    paddingLeft: '32px',
-    paddingRight: '32px',
+    paddingLeft: tokens.spacingHorizontalXXXL,
+    paddingRight: tokens.spacingHorizontalXXXL,
   },
   panel: {
     display: 'none',

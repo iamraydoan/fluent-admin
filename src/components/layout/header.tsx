@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Divider } from '@/components/ui/divider'
 
 const useStyles = makeStyles({
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
     display: 'flex',
     height: '100%',
     alignItems: 'center',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
     padding: '0px 16px',
     boxSizing: 'border-box',
   },

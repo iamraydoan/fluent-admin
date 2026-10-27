@@ -1,4 +1,5 @@
 import { type Column } from '@tanstack/react-table'
+import { tokens } from '@fluentui/react-components'
 import { Select } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
 
@@ -37,7 +38,7 @@ export function DataTableSingleSelectFilter<TData, TValue>({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: tokens.spacingHorizontalS,
       }}
     >
       <Text size={300}>{`${title}:`}</Text>

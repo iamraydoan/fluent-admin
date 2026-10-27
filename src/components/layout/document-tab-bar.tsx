@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   docTabBar: {
     display: 'flex',
     alignItems: 'flex-end',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     // 4px top + 44px tab = 48px strip, as in the reference; 8px right
     // padding, because the main area's 8px right margin already
     // contributes 8px, so the avatar's right edge still sits ~16px
@@ -143,7 +143,7 @@ const useStyles = makeStyles({
     zIndex: 1,
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     height: '32px',
     marginTop: '6px',
     boxSizing: 'border-box',
@@ -191,7 +191,7 @@ const useStyles = makeStyles({
     zIndex: 2,
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     height: '32px',
     marginTop: '6px',
     boxSizing: 'border-box',
@@ -216,7 +216,7 @@ const useStyles = makeStyles({
   },
   backButton: {
     alignSelf: 'center',
-    marginBottom: '4px',
+    marginBottom: tokens.spacingVerticalXS,
     flexShrink: 0,
   },
   // Even, tight spacing, 20px icons, centred, padded from the edge.
@@ -224,8 +224,8 @@ const useStyles = makeStyles({
     marginLeft: 'auto',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    paddingBottom: '8px',
+    gap: tokens.spacingHorizontalS,
+    paddingBottom: tokens.spacingVerticalS,
     paddingRight: '0px',
     flexShrink: 0,
   },

@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   brand: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     fontSize: '18px',
     fontWeight: 500,
     color: '#ffffff',
@@ -51,11 +51,11 @@ const useStyles = makeStyles({
   quote: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
     marginTop: 'auto',
   },
   formSide: {
-    padding: '32px',
+    padding: `${tokens.spacingVerticalXXXL} ${tokens.spacingHorizontalXXXL}`,
     boxSizing: 'border-box',
   },
   formInner: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
     width: '100%',
     marginLeft: 'auto',
     marginRight: 'auto',

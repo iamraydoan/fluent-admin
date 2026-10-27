@@ -40,7 +40,7 @@ const useStyles = makeStyles({
     minHeight: 0,
     overflow: 'hidden',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   tableWrap: {
     flex: '1',

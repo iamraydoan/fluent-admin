@@ -64,8 +64,8 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-    padding: '16px',
+    gap: tokens.spacingVerticalL,
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
   },
   accountRow: {
     flexShrink: 0,
@@ -73,7 +73,7 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   accountNote: {
     color: tokens.colorNeutralForeground2,
@@ -92,11 +92,11 @@ const useStyles = makeStyles({
     marginBottom: '0px',
   },
   learnMoreTextSpaced: {
-    marginTop: '16px',
+    marginTop: tokens.spacingVerticalL,
     marginBottom: '0px',
   },
   countdown: {
-    marginTop: '16px',
+    marginTop: tokens.spacingVerticalL,
     height: '32px',
     textAlign: 'center',
   },

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Card } from '@/components/ui/card'
 import HeaderBlock from '@/components/layout/header-block'
 import { ForbiddenError } from '@/features/errors/forbidden'
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     height: '100%',
     minHeight: 0,
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
   },
   card: {
     flex: 1,
@@ -63,7 +63,7 @@ function RouteComponent() {
       <Card
         className={styles.card}
         style={{
-          padding: '24px',
+          padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
           borderRadius: '8px',
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
         }}

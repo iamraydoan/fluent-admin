@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { ArrowRight20Regular } from '@fluentui/react-icons'
 import { toast } from '@/lib/toast'
 import { sleep } from '@/lib/utils'
@@ -15,10 +15,10 @@ import { Spinner } from '@/components/ui/spinner'
 const useStyles = makeStyles({
   form: {
     display: 'grid',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   submit: {
-    marginTop: '8px',
+    marginTop: tokens.spacingVerticalS,
     width: '100%',
   },
 })

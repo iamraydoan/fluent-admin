@@ -1,4 +1,4 @@
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Divider } from '@/components/ui/divider'
 import { Text } from '@/components/ui/text'
 
@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
   desc: {
     display: 'block',
-    marginTop: '4px',
+    marginTop: tokens.spacingVerticalXS,
   },
   divider: {
     // Fluent Divider ships flex-grow: 1 by design (to fill a flex row).
@@ -26,8 +26,8 @@ const useStyles = makeStyles({
     // a plain 1px div with no flex-grow, so it never stretched.
     flexGrow: 0,
     flexShrink: 0,
-    marginTop: '16px',
-    marginBottom: '16px',
+    marginTop: tokens.spacingVerticalL,
+    marginBottom: tokens.spacingVerticalL,
   },
   scroll: {
     width: '100%',

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { useFont } from '@/context/font-provider'
 import { useTheme } from '@/context/theme-provider'
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: tokens.spacingVerticalXXXL,
   },
   select: {
     textTransform: 'capitalize',
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   radios: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
   },
 })
 

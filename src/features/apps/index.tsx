@@ -27,20 +27,20 @@ const useStyles = makeStyles({
   cardBody: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-    padding: '16px',
+    gap: tokens.spacingVerticalL,
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
     minHeight: 0,
   },
   filterRow: {
     display: 'flex',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     flexWrap: 'wrap',
   },
   filterGroup: {
     display: 'flex',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     flexWrap: 'wrap',
   },
   filterInput: {
@@ -48,7 +48,7 @@ const useStyles = makeStyles({
   },
   grid: {
     display: 'grid',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     gridTemplateColumns: 'repeat(3, 1fr)',
     listStyleType: 'none',
     margin: '0',
@@ -63,7 +63,7 @@ const useStyles = makeStyles({
   appCard: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: tokens.spacingVerticalXXXL,
   },
   appTop: {
     display: 'flex',
@@ -78,7 +78,7 @@ const useStyles = makeStyles({
     height: '40px',
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: tokens.colorNeutralBackground3,
-    padding: '8px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
   },
   appDesc: {
     color: tokens.colorNeutralForeground3,

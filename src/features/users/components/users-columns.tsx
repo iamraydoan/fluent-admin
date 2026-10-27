@@ -1,4 +1,5 @@
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import { tokens } from '@fluentui/react-components'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
@@ -145,7 +146,13 @@ export const usersColumns: ColumnDef<User>[] = [
 
       const RoleIcon = userType.icon
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: tokens.spacingHorizontalS,
+          }}
+        >
           <RoleIcon />
           <span style={{ textTransform: 'capitalize' }}>
             {row.getValue('role')}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Warning20Regular } from '@fluentui/react-icons'
 import { toast } from '@/lib/toast'
 import { sleep } from '@/lib/utils'
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   text: {
     margin: '0',
@@ -21,12 +21,12 @@ const useStyles = makeStyles({
   title: {
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: tokens.spacingHorizontalXS,
   },
   confirmField: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: tokens.spacingVerticalXS,
   },
 })
 

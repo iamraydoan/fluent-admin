@@ -1,5 +1,5 @@
 import { type Table } from '@tanstack/react-table'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ChevronLeft20Regular,
   ChevronRight20Regular,
@@ -18,15 +18,15 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
     flexWrap: 'wrap',
-    paddingLeft: '8px',
-    paddingRight: '8px',
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
   },
   group: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
 })
 

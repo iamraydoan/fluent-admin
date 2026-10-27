@@ -1,4 +1,4 @@
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 
 const useStyles = makeStyles({
   link: {
@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     zIndex: 999,
     backgroundColor: '#0f6cbd',
     color: '#ffffff',
-    padding: '8px 16px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
     fontSize: '14px',
     fontWeight: 500,
     textDecoration: 'none',

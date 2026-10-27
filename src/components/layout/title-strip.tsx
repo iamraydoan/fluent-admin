@@ -8,9 +8,9 @@ const useStyles = makeStyles({
   titleStrip: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     backgroundColor: tokens.colorNeutralBackground1,
-    padding: '8px 16px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
     height: '40px',
     boxSizing: 'border-box',
   },

@@ -43,7 +43,7 @@ const useStyles = makeStyles({
     minHeight: 0,
     overflow: 'hidden',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   tableWrap: {
     flex: '1',
@@ -87,8 +87,8 @@ const useStyles = makeStyles({
   },
   emptyCell: {
     textAlign: 'center',
-    paddingTop: '24px',
-    paddingBottom: '24px',
+    paddingTop: tokens.spacingVerticalXXL,
+    paddingBottom: tokens.spacingVerticalXXL,
   },
 })
 

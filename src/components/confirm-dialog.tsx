@@ -10,18 +10,18 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    padding: '16px',
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
   },
   surface: {
     backgroundColor: tokens.colorNeutralBackground1,
     borderRadius: tokens.borderRadiusLarge,
     boxShadow: tokens.shadow16,
-    padding: '24px',
+    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
     maxWidth: '480px',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   title: {
     margin: '0',
@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   footer: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
 })
 

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -11,12 +11,12 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: tokens.spacingVerticalXXXL,
   },
   list: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: tokens.spacingVerticalM,
   },
 })
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ArrowClockwise24Regular,
   MailAdd24Regular,
@@ -44,8 +44,8 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-    padding: '16px',
+    gap: tokens.spacingVerticalL,
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
   },
 })
 

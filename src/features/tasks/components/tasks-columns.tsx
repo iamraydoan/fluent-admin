@@ -1,4 +1,5 @@
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import { tokens } from '@fluentui/react-components'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
@@ -20,7 +21,7 @@ function TaskTitleCell({ row }: { row: Row<Task> }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: tokens.spacingHorizontalS,
         minWidth: 0,
       }}
     >
@@ -118,7 +119,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: tokens.spacingHorizontalS,
             width: '100px',
           }}
         >
@@ -147,7 +148,13 @@ export const tasksColumns: ColumnDef<Task>[] = [
 
       const PriorityIcon = priority.icon
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: tokens.spacingHorizontalS,
+          }}
+        >
           <PriorityIcon aria-hidden='true' />
           <span>{priority.label}</span>
         </div>

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Dismiss20Regular } from '@fluentui/react-icons'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   description: {
     margin: '0',
@@ -105,7 +105,11 @@ type UserActionDialogProps = {
 }
 
 type TextFieldName =
-  'firstName' | 'lastName' | 'username' | 'email' | 'phoneNumber'
+  | 'firstName'
+  | 'lastName'
+  | 'username'
+  | 'email'
+  | 'phoneNumber'
 
 export function UsersActionDialog({
   currentRow,

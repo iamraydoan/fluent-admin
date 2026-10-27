@@ -53,7 +53,7 @@ const useStyles = makeStyles({
   },
   objectTabs: {
     backgroundColor: tokens.colorNeutralBackground1,
-    paddingLeft: '16px',
+    paddingLeft: tokens.spacingHorizontalL,
     // Reference selected tab text is brand blue, not black bold.
     '& [aria-selected="true"]': {
       color: tokens.colorBrandForeground1,

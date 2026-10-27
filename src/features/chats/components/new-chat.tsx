@@ -28,13 +28,13 @@ const useStyles = makeStyles({
   content: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: tokens.spacingVerticalL,
   },
   selectedRow: {
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   selectedLabel: {
     color: tokens.colorNeutralForeground3,
@@ -47,14 +47,14 @@ const useStyles = makeStyles({
     overflowY: 'auto',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
-    padding: '4px',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalXS}`,
   },
   userRow: {
     display: 'flex',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     textAlign: 'start',
     backgroundColor: 'transparent',
     border: 'none',
@@ -69,7 +69,7 @@ const useStyles = makeStyles({
   userInfo: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     minWidth: 0,
   },
   userNames: {
@@ -81,7 +81,7 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
   },
   empty: {
-    padding: '12px 8px',
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalS}`,
     color: tokens.colorNeutralForeground3,
   },
 })

@@ -8,7 +8,7 @@ const useStyles = makeStyles({
   buttonContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     width: '100%',
   },
   kbd: {

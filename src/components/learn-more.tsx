@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow8,
-    padding: '12px',
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalM}`,
     minWidth: '240px',
     color: tokens.colorNeutralForeground2,
     fontSize: '14px',

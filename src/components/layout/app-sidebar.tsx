@@ -60,7 +60,7 @@ const useStyles = makeStyles({
     // 8px left inset, as in the demo rail and Details View: the active
     // bar sits 8px from the menu edge, not flush to it, while the
     // bar-to-icon/text gap stays ~13px.
-    paddingLeft: '8px',
+    paddingLeft: tokens.spacingHorizontalS,
     // Single selected-item bar, demo technique: 3px x 20px brand blue,
     // centred, no fill. Fluent Nav's own ::after is hidden, otherwise
     // the selected item shows two bars.
@@ -111,7 +111,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     height: '48px',
-    paddingRight: '8px',
+    paddingRight: tokens.spacingHorizontalS,
   },
   toggleButton: {
     minWidth: '40px',
@@ -129,7 +129,7 @@ const useStyles = makeStyles({
     gap: '0px',
   },
   sectionHeader: {
-    padding: '16px 16px 4px 16px',
+    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL} ${tokens.spacingVerticalXS} ${tokens.spacingHorizontalL}`,
     color: tokens.colorNeutralForeground3,
   },
   badge: {
@@ -146,7 +146,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   subItems: {
     display: 'flex',
@@ -218,7 +218,9 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
         aria-label={
           item.badge ? `${item.title}, ${item.badge} unread` : item.title
         }
-        style={indent ? { paddingLeft: '32px' } : undefined}
+        style={
+          indent ? { paddingLeft: tokens.spacingHorizontalXXXL } : undefined
+        }
       >
         {expanded ? label : null}
       </NavItem>

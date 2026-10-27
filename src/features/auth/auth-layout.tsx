@@ -1,4 +1,4 @@
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Logo } from '@/assets/logo'
 import { Text } from '@/components/ui/text'
 
@@ -8,22 +8,22 @@ const useStyles = makeStyles({
     minHeight: '100svh',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '32px 16px',
+    padding: `${tokens.spacingVerticalXXXL} ${tokens.spacingHorizontalL}`,
     boxSizing: 'border-box',
   },
   inner: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    gap: '8px',
+    gap: tokens.spacingVerticalS,
     width: '100%',
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '8px',
-    marginBottom: '16px',
+    gap: tokens.spacingHorizontalS,
+    marginBottom: tokens.spacingVerticalL,
   },
 })
 

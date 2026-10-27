@@ -20,8 +20,8 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '8px',
-    padding: '24px',
+    gap: tokens.spacingVerticalS,
+    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
     boxSizing: 'border-box',
   },
   code: {
@@ -38,9 +38,9 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground2,
   },
   actions: {
-    marginTop: '24px',
+    marginTop: tokens.spacingVerticalXXL,
     display: 'flex',
-    gap: '16px',
+    gap: tokens.spacingHorizontalL,
   },
 })
 

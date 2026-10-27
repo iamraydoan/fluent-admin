@@ -1,8 +1,8 @@
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 
 const useStyles = makeStyles({
   main: {
-    padding: '24px 16px',
+    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalL}`,
   },
   mainFixed: {
     display: 'flex',

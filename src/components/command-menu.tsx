@@ -19,8 +19,8 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     paddingTop: '96px',
-    paddingLeft: '16px',
-    paddingRight: '16px',
+    paddingLeft: tokens.spacingHorizontalL,
+    paddingRight: tokens.spacingHorizontalL,
   },
   surface: {
     backgroundColor: tokens.colorNeutralBackground1,
@@ -36,16 +36,16 @@ const useStyles = makeStyles({
   header: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '8px',
+    gap: tokens.spacingHorizontalS,
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
   },
   list: {
     overflowY: 'auto',
-    padding: '8px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: tokens.spacingVerticalM,
   },
   group: {
     display: 'flex',
@@ -53,7 +53,7 @@ const useStyles = makeStyles({
     gap: '2px',
   },
   groupTitle: {
-    padding: '4px 8px',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
     color: tokens.colorNeutralForeground3,
   },
   item: {
