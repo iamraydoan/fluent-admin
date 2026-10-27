@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
@@ -49,97 +49,147 @@ const useStyles = makeStyles({
     // because no light token equals #e6e8eb).
     backgroundColor: HEADER_GREY,
   },
-  // SCOPE (user note 2026-10-27): ONLY the rounded method and the
-  // idea are borrowed from the Chrome reference
-  // (~/workspace/user/files/google_chrome_tab_ui.html). Spacing and
-  // size stay exactly like the current (pre-Chrome) version: strip
-  // padding 4px 8px 0 16px, strip gap 8px, tab height 44px, tab
-  // padding 8px, tab gap 8px, 24px icons, Fluent close Button,
-  // semibold active / regular inactive title. The full Chrome
-  // strip was REJECTED for changing that layout, so the following
-  // Chrome elements are DELIBERATELY NOT applied: tab overlap
-  // (would erase the current 8px gap between tabs), transparent
-  // inactive tabs, hover pill, separators, 42px strip / 36px shape,
-  // 12px title / 16px icon / 22px close circle, fixed 200px tab
-  // width. Inactive tabs are therefore completely untouched below.
+  // CHROME REDO (2026-10-27): full Chrome shape, NO BORDER AT ALL.
+  // The two rejected rounds are NOT repeated: e913431 changed too
+  // much layout, and 080a47c only painted 8x8 scoops INSIDE a
+  // 1px-bordered white box, leaving a border hairline outside each
+  // scoop and square grey inactive boxes with no hover. This round
+  // therefore (a) deletes every border on active AND inactive tabs
+  // — definition comes ONLY from fill vs strip contrast, never
+  // from a stroke, outline or shadow edge; (b) draws the active
+  // tab as the reference's full buildTabPath SVG (top radius 8,
+  // bottom concave fillets 8 on BOTH sides, no stroke), so the
+  // strip colour shows through at the sides and in the concave
+  // bottom corners at 1x, not only in enlarged crops; (c) makes
+  // inactive tabs pills (rounded all corners, inset 6px top/bottom
+  // inside the unchanged 44px tab bounds) with a real hover pill;
+  // (d) adds 1px x 18px separators centred in the 8px gap.
   //
-  // Active tab only, and only its bottom corners change: the tab
-  // keeps its current white box, 1px border (except bottom), 8px
-  // top radius, shadow, padding, height and gap, and gains the
-  // reference's bottom concave fillets (R=8) as two 8x8 corner
-  // scoops (see CHROME_FILLET_* below) painted in the strip colour
-  // over the box's bottom corners, so the fill still merges into
-  // the white block below exactly like Chrome's active tab.
-  // Why scoops instead of the reference's full SVG tab path? The
-  // full path was tried first in this task and measured: its sides
-  // sit 8px inset, so the visible white fill narrows by 16px and
-  // the title / close X edge margin drops from 8px to 0px for
-  // icon-less tabs (e.g. Users) — a spacing change the user
-  // explicitly forbade. Scoops apply the same R=8 concave curve at
-  // the bottom corners only, with zero change to fill width,
-  // content margins, or any other size.
-  docTab: {
+  // ADAPTATION vs the reference (documented, not silent): the
+  // reference's shape sides sit 8px inset from the tab's outer
+  // edges, so content padded 8px from the OUTER edge would sit
+  // exactly ON the fill edge (0px from the fill). To keep the
+  // current 8px content-to-fill-edge gap, the active tab's content
+  // row is padded 16px from the outer edge (8px fillet inset +
+  // 8px visual gap). Consequence, accepted by the brief: the
+  // active tab's OUTER width grows by 16px (border removal gives
+  // back 2px, so net +14px vs the bordered box). Everything else
+  // is unchanged: strip padding 4px 8px 0 16px, strip height
+  // 48px, tab height 44px, gap 8px, 24px icons, Fluent close
+  // Button, semibold active / regular inactive title. Deliberately
+  // NOT copied from Chrome: fixed 200px width, 42px strip / 36px
+  // shape height (shape height here is the current 44px), tab
+  // overlap (the 8px gap is kept — separators sit INSIDE it),
+  // 12px title / 16px icon / 22px close circle.
+  //
+  // Active tab root: transparent, no border, no shadow. Its size
+  // comes from the content row in normal flow; the SVG shape is
+  // absolutely positioned behind it and sized from the measured
+  // root width (ResizeObserver in ChromeActiveTab below), so the
+  // path's curves are never stretched by viewBox scaling.
+  docTabActive: {
+    position: 'relative',
+    height: '44px',
+    flexShrink: 0,
+    cursor: 'pointer',
+    backgroundColor: 'transparent',
+    color: tokens.colorNeutralForeground1,
+  },
+  docTabActiveSvg: {
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+    display: 'block',
+    pointerEvents: 'none',
+  },
+  // Content row: 16px outer padding = 8px fillet inset + the
+  // current 8px visual gap to the fill edge (see above).
+  docTabActiveContent: {
+    position: 'relative',
+    zIndex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    height: '44px',
+    boxSizing: 'border-box',
+    padding: '0px 16px',
+  },
+  // Inactive tab root: transparent, no border. The pill (below)
+  // is inset 6px top/bottom, so the pill is 32px tall inside the
+  // unchanged 44px tab bounds, and the 8px gap between tabs and
+  // the 44px height are untouched.
+  docTabInactive: {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderBottom: 'none',
-    borderRadius: '8px 8px 0 0',
-    boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.06)',
-    padding: '8px 8px 8px 8px',
     height: '44px',
     boxSizing: 'border-box',
+    padding: '0px 8px',
     cursor: 'pointer',
+    backgroundColor: 'transparent',
+    color: tokens.colorNeutralForeground1,
   },
-  // Bottom concave fillet scoops for the active tab: 8x8, pinned
-  // to the tab's bottom corners, painted in the strip colour (set
-  // inline: HEADER_GREY light, Background2 dark, matching the
-  // strip itself). They sit over the white box only in the curved
-  // triangle at each bottom corner (the SVG path's other pixels
-  // are transparent), so the tab's bottom edge stays full width
-  // and merged into the block below, while each side edge curves
-  // outward at the bottom exactly like the reference fillet.
-  // pointerEvents none, so clicks still hit the tab. They never
-  // overlap content: content lives in the padded row above
-  // (8px padding, 44px tab), the scoops in the bottom 8px.
-  docTabFilletLeft: {
+  // Inactive pill: rounded ALL corners, full tab width, inset
+  // 6px top/bottom. Light fill #eef0f2 is slightly lighter than
+  // the #e6e8eb strip (sampled from the reference image: strip
+  // ~224, pill ~240). Dark fill is a low-opacity white wash over
+  // the dark strip (see the inline style override), slightly
+  // lighter than the strip without equalling the active fill's
+  // full-height Chrome shape. No border, no stroke.
+  docTabInactivePill: {
     position: 'absolute',
-    bottom: '0px',
+    top: '6px',
+    bottom: '6px',
     left: '0px',
-    width: '8px',
-    height: '8px',
-    pointerEvents: 'none',
-    display: 'block',
-  },
-  docTabFilletRight: {
-    position: 'absolute',
-    bottom: '0px',
     right: '0px',
-    width: '8px',
-    height: '8px',
+    borderRadius: '8px',
+    backgroundColor: '#eef0f2',
     pointerEvents: 'none',
-    display: 'block',
   },
-  // Inactive tab: same shape, but a flat grey fill (darker than the
-  // strip so the tab shape still reads) and no shadow, so only the
-  // active tab merges into the white block below. Light keeps the
-  // exact #d9dcdf (see the inline style override: dark swaps it for
-  // a darker-than-strip token, mirroring the light relationship).
-  docTabInactive: {
+  // Hover pill: a SECOND layer over the base pill, inset 6px
+  // top/bottom and 8px left/right exactly as in the reference, so
+  // the hover step is visible against the base pill (light:
+  // rgba(255,255,255,0.5) over #eef0f2 composites to ~#f7f8f9;
+  // dark: rgba(255,255,255,0.12) lightens the dark pill). Rendered
+  // only while the tab is really hovered (React mouse state, so a
+  // Playwright mouse hover shows it); there is no hover at all
+  // in the rejected 080a47c version, so this is a pass/fail item.
+  docTabHoverPill: {
+    position: 'absolute',
+    top: '6px',
+    bottom: '6px',
+    left: '8px',
+    right: '8px',
+    borderRadius: '8px',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    pointerEvents: 'none',
+    zIndex: 1,
+  },
+  // Content sits above both pill layers.
+  docTabInactiveContent: {
+    position: 'relative',
+    zIndex: 2,
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#d9dcdf',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderBottom: 'none',
-    borderRadius: '8px 8px 0 0',
-    padding: '8px 8px 8px 8px',
     height: '44px',
-    boxSizing: 'border-box',
-    cursor: 'pointer',
-    color: tokens.colorNeutralForeground1,
+  },
+  // Separator: 1px x 18px, reference colour #aeb4ba light, centred
+  // in the 8px gap (right -4.5px puts its centre 4px past the tab
+  // edge, i.e. the middle of the gap) and centred vertically in
+  // the 44px tab ((44-18)/2 = 13px). It is a child of the tab, so
+  // it adds no width and changes no spacing. Hidden when this tab
+  // or the next tab is active or hovered, as in the reference.
+  docTabSeparator: {
+    position: 'absolute',
+    top: '13px',
+    right: '-4.5px',
+    width: '1px',
+    height: '18px',
+    backgroundColor: '#aeb4ba',
+    pointerEvents: 'none',
+    zIndex: 2,
   },
   backButton: {
     alignSelf: 'center',
@@ -174,19 +224,114 @@ const useStyles = makeStyles({
   },
 })
 
-// Chrome bottom concave fillet curves, taken from the reference
-// buildTabPath (google_chrome_tab_ui.html) fillet segments, R=8,
-// cubic factors 0.552 / 0.448, reused as the boundary of each
-// corner scoop (local 8x8 square, origin at the square's top
-// corner toward the tab centre). Left scoop: the reference's
-// bottom-left fillet, from (8,0) to (0,8) in local coords, i.e.
-// the quarter circle centred on the square's top-left corner;
-// the painted region is the curved triangle between the square's
-// top edge, its outer edge, and that arc. Right scoop is the
-// mirror image. The tab's bottom edge is NOT part of either path,
-// so it stays full width and merged into the block below.
-const CHROME_FILLET_LEFT = 'M 0,0 L 8,0 C 8,4.416 4.416,8 0,8 Z'
-const CHROME_FILLET_RIGHT = 'M 8,0 L 0,0 C 0,4.416 3.584,8 8,8 Z'
+// Full Chrome tab path, adapted from the reference buildTabPath
+// (google_chrome_tab_ui.html): same R=8, same cubic factors
+// 0.552 / 0.448, but H is the current 44px tab height (not the
+// reference's 36px) and W is the live measured tab width. Path
+// order, as in the reference: concave bottom-left fillet
+// (0,H) -> (R,H-R), left side up to (R,R), top-left round to
+// (2R,0), top edge to (W-2R,0), top-right round to (W-R,R),
+// right side down to (W-R,H-R), concave bottom-right fillet to
+// (W,H), bottom edge straight back to (0,H). The bottom edge is
+// full width, so the fill merges into the HeaderBlock below with
+// no gap and no border; the strip colour shows in the two
+// concave corner triangles outside the path. No stroke ever.
+function buildTabPath(width: number, height: number): string {
+  const r = 8
+  const w = Math.round(width)
+  const h = height
+  if (w <= 2 * r) return ''
+  return [
+    `M 0,${h}`,
+    `C ${r * 0.552},${h} ${r},${h - r * 0.448} ${r},${h - r}`,
+    `L ${r},${r}`,
+    `C ${r},${r * 0.448} ${r + r * 0.448},0 ${2 * r},0`,
+    `L ${w - 2 * r},0`,
+    `C ${w - r - r * 0.448},0 ${w - r},${r * 0.448} ${w - r},${r}`,
+    `L ${w - r},${h - r}`,
+    `C ${w - r},${h - r * 0.448} ${w - r * 0.448},${h} ${w},${h}`,
+    'Z',
+  ].join(' ')
+}
+
+type ChromeActiveTabProps = {
+  tab: ShellTab
+  showFirstIcon: boolean
+  separatorVisible: boolean
+  isDark: boolean
+  onCloseTab: (url: string) => void
+}
+
+// Active tab as its own component so it can own a ResizeObserver
+// (hooks cannot live in the tabs.map loop). The root width is set
+// by the content row; the observer reports that width, the SVG
+// viewBox is set to exactly that width x 44, and the path is
+// rebuilt — the same measure-then-draw loop as the reference,
+// which observes its tab list. Setting the width never changes
+// the root width (the SVG is absolute), so the loop is stable.
+function ChromeActiveTab({
+  tab,
+  showFirstIcon,
+  separatorVisible,
+  isDark,
+  onCloseTab,
+}: ChromeActiveTabProps) {
+  const styles = useStyles()
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const [tabWidth, setTabWidth] = useState(0)
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el) return
+    const update = () => {
+      const w = el.getBoundingClientRect().width
+      setTabWidth((prev) => (prev === w ? prev : w))
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return (
+    <div ref={rootRef} className={styles.docTabActive} role='tab' aria-selected>
+      <svg
+        className={styles.docTabActiveSvg}
+        width={tabWidth}
+        height={44}
+        viewBox={`0 0 ${tabWidth} 44`}
+        aria-hidden='true'
+      >
+        <path
+          d={buildTabPath(tabWidth, 44)}
+          style={{ fill: tokens.colorNeutralBackground1 }}
+          stroke='none'
+        />
+      </svg>
+      <div className={styles.docTabActiveContent}>
+        {showFirstIcon && <Home24Regular />}
+        <Text weight='semibold'>{tab.title}</Text>
+        <Button
+          appearance='transparent'
+          size='small'
+          icon={<Dismiss24Regular />}
+          aria-label={`Close tab ${tab.title}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            onCloseTab(tab.url)
+          }}
+        />
+      </div>
+      {separatorVisible && (
+        <span
+          className={styles.docTabSeparator}
+          style={
+            isDark ? { backgroundColor: 'rgba(255, 255, 255, 0.3)' } : undefined
+          }
+          aria-hidden='true'
+        />
+      )}
+    </div>
+  )
+}
 
 export type DocumentTabBarProps = {
   tabs: ShellTab[]
@@ -211,9 +356,9 @@ export type DocumentTabBarProps = {
 // One Back button at the start of the strip (goes to the preceding
 // tab, or '/' when only one tab remains), then one tab per open
 // document: the Home icon only on the first tab, every tab with its
-// own Dismiss X. Active tab keeps the MES style (white, 8px top
-// radius, #c8c8c8 border except the bottom); inactive tabs are flat
-// grey but still readable. Right-hand icons keep the MES order:
+// own Dismiss X. Active tab is the borderless Chrome SVG shape
+// (Background1 fill, merging into the block below); inactive tabs
+// are borderless pills, still readable. Right-hand icons keep the MES order:
 // More, Scan, Search, Messages, account avatar.
 export default function DocumentTabBar({
   tabs,
@@ -228,6 +373,10 @@ export default function DocumentTabBar({
   const styles = useStyles()
   const navigate = useNavigate()
   const [signOutOpen, setSignOutOpen] = useState(false)
+  // Real hover state for inactive tabs: drives the hover pill
+  // and separator hiding (a tab's separator hides when it, or the
+  // tab after it, is active or hovered, as in the reference).
+  const [hoveredUrl, setHoveredUrl] = useState<string | null>(null)
   const { setOpen } = useSearch()
   // Dark palette mirrors the light relationships: strip mid-dark,
   // inactive tab darker than the strip, active tab the header
@@ -251,69 +400,83 @@ export default function DocumentTabBar({
       />
       {tabs.map((tab, index) => {
         const isActive = tab.url === activeUrl
+        const isHovered = hoveredUrl === tab.url
+        const nextTab = tabs[index + 1]
+        const nextIsActiveOrHovered =
+          !!nextTab && (nextTab.url === activeUrl || nextTab.url === hoveredUrl)
+        // Separator after this tab hides when this tab or the next
+        // tab is active or hovered (reference rule); the last tab
+        // keeps its separator (before the right-hand icons) unless
+        // it is itself active or hovered.
+        const separatorVisible =
+          !isActive && !isHovered && !nextIsActiveOrHovered
+        if (isActive) {
+          return (
+            <ChromeActiveTab
+              key={tab.url}
+              tab={tab}
+              showFirstIcon={index === 0}
+              separatorVisible={separatorVisible}
+              isDark={isDark}
+              onCloseTab={onCloseTab}
+            />
+          )
+        }
         return (
           <div
             key={tab.url}
-            className={isActive ? styles.docTab : styles.docTabInactive}
-            style={
-              !isActive && isDark
-                ? { backgroundColor: tokens.colorNeutralBackground3 }
-                : undefined
-            }
-            onClick={() => {
-              if (!isActive) onSelectTab(tab.url)
-            }}
+            className={styles.docTabInactive}
+            onClick={() => onSelectTab(tab.url)}
+            onMouseEnter={() => setHoveredUrl(tab.url)}
+            onMouseLeave={() => setHoveredUrl(null)}
             role='tab'
-            aria-selected={isActive}
+            aria-selected={false}
           >
-            {isActive && (
-              <>
-                <svg
-                  className={styles.docTabFilletLeft}
-                  width='8'
-                  height='8'
-                  viewBox='0 0 8 8'
-                  aria-hidden='true'
-                >
-                  <path
-                    d={CHROME_FILLET_LEFT}
-                    style={{
-                      fill: isDark
-                        ? tokens.colorNeutralBackground2
-                        : HEADER_GREY,
-                    }}
-                  />
-                </svg>
-                <svg
-                  className={styles.docTabFilletRight}
-                  width='8'
-                  height='8'
-                  viewBox='0 0 8 8'
-                  aria-hidden='true'
-                >
-                  <path
-                    d={CHROME_FILLET_RIGHT}
-                    style={{
-                      fill: isDark
-                        ? tokens.colorNeutralBackground2
-                        : HEADER_GREY,
-                    }}
-                  />
-                </svg>
-              </>
-            )}
-            {index === 0 && <Home24Regular />}
-            <Text weight={isActive ? 'semibold' : 'regular'}>{tab.title}</Text>
-            <Button
-              appearance='transparent'
-              size='small'
-              icon={<Dismiss24Regular />}
-              aria-label={`Close tab ${tab.title}`}
-              onClick={(e) => {
-                e.stopPropagation()
-                onCloseTab(tab.url)
-              }}
+            <span
+              className={styles.docTabInactivePill}
+              style={
+                isDark
+                  ? { backgroundColor: 'rgba(255, 255, 255, 0.07)' }
+                  : undefined
+              }
+              aria-hidden='true'
             />
+            {isHovered && (
+              <span
+                className={styles.docTabHoverPill}
+                style={
+                  isDark
+                    ? { backgroundColor: 'rgba(255, 255, 255, 0.12)' }
+                    : undefined
+                }
+                aria-hidden='true'
+              />
+            )}
+            <span className={styles.docTabInactiveContent}>
+              {index === 0 && <Home24Regular />}
+              <Text weight='regular'>{tab.title}</Text>
+              <Button
+                appearance='transparent'
+                size='small'
+                icon={<Dismiss24Regular />}
+                aria-label={`Close tab ${tab.title}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onCloseTab(tab.url)
+                }}
+              />
+            </span>
+            {separatorVisible && (
+              <span
+                className={styles.docTabSeparator}
+                style={
+                  isDark
+                    ? { backgroundColor: 'rgba(255, 255, 255, 0.3)' }
+                    : undefined
+                }
+                aria-hidden='true'
+              />
+            )}
           </div>
         )
       })}
