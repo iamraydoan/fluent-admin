@@ -1,22 +1,19 @@
 import { useState } from 'react'
-import { Check, X } from 'lucide-react'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Checkmark20Regular, Dismiss20Regular } from '@fluentui/react-icons'
 import { showSubmittedData } from '@/lib/show-submitted-data'
+import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
   Dialog,
-  DialogContent,
-  DialogHeader,
+  DialogActions,
+  DialogBody,
+  DialogSurface,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Text } from '@/components/ui/text'
 import { type ChatUser } from '../data/chat-types'
 
 type User = Omit<ChatUser, 'messages'>
@@ -26,8 +23,73 @@ type NewChatProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
+
+const useStyles = makeStyles({
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  selectedRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  selectedLabel: {
+    color: tokens.colorNeutralForeground3,
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+    maxHeight: '320px',
+    overflowY: 'auto',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    padding: '4px',
+  },
+  userRow: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    textAlign: 'start',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: tokens.borderRadiusSmall,
+    padding: '6px 8px',
+    cursor: 'pointer',
+    boxSizing: 'border-box',
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+    },
+  },
+  userInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    minWidth: 0,
+  },
+  userNames: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+  },
+  username: {
+    color: tokens.colorNeutralForeground3,
+  },
+  empty: {
+    padding: '12px 8px',
+    color: tokens.colorNeutralForeground3,
+  },
+})
+
 export function NewChat({ users, onOpenChange, open }: NewChatProps) {
+  const styles = useStyles()
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
+  const [query, setQuery] = useState('')
 
   const handleSelectUser = (user: User) => {
     if (!selectedUsers.find((u) => u.id === user.id)) {
@@ -46,82 +108,97 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
     // Reset selected users when dialog closes
     if (!newOpen) {
       setSelectedUsers([])
+      setQuery('')
     }
   }
 
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className='sm:max-w-150'>
-        <DialogHeader>
-          <DialogTitle>New message</DialogTitle>
-        </DialogHeader>
-        <div className='flex flex-col gap-4'>
-          <div className='flex flex-wrap items-baseline-last gap-2'>
-            <span className='min-h-6 text-sm text-muted-foreground'>To:</span>
-            {selectedUsers.map((user) => (
-              <Badge key={user.id} variant='default'>
-                {user.fullName}
-                <button
-                  className='ms-1 rounded-full ring-offset-background outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2'
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleRemoveUser(user.id)
-                    }
-                  }}
-                  onClick={() => handleRemoveUser(user.id)}
-                >
-                  <X className='h-3 w-3 text-muted-foreground hover:text-foreground' />
-                </button>
-              </Badge>
-            ))}
-          </div>
-          <Command className='rounded-lg border'>
-            <CommandInput
-              placeholder='Search people...'
-              className='text-foreground'
-            />
-            <CommandList>
-              <CommandEmpty>No people found.</CommandEmpty>
-              <CommandGroup>
-                {users.map((user) => (
-                  <CommandItem
-                    key={user.id}
-                    onSelect={() => handleSelectUser(user)}
-                    className='flex items-center justify-between gap-2 hover:bg-accent hover:text-accent-foreground'
-                  >
-                    <div className='flex items-center gap-2'>
-                      <img
-                        src={user.profile || '/placeholder.svg'}
-                        alt={user.fullName}
-                        className='h-8 w-8 rounded-full'
-                      />
-                      <div className='flex flex-col'>
-                        <span className='text-sm font-medium'>
-                          {user.fullName}
-                        </span>
-                        <span className='text-xs text-accent-foreground/70'>
-                          {user.username}
-                        </span>
-                      </div>
-                    </div>
+  const filteredUsers = users.filter((user) =>
+    `${user.fullName} ${user.username}`
+      .toLowerCase()
+      .includes(query.trim().toLowerCase())
+  )
 
-                    {selectedUsers.find((u) => u.id === user.id) && (
-                      <Check className='h-4 w-4' />
-                    )}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(_e, data) => handleOpenChange(data.open)}
+    >
+      <DialogSurface>
+        <DialogTitle>New message</DialogTitle>
+        <DialogBody>
+          <div className={styles.content}>
+            <div className={styles.selectedRow}>
+              <Text size={300} className={styles.selectedLabel}>
+                To:
+              </Text>
+              {selectedUsers.map((user) => (
+                <Badge key={user.id}>
+                  {user.fullName}
+                  <Button
+                    appearance='subtle'
+                    size='small'
+                    icon={<Dismiss20Regular />}
+                    aria-label={`Remove ${user.fullName}`}
+                    onClick={() => handleRemoveUser(user.id)}
+                  />
+                </Badge>
+              ))}
+            </div>
+            <Input
+              placeholder='Search people...'
+              value={query}
+              onChange={(_e, data) => setQuery(data.value)}
+            />
+            <div className={styles.list}>
+              {filteredUsers.length === 0 && (
+                <div className={styles.empty}>
+                  <Text size={300}>No people found.</Text>
+                </div>
+              )}
+              {filteredUsers.map((user) => (
+                <button
+                  key={user.id}
+                  type='button'
+                  className={styles.userRow}
+                  onClick={() => handleSelectUser(user)}
+                >
+                  <div className={styles.userInfo}>
+                    <Avatar
+                      name={user.fullName}
+                      image={{
+                        src: user.profile || '/placeholder.svg',
+                        alt: user.fullName,
+                      }}
+                      size={32}
+                    />
+                    <div className={styles.userNames}>
+                      <Text size={300} weight='semibold'>
+                        {user.fullName}
+                      </Text>
+                      <Text size={200} className={styles.username}>
+                        {user.username}
+                      </Text>
+                    </div>
+                  </div>
+
+                  {selectedUsers.find((u) => u.id === user.id) && (
+                    <Checkmark20Regular />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </DialogBody>
+        <DialogActions>
           <Button
-            variant={'default'}
+            appearance='primary'
             onClick={() => showSubmittedData(selectedUsers)}
             disabled={selectedUsers.length === 0}
           >
             Chat
           </Button>
-        </div>
-      </DialogContent>
+        </DialogActions>
+      </DialogSurface>
     </Dialog>
   )
 }

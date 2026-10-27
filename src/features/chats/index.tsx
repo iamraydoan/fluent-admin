@@ -1,24 +1,24 @@
 import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { format } from 'date-fns'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
-  ArrowLeft,
-  MoreVertical,
-  Edit,
-  Paperclip,
-  Phone,
-  ImagePlus,
-  Plus,
-  Search as SearchIcon,
-  Send,
-  Video,
-  MessagesSquare,
-} from 'lucide-react'
-import { cn, getDisplayNameInitials } from '@/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+  Add20Regular,
+  Attach20Regular,
+  Call20Regular,
+  ChatMultiple20Regular,
+  Compose20Regular,
+  ImageAdd20Regular,
+  MoreHorizontal20Regular,
+  Search20Regular,
+  Send20Regular,
+  Video20Regular,
+} from '@fluentui/react-icons'
+import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import { Divider } from '@/components/ui/divider'
+import { Input } from '@/components/ui/input'
+import { Text } from '@/components/ui/text'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -30,12 +30,219 @@ import { type ChatUser, type Convo } from './data/chat-types'
 // Fake Data
 import { conversations } from './data/convo.json'
 
+const useStyles = makeStyles({
+  section: {
+    display: 'flex',
+    height: '100%',
+    gap: '24px',
+  },
+  leftPane: {
+    display: 'flex',
+    width: '288px',
+    flexShrink: 0,
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  leftHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: '8px',
+    paddingBottom: '8px',
+  },
+  inboxTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    height: '100%',
+    overflowY: 'auto',
+    padding: '4px',
+    boxSizing: 'border-box',
+  },
+  chatRow: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'flex-start',
+    gap: '8px',
+    textAlign: 'start',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: tokens.borderRadiusMedium,
+    padding: '8px',
+    cursor: 'pointer',
+    boxSizing: 'border-box',
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+    },
+  },
+  chatRowSelected: {
+    backgroundColor: tokens.colorNeutralBackground1Selected,
+  },
+  rowText: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+  },
+  lastMsg: {
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    color: tokens.colorNeutralForeground3,
+  },
+  rightPane: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    minWidth: 0,
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    overflow: 'hidden',
+  },
+  convoHeader: {
+    display: 'flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '16px',
+    boxShadow: tokens.shadow4,
+  },
+  convoHeaderLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  convoHeaderRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  titleText: {
+    display: 'block',
+    maxWidth: '128px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: tokens.colorNeutralForeground3,
+  },
+  messages: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    gap: '16px',
+    overflowY: 'auto',
+    padding: '16px',
+  },
+  dateLabel: {
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground3,
+  },
+  bubbleOwn: {
+    alignSelf: 'flex-end',
+    maxWidth: '288px',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    borderRadius: '16px 16px 0px 16px',
+    padding: '8px 12px',
+    overflowWrap: 'break-word',
+    boxShadow: tokens.shadow4,
+  },
+  bubbleOther: {
+    alignSelf: 'flex-start',
+    maxWidth: '288px',
+    backgroundColor: tokens.colorNeutralBackground3,
+    borderRadius: '16px 16px 16px 0px',
+    padding: '8px 12px',
+    overflowWrap: 'break-word',
+    boxShadow: tokens.shadow4,
+  },
+  bubbleTime: {
+    display: 'block',
+    marginTop: '4px',
+    fontSize: '12px',
+    fontStyle: 'italic',
+    opacity: 0.85,
+  },
+  bubbleTimeOwn: {
+    textAlign: 'end',
+  },
+  composer: {
+    display: 'flex',
+    flexShrink: 0,
+    gap: '8px',
+    padding: '16px',
+    paddingTop: '0px',
+  },
+  composerBox: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    gap: '8px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    padding: '4px 8px',
+  },
+  composerActions: {
+    display: 'flex',
+    gap: '4px',
+  },
+  composerInput: {
+    flex: 1,
+    minWidth: 0,
+    border: 'none',
+    backgroundColor: 'transparent',
+    outline: 'none',
+    height: '32px',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+  },
+  composerLabel: {
+    display: 'flex',
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+  },
+  emptyPane: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px',
+    minWidth: 0,
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+  },
+  emptyIcon: {
+    display: 'flex',
+    width: '64px',
+    height: '64px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: `2px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: '50%',
+  },
+  emptyText: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '8px',
+    textAlign: 'center',
+  },
+})
+
 export function Chats() {
+  const styles = useStyles()
   const [search, setSearch] = useState('')
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
-  const [mobileSelectedUser, setMobileSelectedUser] = useState<ChatUser | null>(
-    null
-  )
   const [createConversationDialogOpened, setCreateConversationDialog] =
     useState(false)
 
@@ -67,52 +274,40 @@ export function Chats() {
     <>
       {/* ===== Top Heading ===== */}
       <Header>
-        <Search className='me-auto' />
+        <Search />
         <ThemeSwitch />
         <ConfigDrawer />
         <ProfileDropdown />
       </Header>
 
       <Main fixed>
-        <section className='flex h-full gap-6'>
+        <section className={styles.section}>
           {/* Left Side */}
-          <div className='flex w-full flex-col gap-2 sm:w-56 lg:w-72 2xl:w-80'>
-            <div className='sticky top-0 z-10 -mx-4 bg-background px-4 pb-3 shadow-md sm:static sm:z-auto sm:mx-0 sm:p-0 sm:shadow-none'>
-              <div className='flex items-center justify-between py-2'>
-                <div className='flex gap-2'>
-                  <h1 className='text-2xl font-bold'>Inbox</h1>
-                  <MessagesSquare size={20} />
-                </div>
-
-                <Button
-                  size='icon'
-                  variant='ghost'
-                  onClick={() => setCreateConversationDialog(true)}
-                  className='rounded-lg'
-                >
-                  <Edit size={24} className='stroke-muted-foreground' />
-                </Button>
+          <div className={styles.leftPane}>
+            <div className={styles.leftHeader}>
+              <div className={styles.inboxTitle}>
+                <Text size={600} weight='bold'>
+                  Inbox
+                </Text>
+                <ChatMultiple20Regular />
               </div>
 
-              <label
-                className={cn(
-                  'focus-within:ring-1 focus-within:ring-ring focus-within:outline-hidden',
-                  'flex h-10 w-full items-center space-x-0 rounded-md border border-border ps-2'
-                )}
-              >
-                <SearchIcon size={15} className='me-2 stroke-slate-500' />
-                <span className='sr-only'>Search</span>
-                <input
-                  type='text'
-                  className='w-full flex-1 bg-inherit text-sm focus-visible:outline-hidden'
-                  placeholder='Search chat...'
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </label>
+              <Button
+                appearance='subtle'
+                icon={<Compose20Regular />}
+                aria-label='New message'
+                onClick={() => setCreateConversationDialog(true)}
+              />
             </div>
 
-            <ScrollArea className='-mx-3 h-full overflow-scroll p-3'>
+            <Input
+              contentBefore={<Search20Regular />}
+              placeholder='Search chat...'
+              value={search}
+              onChange={(_e, data) => setSearch(data.value)}
+            />
+
+            <div className={styles.list}>
               {filteredChatList.map((chatUsr) => {
                 const { id, profile, username, messages, fullName } = chatUsr
                 const lastConvo = messages[0]
@@ -124,219 +319,157 @@ export function Chats() {
                   <Fragment key={id}>
                     <button
                       type='button'
-                      className={cn(
-                        'group hover:bg-accent hover:text-accent-foreground',
-                        `flex w-full rounded-md px-2 py-2 text-start text-sm`,
-                        selectedUser?.id === id && 'sm:bg-muted'
-                      )}
-                      onClick={() => {
-                        setSelectedUser(chatUsr)
-                        setMobileSelectedUser(chatUsr)
-                      }}
+                      className={`${styles.chatRow} ${selectedUser?.id === id ? styles.chatRowSelected : ''}`}
+                      onClick={() => setSelectedUser(chatUsr)}
                     >
-                      <div className='flex gap-2'>
-                        <Avatar>
-                          <AvatarImage src={profile} alt={username} />
-                          <AvatarFallback>
-                            {getDisplayNameInitials(fullName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <span className='col-start-2 row-span-2 font-medium'>
-                            {fullName}
-                          </span>
-                          <span className='col-start-2 row-span-2 row-start-2 line-clamp-2 text-ellipsis text-muted-foreground group-hover:text-accent-foreground/90'>
-                            {lastMsg}
-                          </span>
-                        </div>
+                      <Avatar
+                        name={fullName}
+                        image={{ src: profile, alt: username }}
+                      />
+                      <div className={styles.rowText}>
+                        <Text weight='semibold'>{fullName}</Text>
+                        <Text size={200} className={styles.lastMsg}>
+                          {lastMsg}
+                        </Text>
                       </div>
                     </button>
-                    <Separator className='my-1' />
+                    <Divider />
                   </Fragment>
                 )
               })}
-            </ScrollArea>
+            </div>
           </div>
 
           {/* Right Side */}
           {selectedUser ? (
-            <div
-              className={cn(
-                'absolute inset-0 start-full z-50 hidden w-full flex-1 flex-col border bg-background shadow-xs sm:static sm:z-auto sm:flex sm:rounded-md',
-                mobileSelectedUser && 'inset-s-0 flex'
-              )}
-            >
+            <div className={styles.rightPane}>
               {/* Top Part */}
-              <div className='mb-1 flex flex-none justify-between bg-card p-4 shadow-lg sm:rounded-t-md'>
+              <div className={styles.convoHeader}>
                 {/* Left */}
-                <div className='flex gap-3'>
-                  <Button
-                    size='icon'
-                    variant='ghost'
-                    className='-ms-2 h-full sm:hidden'
-                    onClick={() => setMobileSelectedUser(null)}
-                  >
-                    <ArrowLeft className='rtl:rotate-180' />
-                  </Button>
-                  <div className='flex items-center gap-2 lg:gap-4'>
-                    <Avatar className='size-9 lg:size-11'>
-                      <AvatarImage
-                        src={selectedUser.profile}
-                        alt={selectedUser.username}
-                      />
-                      <AvatarFallback>
-                        {getDisplayNameInitials(selectedUser.fullName)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <span className='col-start-2 row-span-2 text-sm font-medium lg:text-base'>
-                        {selectedUser.fullName}
-                      </span>
-                      <span className='col-start-2 row-span-2 row-start-2 line-clamp-1 block max-w-32 text-xs text-nowrap text-ellipsis text-muted-foreground lg:max-w-none lg:text-sm'>
-                        {selectedUser.title}
-                      </span>
-                    </div>
+                <div className={styles.convoHeaderLeft}>
+                  <Avatar
+                    name={selectedUser.fullName}
+                    image={{
+                      src: selectedUser.profile,
+                      alt: selectedUser.username,
+                    }}
+                    size={40}
+                  />
+                  <div>
+                    <Text weight='semibold'>{selectedUser.fullName}</Text>
+                    <Text size={200} className={styles.titleText}>
+                      {selectedUser.title}
+                    </Text>
                   </div>
                 </div>
 
                 {/* Right */}
-                <div className='-me-1 flex items-center gap-1 lg:gap-2'>
+                <div className={styles.convoHeaderRight}>
                   <Button
-                    size='icon'
-                    variant='ghost'
-                    className='hidden size-8 rounded-full sm:inline-flex lg:size-10'
-                  >
-                    <Video size={22} className='stroke-muted-foreground' />
-                  </Button>
+                    appearance='subtle'
+                    icon={<Video20Regular />}
+                    aria-label='Video call'
+                  />
                   <Button
-                    size='icon'
-                    variant='ghost'
-                    className='hidden size-8 rounded-full sm:inline-flex lg:size-10'
-                  >
-                    <Phone size={22} className='stroke-muted-foreground' />
-                  </Button>
+                    appearance='subtle'
+                    icon={<Call20Regular />}
+                    aria-label='Voice call'
+                  />
                   <Button
-                    size='icon'
-                    variant='ghost'
-                    className='h-10 rounded-md sm:h-8 sm:w-4 lg:h-10 lg:w-6'
-                  >
-                    <MoreVertical className='stroke-muted-foreground sm:size-5' />
-                  </Button>
+                    appearance='subtle'
+                    icon={<MoreHorizontal20Regular />}
+                    aria-label='More options'
+                  />
                 </div>
               </div>
 
-              {/* Conversation */}
-              <div className='flex flex-1 flex-col gap-2 rounded-md px-4 pt-0 pb-4'>
-                <div className='flex size-full flex-1'>
-                  <div className='chat-text-container relative -me-4 flex flex-1 flex-col overflow-y-hidden'>
-                    <div className='chat-flex flex h-40 w-full grow flex-col-reverse justify-start gap-4 overflow-y-auto py-2 pe-4 pb-4'>
-                      {currentMessage &&
-                        Object.keys(currentMessage).map((key) => (
-                          <Fragment key={key}>
-                            {currentMessage[key].map((msg, index) => (
-                              <div
-                                key={`${msg.sender}-${msg.timestamp}-${index}`}
-                                className={cn(
-                                  'chat-box max-w-72 px-3 py-2 wrap-break-word shadow-lg',
-                                  msg.sender === 'You'
-                                    ? 'self-end rounded-[16px_16px_0_16px] bg-primary/90 text-primary-foreground/75'
-                                    : 'self-start rounded-[16px_16px_16px_0] bg-muted'
-                                )}
-                              >
-                                {msg.message}{' '}
-                                <span
-                                  className={cn(
-                                    'mt-1 block text-xs font-light text-foreground/75 italic',
-                                    msg.sender === 'You' &&
-                                      'text-end text-primary-foreground/85'
-                                  )}
-                                >
-                                  {format(msg.timestamp, 'h:mm a')}
-                                </span>
-                              </div>
-                            ))}
-                            <div className='text-center text-xs'>{key}</div>
-                          </Fragment>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-                <form className='flex w-full flex-none gap-2'>
-                  <div className='flex flex-1 items-center gap-2 rounded-md border border-input bg-card px-2 py-1 focus-within:ring-1 focus-within:ring-ring focus-within:outline-hidden lg:gap-4'>
-                    <div className='space-x-1'>
-                      <Button
-                        size='icon'
-                        type='button'
-                        variant='ghost'
-                        className='h-8 rounded-md'
-                      >
-                        <Plus size={20} className='stroke-muted-foreground' />
-                      </Button>
-                      <Button
-                        size='icon'
-                        type='button'
-                        variant='ghost'
-                        className='hidden h-8 rounded-md lg:inline-flex'
-                      >
-                        <ImagePlus
-                          size={20}
-                          className='stroke-muted-foreground'
-                        />
-                      </Button>
-                      <Button
-                        size='icon'
-                        type='button'
-                        variant='ghost'
-                        className='hidden h-8 rounded-md lg:inline-flex'
-                      >
-                        <Paperclip
-                          size={20}
-                          className='stroke-muted-foreground'
-                        />
-                      </Button>
-                    </div>
-                    <label className='flex-1'>
-                      <span className='sr-only'>Chat Text Box</span>
-                      <input
-                        type='text'
-                        placeholder='Type your messages...'
-                        className='h-8 w-full bg-inherit focus-visible:outline-hidden'
-                      />
-                    </label>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='hidden sm:inline-flex'
-                    >
-                      <Send size={20} />
-                    </Button>
-                  </div>
-                  <Button className='h-full sm:hidden'>
-                    <Send size={18} /> Send
-                  </Button>
-                </form>
+              {/* Conversation: oldest at top, newest at bottom */}
+              <div className={styles.messages}>
+                {currentMessage &&
+                  Object.keys(currentMessage).map((key) => (
+                    <Fragment key={key}>
+                      <div className={styles.dateLabel}>
+                        <Text size={200}>{key}</Text>
+                      </div>
+                      {[...currentMessage[key]].reverse().map((msg, index) => (
+                        <div
+                          key={`${msg.sender}-${msg.timestamp}-${index}`}
+                          className={
+                            msg.sender === 'You'
+                              ? styles.bubbleOwn
+                              : styles.bubbleOther
+                          }
+                        >
+                          {msg.message}{' '}
+                          <span
+                            className={`${styles.bubbleTime} ${msg.sender === 'You' ? styles.bubbleTimeOwn : ''}`}
+                          >
+                            {format(msg.timestamp, 'h:mm a')}
+                          </span>
+                        </div>
+                      ))}
+                    </Fragment>
+                  ))}
               </div>
+              <form
+                className={styles.composer}
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <div className={styles.composerBox}>
+                  <div className={styles.composerActions}>
+                    <Button
+                      appearance='subtle'
+                      type='button'
+                      icon={<Add20Regular />}
+                      aria-label='Add attachment'
+                    />
+                    <Button
+                      appearance='subtle'
+                      type='button'
+                      icon={<ImageAdd20Regular />}
+                      aria-label='Add image'
+                    />
+                    <Button
+                      appearance='subtle'
+                      type='button'
+                      icon={<Attach20Regular />}
+                      aria-label='Attach file'
+                    />
+                  </div>
+                  <label className={styles.composerLabel}>
+                    <span hidden>Chat Text Box</span>
+                    <input
+                      type='text'
+                      placeholder='Type your messages...'
+                      className={styles.composerInput}
+                    />
+                  </label>
+                  <Button
+                    appearance='subtle'
+                    type='submit'
+                    icon={<Send20Regular />}
+                    aria-label='Send message'
+                  />
+                </div>
+              </form>
             </div>
           ) : (
-            <div
-              className={cn(
-                'absolute inset-0 start-full z-50 hidden w-full flex-1 flex-col justify-center rounded-md border bg-card shadow-xs sm:static sm:z-auto sm:flex'
-              )}
-            >
-              <div className='flex flex-col items-center space-y-6'>
-                <div className='flex size-16 items-center justify-center rounded-full border-2 border-border'>
-                  <MessagesSquare className='size-8' />
-                </div>
-                <div className='space-y-2 text-center'>
-                  <h1 className='text-xl font-semibold'>Your messages</h1>
-                  <p className='text-sm text-muted-foreground'>
-                    Send a message to start a chat.
-                  </p>
-                </div>
-                <Button onClick={() => setCreateConversationDialog(true)}>
-                  Send message
-                </Button>
+            <div className={styles.emptyPane}>
+              <div className={styles.emptyIcon}>
+                <ChatMultiple20Regular />
               </div>
+              <div className={styles.emptyText}>
+                <Text size={500} weight='semibold'>
+                  Your messages
+                </Text>
+                <Text size={300}>Send a message to start a chat.</Text>
+              </div>
+              <Button
+                appearance='primary'
+                onClick={() => setCreateConversationDialog(true)}
+              >
+                Send message
+              </Button>
             </div>
           )}
         </section>
