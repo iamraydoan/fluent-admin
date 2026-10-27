@@ -1,13 +1,17 @@
-import { cn } from '@/lib/utils'
+// Fluent Skeleton wrappers, kept under their original names.
+// Pass-through only: no style or behaviour change. Edit this file to
+// change Skeleton styling system-wide.
+import {
+  Skeleton as FluentSkeleton,
+  SkeletonItem as FluentSkeletonItem,
+  type SkeletonItemProps,
+  type SkeletonProps,
+} from '@fluentui/react-components'
 
-function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot='skeleton'
-      className={cn('animate-pulse rounded-md bg-accent', className)}
-      {...props}
-    />
-  )
+export function Skeleton(props: SkeletonProps) {
+  return <FluentSkeleton {...props} />
 }
 
-export { Skeleton }
+export function SkeletonItem(props: SkeletonItemProps) {
+  return <FluentSkeletonItem {...props} />
+}
