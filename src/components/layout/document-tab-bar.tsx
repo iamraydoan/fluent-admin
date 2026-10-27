@@ -3,11 +3,13 @@ import { useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   BarcodeScanner20Regular,
+  bundleIcon,
   Chat20Regular,
   ChevronDown20Regular,
   ChevronDown24Regular,
   ChevronLeft24Regular,
   Dismiss24Regular,
+  Home24Filled,
   Home24Regular,
   Search20Regular,
 } from '@fluentui/react-icons'
@@ -33,6 +35,10 @@ import { sidebarData } from '@/components/layout/data/sidebar-data'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { HEADER_GREY } from './shell-constants'
+
+// Group 1 icons: first-tab Home is a Fluent bundle — Filled on the
+// active tab, Regular on inactive tabs. Same 24px size/position.
+const HomeIcon = bundleIcon(Home24Filled, Home24Regular)
 
 const useStyles = makeStyles({
   docTabBar: {
@@ -332,7 +338,7 @@ function ChromeActiveTab({
         />
       </svg>
       <div className={styles.docTabActiveContent}>
-        {showFirstIcon && <Home24Regular />}
+        {showFirstIcon && <HomeIcon filled />}
         <Text weight='semibold'>{tab.title}</Text>
         <Button
           appearance='transparent'
@@ -475,7 +481,7 @@ export default function DocumentTabBar({
               aria-hidden='true'
             />
             <span className={styles.docTabInactiveContent}>
-              {index === 0 && <Home24Regular />}
+              {index === 0 && <HomeIcon />}
               <Text weight='regular'>{tab.title}</Text>
               <Button
                 appearance='transparent'

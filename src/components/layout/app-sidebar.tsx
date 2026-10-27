@@ -204,6 +204,9 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
     // Clicking a leaf navigates AND opens (or activates) its
     // document tab in the shell store; selection follows the current
     // route, never a hardcoded url.
+    // Group 1 icons: bundled sidebar icons render Filled only for the
+    // current route; every other leaf stays Regular. Same size and
+    // position either way (bundleIcon hides the inactive variant).
     return (
       <NavItem
         key={item.url ?? item.title}
@@ -214,7 +217,7 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
             navigate({ to: item.url })
           }
         }}
-        icon={Icon ? <Icon /> : undefined}
+        icon={Icon ? <Icon filled={pathname === item.url} /> : undefined}
         aria-label={
           item.badge ? `${item.title}, ${item.badge} unread` : item.title
         }

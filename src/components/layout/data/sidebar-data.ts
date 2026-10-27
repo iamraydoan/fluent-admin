@@ -1,28 +1,83 @@
 import {
+  Alert24Filled,
   Alert24Regular,
+  Apps24Filled,
   Apps24Regular,
+  Bug24Filled,
   Bug24Regular,
+  bundleIcon,
+  Chat24Filled,
   Chat24Regular,
+  ClipboardTask24Filled,
+  ClipboardTask24Regular,
+  Desktop24Filled,
   Desktop24Regular,
+  DocumentDismiss24Filled,
   DocumentDismiss24Regular,
+  Home24Filled,
   Home24Regular,
   Image24Regular,
+  LockClosed24Filled,
   LockClosed24Regular,
   MusicNote124Regular,
   Navigation24Regular,
+  PaintBrush24Filled,
   PaintBrush24Regular,
+  People24Filled,
   People24Regular,
+  PersonEdit24Filled,
   PersonEdit24Regular,
+  PersonProhibited24Filled,
   PersonProhibited24Regular,
+  QuestionCircle24Filled,
   QuestionCircle24Regular,
+  Server24Filled,
   Server24Regular,
+  Settings24Filled,
   Settings24Regular,
+  Shield24Filled,
   Shield24Regular,
-  ClipboardTask24Regular,
+  Wrench24Filled,
   Wrench24Regular,
 } from '@fluentui/react-icons'
 import { ClerkLogo } from '@/assets/clerk-logo'
 import { type SidebarData } from '../types'
+
+// Group 1 icons: sidebar icons are Fluent bundles — Regular at rest,
+// Filled when the item is the current route (app-sidebar passes
+// filled={pathname === item.url} for leaves). Same 24px size and
+// position; only the glyph weight changes on selection. ClerkLogo
+// is a brand mark, not a UI icon, so it stays unbundled.
+const HomeIcon = bundleIcon(Home24Filled, Home24Regular)
+const ClipboardTaskIcon = bundleIcon(
+  ClipboardTask24Filled,
+  ClipboardTask24Regular
+)
+const AppsIcon = bundleIcon(Apps24Filled, Apps24Regular)
+const ChatIcon = bundleIcon(Chat24Filled, Chat24Regular)
+const PeopleIcon = bundleIcon(People24Filled, People24Regular)
+const ShieldIcon = bundleIcon(Shield24Filled, Shield24Regular)
+const BugIcon = bundleIcon(Bug24Filled, Bug24Regular)
+const LockClosedIcon = bundleIcon(LockClosed24Filled, LockClosed24Regular)
+const PersonProhibitedIcon = bundleIcon(
+  PersonProhibited24Filled,
+  PersonProhibited24Regular
+)
+const DocumentDismissIcon = bundleIcon(
+  DocumentDismiss24Filled,
+  DocumentDismiss24Regular
+)
+const ServerIcon = bundleIcon(Server24Filled, Server24Regular)
+const WrenchIcon = bundleIcon(Wrench24Filled, Wrench24Regular)
+const SettingsIcon = bundleIcon(Settings24Filled, Settings24Regular)
+const PersonEditIcon = bundleIcon(PersonEdit24Filled, PersonEdit24Regular)
+const PaintBrushIcon = bundleIcon(PaintBrush24Filled, PaintBrush24Regular)
+const AlertIcon = bundleIcon(Alert24Filled, Alert24Regular)
+const DesktopIcon = bundleIcon(Desktop24Filled, Desktop24Regular)
+const QuestionCircleIcon = bundleIcon(
+  QuestionCircle24Filled,
+  QuestionCircle24Regular
+)
 
 export const sidebarData: SidebarData = {
   user: {
@@ -58,28 +113,28 @@ export const sidebarData: SidebarData = {
         {
           title: 'Dashboard',
           url: '/',
-          icon: Home24Regular,
+          icon: HomeIcon,
         },
         {
           title: 'Tasks',
           url: '/tasks',
-          icon: ClipboardTask24Regular,
+          icon: ClipboardTaskIcon,
         },
         {
           title: 'Apps',
           url: '/apps',
-          icon: Apps24Regular,
+          icon: AppsIcon,
         },
         {
           title: 'Chats',
           url: '/chats',
           badge: '3',
-          icon: Chat24Regular,
+          icon: ChatIcon,
         },
         {
           title: 'Users',
           url: '/users',
-          icon: People24Regular,
+          icon: PeopleIcon,
         },
         {
           title: 'Secured by Clerk',
@@ -106,7 +161,7 @@ export const sidebarData: SidebarData = {
       items: [
         {
           title: 'Auth',
-          icon: Shield24Regular,
+          icon: ShieldIcon,
           items: [
             {
               title: 'Sign In',
@@ -132,32 +187,32 @@ export const sidebarData: SidebarData = {
         },
         {
           title: 'Errors',
-          icon: Bug24Regular,
+          icon: BugIcon,
           items: [
             {
               title: 'Unauthorized',
               url: '/errors/unauthorized',
-              icon: LockClosed24Regular,
+              icon: LockClosedIcon,
             },
             {
               title: 'Forbidden',
               url: '/errors/forbidden',
-              icon: PersonProhibited24Regular,
+              icon: PersonProhibitedIcon,
             },
             {
               title: 'Not Found',
               url: '/errors/not-found',
-              icon: DocumentDismiss24Regular,
+              icon: DocumentDismissIcon,
             },
             {
               title: 'Internal Server Error',
               url: '/errors/internal-server-error',
-              icon: Server24Regular,
+              icon: ServerIcon,
             },
             {
               title: 'Maintenance Error',
               url: '/errors/maintenance-error',
-              icon: Wrench24Regular,
+              icon: WrenchIcon,
             },
           ],
         },
@@ -168,39 +223,39 @@ export const sidebarData: SidebarData = {
       items: [
         {
           title: 'Settings',
-          icon: Settings24Regular,
+          icon: SettingsIcon,
           items: [
             {
               title: 'Profile',
               url: '/settings',
-              icon: PersonEdit24Regular,
+              icon: PersonEditIcon,
             },
             {
               title: 'Account',
               url: '/settings/account',
-              icon: Wrench24Regular,
+              icon: WrenchIcon,
             },
             {
               title: 'Appearance',
               url: '/settings/appearance',
-              icon: PaintBrush24Regular,
+              icon: PaintBrushIcon,
             },
             {
               title: 'Notifications',
               url: '/settings/notifications',
-              icon: Alert24Regular,
+              icon: AlertIcon,
             },
             {
               title: 'Display',
               url: '/settings/display',
-              icon: Desktop24Regular,
+              icon: DesktopIcon,
             },
           ],
         },
         {
           title: 'Help Center',
           url: '/help-center',
-          icon: QuestionCircle24Regular,
+          icon: QuestionCircleIcon,
         },
       ],
     },
