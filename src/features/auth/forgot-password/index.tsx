@@ -1,43 +1,56 @@
 import { Link } from '@tanstack/react-router'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Card } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 import { AuthLayout } from '../auth-layout'
 import { ForgotPasswordForm } from './components/forgot-password-form'
 
+const useStyles = makeStyles({
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    width: '100%',
+    maxWidth: '384px',
+    padding: '24px',
+    boxSizing: 'border-box',
+  },
+  description: {
+    color: tokens.colorNeutralForeground2,
+  },
+  link: {
+    textDecoration: 'underline',
+    textUnderlineOffset: '4px',
+    color: tokens.colorBrandForegroundLink,
+  },
+  footer: {
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground2,
+    paddingLeft: '32px',
+    paddingRight: '32px',
+  },
+})
+
 export function ForgotPassword() {
+  const styles = useStyles()
   return (
     <AuthLayout>
-      <Card className='max-w-sm gap-4 sm:min-w-sm'>
-        <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>
-            Forgot Password
-          </CardTitle>
-          <CardDescription>
-            Enter your registered email and <br /> we will send you a link to
-            reset your password.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ForgotPasswordForm />
-        </CardContent>
-        <CardFooter>
-          <p className='mx-auto px-8 text-center text-sm text-balance text-muted-foreground'>
-            Don't have an account?{' '}
-            <Link
-              to='/sign-up'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Sign up
-            </Link>
-            .
-          </p>
-        </CardFooter>
+      <Card className={styles.card}>
+        <Text size={500} weight='semibold'>
+          Forgot Password
+        </Text>
+        <Text className={styles.description}>
+          Enter your registered email and we will send you a link to reset your
+          password.
+        </Text>
+        <ForgotPasswordForm />
+        <Text size={300} className={styles.footer}>
+          Don&apos;t have an account?{' '}
+          <Link to='/sign-up' className={styles.link}>
+            Sign up
+          </Link>
+          .
+        </Text>
       </Card>
     </AuthLayout>
   )

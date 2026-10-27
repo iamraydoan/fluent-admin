@@ -1,25 +1,25 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
+import { makeStyles } from '@fluentui/react-components'
+import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from '@/components/ui/input-otp'
+import { Field } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'grid',
+    gap: '8px',
+  },
+  submit: {
+    marginTop: '8px',
+    width: '100%',
+  },
+})
 
 const formSchema = z.object({
   otp: z
@@ -30,7 +30,8 @@ const formSchema = z.object({
 
 type OtpFormProps = React.HTMLAttributes<HTMLFormElement>
 
-export function OtpForm({ className, ...props }: OtpFormProps) {
+export function OtpForm({ ...props }: OtpFormProps) {
+  const styles = useStyles()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -42,9 +43,9 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const otp = form.watch('otp')
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  function onSubmit() {
     setIsLoading(true)
-    showSubmittedData(data)
+    toast.success('Verification code submitted.')
 
     setTimeout(() => {
       setIsLoading(false)
@@ -53,48 +54,38 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-2', className)}
-        {...props}
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className={styles.form}
+      {...props}
+    >
+      <Controller
+        control={form.control}
+        name='otp'
+        render={({ field, fieldState }) => (
+          <Field
+            label='One-Time Password'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : undefined}
+          >
+            <Input
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          </Field>
+        )}
+      />
+      <Button
+        appearance='primary'
+        type='submit'
+        disabled={otp.length < 6 || isLoading}
+        className={styles.submit}
       >
-        <FormField
-          control={form.control}
-          name='otp'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className='sr-only'>One-Time Password</FormLabel>
-              <FormControl>
-                <InputOTP
-                  maxLength={6}
-                  {...field}
-                  containerClassName='justify-between sm:[&>[data-slot="input-otp-group"]>div]:w-12'
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={otp.length < 6 || isLoading}>
-          Verify
-        </Button>
-      </form>
-    </Form>
+        {isLoading ? <Spinner size='tiny' /> : null}
+        Verify
+      </Button>
+    </form>
   )
 }

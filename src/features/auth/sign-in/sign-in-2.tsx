@@ -1,74 +1,129 @@
 import { Link } from '@tanstack/react-router'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Logo } from '@/assets/logo'
-import { cn } from '@/lib/utils'
-import dashboardDark from './assets/dashboard-dark.png'
+import { Text } from '@/components/ui/text'
 import dashboardLight from './assets/dashboard-light.png'
 import { UserAuthForm } from './components/user-auth-form'
 
+const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    display: 'grid',
+    minHeight: '100svh',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '@media (min-width: 1024px)': {
+      gridTemplateColumns: '1fr 1fr',
+    },
+  },
+  left: {
+    padding: '32px',
+    boxSizing: 'border-box',
+  },
+  brand: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    marginBottom: '16px',
+  },
+  formColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    maxWidth: '384px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+  heading: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  description: {
+    color: tokens.colorNeutralForeground2,
+  },
+  link: {
+    textDecoration: 'underline',
+    textUnderlineOffset: '4px',
+    color: tokens.colorBrandForegroundLink,
+    whiteSpace: 'nowrap',
+  },
+  footer: {
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground2,
+    paddingLeft: '32px',
+    paddingRight: '32px',
+  },
+  panel: {
+    display: 'none',
+    '@media (min-width: 1024px)': {
+      display: 'block',
+      position: 'relative',
+      height: '100%',
+      overflow: 'hidden',
+      backgroundColor: tokens.colorNeutralBackground3,
+    },
+  },
+  panelImage: {
+    position: 'absolute',
+    top: '15%',
+    left: '80px',
+    height: '100%',
+    width: '100%',
+    objectFit: 'cover',
+    objectPosition: 'top left',
+    userSelect: 'none',
+  },
+})
+
 export function SignIn2() {
+  const styles = useStyles()
   return (
-    <div className='relative container grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0'>
-      <div className='lg:p-8'>
-        <div className='mx-auto flex w-full flex-col justify-center space-y-2 py-8 sm:w-120 sm:p-8'>
-          <div className='mb-4 flex items-center justify-center'>
-            <Logo className='me-2' />
-            <h1 className='text-xl font-medium'>Shadcn Admin</h1>
-          </div>
+    <div className={styles.root}>
+      <div className={styles.left}>
+        <div className={styles.brand}>
+          <Logo />
+          <Text size={500} weight='medium'>
+            Shadcn Admin
+          </Text>
         </div>
-        <div className='mx-auto flex w-full max-w-sm flex-col justify-center space-y-2'>
-          <div className='flex flex-col space-y-2 text-start'>
-            <h2 className='text-lg font-semibold tracking-tight'>Sign in</h2>
-            <p className='text-sm text-muted-foreground'>
-              Enter your email and password below to log into{' '}
-              <br className='max-sm:hidden' /> your account. Don't have an
-              account?{' '}
-              <Link
-                to='/sign-up'
-                className='text-nowrap underline underline-offset-4 hover:text-primary'
-              >
+        <div className={styles.formColumn}>
+          <div className={styles.heading}>
+            <Text size={500} weight='semibold'>
+              Sign in
+            </Text>
+            <Text className={styles.description}>
+              Enter your email and password below to log into your account.
+              Don&apos;t have an account?{' '}
+              <Link to='/sign-up' className={styles.link}>
                 Sign Up
               </Link>
-            </p>
+            </Text>
           </div>
           <UserAuthForm />
-          <p className='px-8 text-center text-sm text-muted-foreground'>
+          <Text size={300} className={styles.footer}>
             By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='underline underline-offset-4 hover:text-primary'
-            >
+            <a href='/terms' className={styles.link}>
               Terms of Service
             </a>{' '}
             and{' '}
-            <a
-              href='/privacy'
-              className='underline underline-offset-4 hover:text-primary'
-            >
+            <a href='/privacy' className={styles.link}>
               Privacy Policy
             </a>
             .
-          </p>
+          </Text>
         </div>
       </div>
 
-      <div
-        className={cn(
-          'relative h-full overflow-hidden bg-muted max-lg:hidden',
-          '[&>img]:absolute [&>img]:top-[15%] [&>img]:left-20 [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>img]:object-top-left [&>img]:select-none'
-        )}
-      >
+      <div className={styles.panel}>
         <img
           src={dashboardLight}
-          className='dark:hidden'
+          className={styles.panelImage}
           width={1024}
           height={1151}
-          alt='Shadcn-Admin'
-        />
-        <img
-          src={dashboardDark}
-          className='hidden dark:block'
-          width={1024}
-          height={1138}
           alt='Shadcn-Admin'
         />
       </div>

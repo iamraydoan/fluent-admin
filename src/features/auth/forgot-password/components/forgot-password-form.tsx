@@ -1,21 +1,27 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
-import { sleep, cn } from '@/lib/utils'
+import { makeStyles } from '@fluentui/react-components'
+import { ArrowRight20Regular } from '@fluentui/react-icons'
+import { toast } from '@/lib/toast'
+import { sleep } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'grid',
+    gap: '8px',
+  },
+  submit: {
+    marginTop: '8px',
+    width: '100%',
+  },
+})
 
 const formSchema = z.object({
   email: z.email({
@@ -24,9 +30,9 @@ const formSchema = z.object({
 })
 
 export function ForgotPasswordForm({
-  className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
+  const styles = useStyles()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,43 +44,48 @@ export function ForgotPasswordForm({
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    toast.promise(sleep(2000), {
-      loading: 'Sending email...',
-      success: () => {
-        setIsLoading(false)
-        form.reset()
-        navigate({ to: '/otp' })
-        return `Email sent to ${data.email}`
-      },
-      error: 'Error',
+    void sleep(2000).then(() => {
+      setIsLoading(false)
+      form.reset()
+      navigate({ to: '/otp' })
+      toast.success(`Email sent to ${data.email}`)
     })
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-2', className)}
-        {...props}
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className={styles.form}
+      {...props}
+    >
+      <Controller
+        control={form.control}
+        name='email'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Email'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : undefined}
+          >
+            <Input
+              placeholder='name@example.com'
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          </Field>
+        )}
+      />
+      <Button
+        appearance='primary'
+        type='submit'
+        disabled={isLoading}
+        className={styles.submit}
+        icon={isLoading ? <Spinner size='tiny' /> : <ArrowRight20Regular />}
       >
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder='name@example.com' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={isLoading}>
-          Continue
-          {isLoading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
-        </Button>
-      </form>
-    </Form>
+        Continue
+      </Button>
+    </form>
   )
 }

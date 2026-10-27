@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, type RenderResult } from 'vitest-browser-react'
 import { type Locator, userEvent } from 'vitest/browser'
+import { toast } from '@/lib/toast'
 import { SignUpForm } from './sign-up-form'
 
 const FORM_MESSAGES = {
@@ -10,13 +11,7 @@ const FORM_MESSAGES = {
   passwordMismatch: "Passwords don't match.",
 } as const
 
-const toastPromise = vi.hoisted(() =>
-  vi.fn((p: Promise<unknown>, opts: { success?: () => unknown }) => {
-    p.then(() => opts.success?.())
-  })
-)
-
-vi.mock('sonner', () => ({ toast: { promise: toastPromise } }))
+vi.mock('@/lib/toast', () => ({ toast: { success: vi.fn() } }))
 
 describe('SignUpForm', () => {
   let screen: RenderResult
@@ -83,6 +78,7 @@ describe('SignUpForm', () => {
 
     await vi.advanceTimersByTimeAsync(2000)
     await expect.element(submitButton).toBeEnabled()
-    expect(toastPromise).toHaveBeenCalledOnce()
+    expect(toast.success).toHaveBeenCalledOnce()
+    expect(toast.success).toHaveBeenCalledWith('Account created for a@b.com.')
   })
 })

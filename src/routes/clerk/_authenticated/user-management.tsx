@@ -7,15 +7,18 @@ import {
   useRouter,
 } from '@tanstack/react-router'
 import { useAuth, UserButton } from '@clerk/react'
-import { ExternalLink, Loader2 } from 'lucide-react'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { ClerkLogo } from '@/assets/clerk-logo'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
+import { Text } from '@/components/ui/text'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { LearnMore } from '@/components/learn-more'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { ErrorLayout } from '@/features/errors/error-layout'
 import { UsersDialogs } from '@/features/users/components/users-dialogs'
 import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons'
 import { UsersProvider } from '@/features/users/components/users-provider'
@@ -26,7 +29,59 @@ export const Route = createFileRoute('/clerk/_authenticated/user-management')({
   component: UserManagement,
 })
 
+const useStyles = makeStyles({
+  loading: {
+    display: 'flex',
+    minHeight: '100svh',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchWrap: {
+    flexGrow: 1,
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  titleRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: '8px',
+  },
+  subtitleRow: {
+    display: 'flex',
+    gap: '4px',
+    alignItems: 'center',
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground2,
+  },
+  link: {
+    textDecoration: 'underline',
+    textDecorationStyle: 'dashed',
+    textUnderlineOffset: '2px',
+    color: tokens.colorBrandForegroundLink,
+  },
+  learnMoreText: {
+    marginTop: '0px',
+    marginBottom: '0px',
+  },
+  learnMoreTextSpaced: {
+    marginTop: '16px',
+    marginBottom: '0px',
+  },
+  countdown: {
+    marginTop: '16px',
+    height: '32px',
+    textAlign: 'center',
+  },
+})
+
 function UserManagement() {
+  const styles = useStyles()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
 
@@ -35,8 +90,8 @@ function UserManagement() {
 
   if (!isLoaded) {
     return (
-      <div className='flex h-svh items-center justify-center'>
-        <Loader2 className='size-8 animate-spin' />
+      <div className={styles.loading}>
+        <Spinner size='large' />
       </div>
     )
   }
@@ -48,46 +103,44 @@ function UserManagement() {
   return (
     <UsersProvider>
       <Header fixed>
-        <Search className='me-auto' />
+        <div className={styles.searchWrap}>
+          <Search />
+        </div>
         <ThemeSwitch />
         <ConfigDrawer />
         <UserButton />
       </Header>
 
-      <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
-        <div className='flex flex-wrap items-end justify-between gap-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
-            <div className='flex gap-1'>
-              <p className='text-muted-foreground'>
-                Manage your users and their roles here.
-              </p>
-              <LearnMore
-                open={opened}
-                onOpenChange={setOpened}
-                contentProps={{ side: 'right' }}
-              >
-                <p>
-                  This is the same as{' '}
-                  <Link
-                    to='/users'
-                    className='text-blue-500 underline decoration-dashed underline-offset-2'
-                  >
-                    '/users'
-                  </Link>
-                </p>
+      <Main>
+        <div className={styles.content}>
+          <div className={styles.titleRow}>
+            <div>
+              <Text size={700} weight='bold'>
+                User List
+              </Text>
+              <div className={styles.subtitleRow}>
+                <Text className={styles.subtitle}>
+                  Manage your users and their roles here.
+                </Text>
+                <LearnMore open={opened} onOpenChange={setOpened}>
+                  <p className={styles.learnMoreText}>
+                    This is the same as{' '}
+                    <Link to='/users' className={styles.link}>
+                      &apos;/users&apos;
+                    </Link>
+                  </p>
 
-                <p className='mt-4'>
-                  You can sign out or manage/delete your account via the User
-                  Profile menu in the top-right corner of the page.
-                  <ExternalLink className='inline-block size-4' />
-                </p>
-              </LearnMore>
+                  <p className={styles.learnMoreTextSpaced}>
+                    You can sign out or manage/delete your account via the User
+                    Profile menu in the top-right corner of the page.
+                  </p>
+                </LearnMore>
+              </div>
             </div>
+            <UsersPrimaryButtons />
           </div>
-          <UsersPrimaryButtons />
+          <UsersTable data={users} navigate={navigate} search={search} />
         </div>
-        <UsersTable data={users} navigate={navigate} search={search} />
       </Main>
 
       <UsersDialogs />
@@ -98,6 +151,7 @@ function UserManagement() {
 const COUNTDOWN = 5 // Countdown second
 
 function Unauthorized() {
+  const styles = useStyles()
   const navigate = useNavigate()
   const { history } = useRouter()
 
@@ -121,58 +175,63 @@ function Unauthorized() {
   }, [countdown, navigate])
 
   return (
-    <div className='h-svh'>
-      <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        <h1 className='text-[7rem] leading-tight font-bold'>401</h1>
-        <span className='font-medium'>Unauthorized Access</span>
-        <p className='text-center text-muted-foreground'>
+    <ErrorLayout
+      code='401'
+      title='Unauthorized Access'
+      description={
+        <>
           You must be authenticated via Clerk{' '}
-          <sup>
-            <LearnMore open={opened} onOpenChange={setOpened}>
-              <p>
-                This is the same as{' '}
-                <Link
-                  to='/users'
-                  className='text-blue-500 underline decoration-dashed underline-offset-2'
-                >
-                  '/users'
-                </Link>
-                .{' '}
-              </p>
-              <p>You must first sign in using Clerk to access this route. </p>
+          <LearnMore open={opened} onOpenChange={setOpened}>
+            <p className={styles.learnMoreText}>
+              This is the same as{' '}
+              <Link to='/users' className={styles.link}>
+                &apos;/users&apos;
+              </Link>
+              .{' '}
+            </p>
+            <p className={styles.learnMoreText}>
+              You must first sign in using Clerk to access this route.{' '}
+            </p>
 
-              <p className='mt-4'>
-                After signing in, you'll be able to sign out or delete your
-                account via the User Profile dropdown on this page.
-              </p>
-            </LearnMore>
-          </sup>
+            <p className={styles.learnMoreTextSpaced}>
+              After signing in, you&apos;ll be able to sign out or delete your
+              account via the User Profile dropdown on this page.
+            </p>
+          </LearnMore>
           <br />
           to access this resource.
-        </p>
-        <div className='mt-6 flex gap-4'>
-          <Button variant='outline' onClick={() => history.go(-1)}>
-            Go Back
-          </Button>
-          <Button onClick={() => navigate({ to: '/clerk/sign-in' })}>
-            <ClerkLogo className='invert' /> Sign in
-          </Button>
-        </div>
-        <div className='mt-4 h-8 text-center'>
+        </>
+      }
+      footer={
+        <div className={styles.countdown}>
           {!cancelled && !opened && (
             <>
-              <p>
+              <Text>
                 {countdown > 0
                   ? `Redirecting to Sign In page in ${countdown}s`
                   : `Redirecting...`}
-              </p>
-              <Button variant='link' onClick={() => setCancelled(true)}>
+              </Text>
+              <Button
+                appearance='transparent'
+                onClick={() => setCancelled(true)}
+              >
                 Cancel Redirect
               </Button>
             </>
           )}
         </div>
-      </div>
-    </div>
+      }
+    >
+      <Button appearance='outline' onClick={() => history.go(-1)}>
+        Go Back
+      </Button>
+      <Button
+        appearance='primary'
+        onClick={() => navigate({ to: '/clerk/sign-in' })}
+        icon={<ClerkLogo style={{ width: 20, height: 20 }} />}
+      >
+        Sign in
+      </Button>
+    </ErrorLayout>
   )
 }

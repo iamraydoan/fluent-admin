@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, type RenderResult } from 'vitest-browser-react'
 import { type Locator, userEvent } from 'vitest/browser'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from '@/lib/toast'
 import { OtpForm } from './otp-form'
 
 const navigate = vi.fn()
@@ -11,7 +11,7 @@ vi.mock('@tanstack/react-router', async (orig) => {
   return { ...actual, useNavigate: () => navigate }
 })
 
-vi.mock('@/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
+vi.mock('@/lib/toast', () => ({ toast: { success: vi.fn() } }))
 
 describe('OtpForm', () => {
   let screen: RenderResult
@@ -46,8 +46,8 @@ describe('OtpForm', () => {
     await userEvent.fill(otpInput, '123456')
     await userEvent.click(verifyButton)
 
-    expect(showSubmittedData).toHaveBeenCalledOnce()
-    expect(showSubmittedData).toHaveBeenCalledWith({ otp: '123456' })
+    expect(toast.success).toHaveBeenCalledOnce()
+    expect(toast.success).toHaveBeenCalledWith('Verification code submitted.')
 
     await vi.advanceTimersByTimeAsync(1000)
     expect(navigate).toHaveBeenCalledWith({ to: '/' })

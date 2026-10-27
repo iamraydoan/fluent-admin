@@ -1,40 +1,34 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
-import { Button } from '@fluentui/react-components'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { ErrorLayout } from './error-layout'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
 }
 
-export function GeneralError({
-  className,
-  minimal = false,
-}: GeneralErrorProps) {
+export function GeneralError({ minimal = false }: GeneralErrorProps) {
   const navigate = useNavigate()
   const { history } = useRouter()
   return (
-    <div className={cn('h-svh w-full', className)}>
-      <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        {!minimal && (
-          <h1 className='text-[7rem] leading-tight font-bold'>500</h1>
-        )}
-        <span className='font-medium'>Oops! Something went wrong {`:')`}</span>
-        <p className='text-center text-muted-foreground'>
+    <ErrorLayout
+      code={minimal ? undefined : '500'}
+      title="Oops! Something went wrong :')"
+      description={
+        <>
           We apologize for the inconvenience. <br /> Please try again later.
-        </p>
-        {!minimal && (
-          <div className='mt-6 flex gap-4'>
-            {/* Button swapped to Fluent only so this root error
-                component still loads after the shadcn UI deletion.
-                This is NOT a full Fluent conversion of the error
-                screen (layout/text unchanged); that is step 5. */}
-            <Button appearance='outline' onClick={() => history.go(-1)}>
-              Go Back
-            </Button>
-            <Button onClick={() => navigate({ to: '/' })}>Back to Home</Button>
-          </div>
-        )}
-      </div>
-    </div>
+        </>
+      }
+    >
+      {!minimal && (
+        <>
+          <Button appearance='outline' onClick={() => history.go(-1)}>
+            Go Back
+          </Button>
+          <Button appearance='primary' onClick={() => navigate({ to: '/' })}>
+            Back to Home
+          </Button>
+        </>
+      )}
+    </ErrorLayout>
   )
 }

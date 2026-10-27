@@ -1,56 +1,63 @@
 import { Link } from '@tanstack/react-router'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Card } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 import { AuthLayout } from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
 
+const useStyles = makeStyles({
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    width: '100%',
+    maxWidth: '384px',
+    padding: '24px',
+    boxSizing: 'border-box',
+  },
+  description: {
+    color: tokens.colorNeutralForeground2,
+  },
+  link: {
+    textDecoration: 'underline',
+    textUnderlineOffset: '4px',
+    color: tokens.colorBrandForegroundLink,
+  },
+  footer: {
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground2,
+    paddingLeft: '32px',
+    paddingRight: '32px',
+  },
+})
+
 export function SignUp() {
+  const styles = useStyles()
   return (
     <AuthLayout>
-      <Card className='max-w-sm gap-4'>
-        <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>
-            Create an account
-          </CardTitle>
-          <CardDescription>
-            Enter your email and password to create an account. <br />
-            Already have an account?{' '}
-            <Link
-              to='/sign-in'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Sign In
-            </Link>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SignUpForm />
-        </CardContent>
-        <CardFooter>
-          <p className='px-8 text-center text-sm text-muted-foreground'>
-            By creating an account, you agree to our{' '}
-            <a
-              href='/terms'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a
-              href='/privacy'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Privacy Policy
-            </a>
-            .
-          </p>
-        </CardFooter>
+      <Card className={styles.card}>
+        <Text size={500} weight='semibold'>
+          Create an account
+        </Text>
+        <Text className={styles.description}>
+          Enter your email and password to create an account. Already have an
+          account?{' '}
+          <Link to='/sign-in' className={styles.link}>
+            Sign In
+          </Link>
+        </Text>
+        <SignUpForm />
+        <Text size={300} className={styles.footer}>
+          By creating an account, you agree to our{' '}
+          <a href='/terms' className={styles.link}>
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href='/privacy' className={styles.link}>
+            Privacy Policy
+          </a>
+          .
+        </Text>
       </Card>
     </AuthLayout>
   )
