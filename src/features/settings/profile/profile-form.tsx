@@ -1,28 +1,36 @@
 import { z } from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { makeStyles } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
+import { Text } from '@/components/ui/text'
 import { Textarea } from '@/components/ui/textarea'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+  },
+  urls: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  urlRow: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  addButton: {
+    marginTop: '8px',
+  },
+})
 
 const profileFormSchema = z.object({
   username: z
@@ -57,6 +65,7 @@ const defaultValues: Partial<ProfileFormValues> = {
 }
 
 export function ProfileForm() {
+  const styles = useStyles()
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
@@ -69,109 +78,120 @@ export function ProfileForm() {
   })
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
-        className='space-y-8'
-      >
-        <FormField
-          control={form.control}
-          name='username'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder='shadcn' {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value='m@example.com'>m@example.com</SelectItem>
-                  <SelectItem value='m@google.com'>m@google.com</SelectItem>
-                  <SelectItem value='m@support.com'>m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
+    <form
+      onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
+      className={styles.form}
+    >
+      <Controller
+        control={form.control}
+        name='username'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Username'
+            hint='This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Input
+              placeholder='shadcn'
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+            />
+          </Field>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name='email'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Email'
+            hint={
+              <>
                 You can manage verified email addresses in your{' '}
                 <Link to='/'>email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='bio'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder='Tell us a little bit about yourself'
-                  className='resize-none'
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl className={cn(index !== 0 && 'mt-1.5')}>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              </>
+            }
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Select
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+            >
+              <option value='' disabled>
+                Select a verified email to display
+              </option>
+              <option value='m@example.com'>m@example.com</option>
+              <option value='m@google.com'>m@google.com</option>
+              <option value='m@support.com'>m@support.com</option>
+            </Select>
+          </Field>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name='bio'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Bio'
+            hint='You can @mention other users and organizations to link to them.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Textarea
+              placeholder='Tell us a little bit about yourself'
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
             />
-          ))}
+          </Field>
+        )}
+      />
+      <div className={styles.urls}>
+        <Text size={400} weight='semibold'>
+          URLs
+        </Text>
+        <Text size={300}>
+          Add links to your website, blog, or social media profiles.
+        </Text>
+        {fields.map((item, index) => (
+          <Controller
+            key={item.id}
+            control={form.control}
+            name={`urls.${index}.value`}
+            render={({ field, fieldState }) => (
+              <div className={styles.urlRow}>
+                <Field
+                  validationMessage={fieldState.error?.message}
+                  validationState={fieldState.error ? 'error' : 'none'}
+                >
+                  <Input
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                  />
+                </Field>
+              </div>
+            )}
+          />
+        ))}
+        <div className={styles.addButton}>
           <Button
             type='button'
-            variant='outline'
-            size='sm'
-            className='mt-2'
+            appearance='secondary'
+            size='small'
             onClick={() => append({ value: '' })}
           >
             Add URL
           </Button>
         </div>
+      </div>
+      <div>
         <Button type='submit'>Update profile</Button>
-      </form>
-    </Form>
+      </div>
+    </form>
   )
 }

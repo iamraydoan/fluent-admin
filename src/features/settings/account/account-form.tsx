@@ -1,34 +1,20 @@
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { makeStyles } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { DatePicker } from '@/components/date-picker'
+import { Select } from '@/components/ui/select'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+  },
+})
 
 const languages = [
   { label: 'English', value: 'en' },
@@ -48,7 +34,7 @@ const accountFormSchema = z.object({
     .min(1, 'Please enter your name.')
     .min(2, 'Name must be at least 2 characters.')
     .max(30, 'Name must not be longer than 30 characters.'),
-  dob: z.date('Please select your date of birth.'),
+  dob: z.string().min(1, 'Please select your date of birth.'),
   language: z.string('Please select a language.'),
 })
 
@@ -60,6 +46,7 @@ const defaultValues: Partial<AccountFormValues> = {
 }
 
 export function AccountForm() {
+  const styles = useStyles()
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues,
@@ -70,104 +57,75 @@ export function AccountForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder='Your name' {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the name that will be displayed on your profile and in
-                emails.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='dob'
-          render={({ field }) => (
-            <FormItem className='flex flex-col'>
-              <FormLabel>Date of birth</FormLabel>
-              <DatePicker selected={field.value} onSelect={field.onChange} />
-              <FormDescription>
-                Your date of birth is used to calculate your age.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='language'
-          render={({ field }) => (
-            <FormItem className='flex flex-col'>
-              <FormLabel>Language</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant='outline'
-                      role='combobox'
-                      className={cn(
-                        'w-50 justify-between',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
-                          )?.label
-                        : 'Select language'}
-                      <CaretSortIcon className='ms-2 h-4 w-4 shrink-0 opacity-50' />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className='w-50 p-0'>
-                  <Command>
-                    <CommandInput placeholder='Search language...' />
-                    <CommandEmpty>No language found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandList>
-                        {languages.map((language) => (
-                          <CommandItem
-                            value={language.label}
-                            key={language.value}
-                            onSelect={() => {
-                              form.setValue('language', language.value)
-                            }}
-                          >
-                            <CheckIcon
-                              className={cn(
-                                'size-4',
-                                language.value === field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                            {language.label}
-                          </CommandItem>
-                        ))}
-                      </CommandList>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormDescription>
-                This is the language that will be used in the dashboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
+      <Controller
+        control={form.control}
+        name='name'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Name'
+            hint='This is the name that will be displayed on your profile and in emails.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Input
+              placeholder='Your name'
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+            />
+          </Field>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name='dob'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Date of birth'
+            hint='Your date of birth is used to calculate your age.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Input
+              type='date'
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+            />
+          </Field>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name='language'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Language'
+            hint='This is the language that will be used in the dashboard.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <Select
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+            >
+              <option value='' disabled>
+                Select language
+              </option>
+              {languages.map((language) => (
+                <option key={language.value} value={language.value}>
+                  {language.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
+      />
+      <div>
         <Button type='submit'>Update account</Button>
-      </form>
-    </Form>
+      </div>
+    </form>
   )
 }
