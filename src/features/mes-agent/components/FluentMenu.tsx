@@ -62,12 +62,21 @@ const useStyles = makeStyles({
     '& [aria-current="page"]::after': {
       display: 'none',
     },
+    // All NavItems transparent at rest (demo white), not just the
+    // selected one: Fluent NavItem's default is #f0f0f0, which read
+    // as grey blocks on this white menu, with the selected item
+    // standing out as white — the inverse of the demo.
+    // This is a class rule on purpose, NOT an inline style on every
+    // NavItem: an inline transparent would also beat the hover rule
+    // below (inline styles beat classes), making hover invisible.
+    // A class base rule lets the higher-specificity :hover rule win.
+    '& button, & a': {
+      backgroundColor: 'transparent',
+    },
     // Light pale-grey hover, never blue or dark. Unselected items only.
-    // The selected item keeps its fill-free look via an inline
-    // transparent background on that one NavItem (see renderLeaf):
-    // inline style beats the hover class there, which is exactly what
-    // we want for the active item, while unselected items have no
-    // inline background to block this hover rule.
+    // The selected item keeps its fill-free look via the
+    // [aria-current="page"] rule above, and hover is excluded there,
+    // so the active item never shows a fill, even on hover.
     '& button:not([aria-current="page"]):hover, & a:not([aria-current="page"]):hover':
       {
         backgroundColor: '#f3f2f1',
@@ -170,11 +179,11 @@ export default function FluentMenu({ expanded, onToggle }: FluentMenuProps) {
         {item.badge && <span className={styles.badge}>{item.badge}</span>}
       </span>
     )
-    // Only the selected item (CM MES Agent on this page) gets an
-    // inline transparent background, so it never shows a fill, even
-    // on hover. All other items have no inline background, so the
-    // pale-grey hover rule in the menu styles applies to them.
-    const isSelected = item.url === '/mes-agent'
+    // No inline background here on purpose: the menu styles set every
+    // NavItem transparent at rest (see the '& button, & a' rule), so
+    // an inline transparent would only block the hover rule. The
+    // selected item (CM MES Agent on this page) stays fill-free via
+    // the [aria-current="page"] rule in the menu styles.
     return (
       <NavItem
         key={item.url ?? item.title}
@@ -186,10 +195,7 @@ export default function FluentMenu({ expanded, onToggle }: FluentMenuProps) {
         aria-label={
           item.badge ? `${item.title}, ${item.badge} unread` : item.title
         }
-        style={{
-          ...(indent ? { paddingLeft: '32px' } : {}),
-          ...(isSelected ? { backgroundColor: 'transparent' } : {}),
-        }}
+        style={indent ? { paddingLeft: '32px' } : undefined}
       >
         {expanded ? label : null}
       </NavItem>
