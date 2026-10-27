@@ -1,14 +1,13 @@
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { Checkmark20Regular, Options20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
 
 type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
@@ -18,39 +17,38 @@ export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant='outline'
-          size='sm'
-          className='ms-auto hidden h-8 lg:flex'
-        >
-          <MixerHorizontalIcon className='size-4' />
+    <Menu>
+      <MenuTrigger>
+        <Button appearance='outline' size='small' icon={<Options20Regular />}>
           View
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-37.5'>
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== 'undefined' && column.getCanHide()
-          )
-          .map((column) => {
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className='capitalize'
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
+      </MenuTrigger>
+      <MenuPopover>
+        <MenuList>
+          <MenuItem disabled>Toggle columns</MenuItem>
+          {table
+            .getAllColumns()
+            .filter(
+              (column) =>
+                typeof column.accessorFn !== 'undefined' && column.getCanHide()
             )
-          })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            .map((column) => {
+              return (
+                <MenuItem
+                  key={column.id}
+                  icon={
+                    column.getIsVisible() ? <Checkmark20Regular /> : undefined
+                  }
+                  onClick={() =>
+                    column.toggleVisibility(!column.getIsVisible())
+                  }
+                >
+                  {column.id}
+                </MenuItem>
+              )
+            })}
+        </MenuList>
+      </MenuPopover>
+    </Menu>
   )
 }

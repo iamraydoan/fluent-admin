@@ -1,30 +1,44 @@
-import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { makeStyles } from '@fluentui/react-components'
 import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
-import useDialogState from '@/hooks/use-dialog-state'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+  ArrowSort24Regular,
+  CheckmarkCircle24Regular,
+  Alert24Regular,
+  Payment24Regular,
+  SignOut24Regular,
+  Sparkle24Regular,
+} from '@fluentui/react-icons'
+import { Avatar } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/components/ui/sidebar'
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
+import { Text } from '@/components/ui/text'
 import { SignOutDialog } from '@/components/sign-out-dialog'
+
+const useStyles = makeStyles({
+  triggerRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'left',
+    padding: '4px 8px',
+    boxSizing: 'border-box',
+  },
+  userText: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    minWidth: 0,
+    lineHeight: '1.25',
+  },
+})
 
 type NavUserProps = {
   user: {
@@ -32,93 +46,71 @@ type NavUserProps = {
     email: string
     avatar: string
   }
+  collapsed: boolean
 }
 
-export function NavUser({ user }: NavUserProps) {
-  const { isMobile } = useSidebar()
-  const [open, setOpen] = useDialogState()
+export function NavUser({ user, collapsed }: NavUserProps) {
+  const styles = useStyles()
+  const navigate = useNavigate()
+  const [signOutOpen, setSignOutOpen] = useState(false)
 
   return (
     <>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-              >
-                <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className='rounded-lg'>SN</AvatarFallback>
-                </Avatar>
-                <div className='grid flex-1 text-start text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
-                </div>
-                <ChevronsUpDown className='ms-auto size-4' />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
-              side={isMobile ? 'bottom' : 'right'}
-              align='end'
-              sideOffset={4}
+      <Menu>
+        <MenuTrigger>
+          <Button appearance='transparent'>
+            <span className={styles.triggerRow}>
+              <Avatar
+                name={user.name}
+                image={{ src: user.avatar, alt: user.name }}
+                size={32}
+              />
+              {!collapsed && (
+                <>
+                  <span className={styles.userText}>
+                    <Text weight='semibold' size={300}>
+                      {user.name}
+                    </Text>
+                    <Text size={200}>{user.email}</Text>
+                  </span>
+                  <ArrowSort24Regular />
+                </>
+              )}
+            </span>
+          </Button>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem icon={<Sparkle24Regular />}>Upgrade to Pro</MenuItem>
+            <MenuItem
+              icon={<CheckmarkCircle24Regular />}
+              onClick={() => navigate({ to: '/settings/account' })}
             >
-              <DropdownMenuLabel className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-1 py-1.5 text-start text-sm'>
-                  <Avatar className='h-8 w-8 rounded-lg'>
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className='rounded-lg'>SN</AvatarFallback>
-                  </Avatar>
-                  <div className='grid flex-1 text-start text-sm leading-tight'>
-                    <span className='truncate font-semibold'>{user.name}</span>
-                    <span className='truncate text-xs'>{user.email}</span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Sparkles />
-                  Upgrade to Pro
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings/account'>
-                    <BadgeCheck />
-                    Account
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings'>
-                    <CreditCard />
-                    Billing
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings/notifications'>
-                    <Bell />
-                    Notifications
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant='destructive'
-                onClick={() => setOpen(true)}
-              >
-                <LogOut />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
+              Account
+            </MenuItem>
+            <MenuItem
+              icon={<Payment24Regular />}
+              onClick={() => navigate({ to: '/settings' })}
+            >
+              Billing
+            </MenuItem>
+            <MenuItem
+              icon={<Alert24Regular />}
+              onClick={() => navigate({ to: '/settings/notifications' })}
+            >
+              Notifications
+            </MenuItem>
+            <MenuItem
+              icon={<SignOut24Regular />}
+              onClick={() => setSignOutOpen(true)}
+            >
+              Sign out
+            </MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
 
-      <SignOutDialog open={!!open} onOpenChange={setOpen} />
+      <SignOutDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </>
   )
 }

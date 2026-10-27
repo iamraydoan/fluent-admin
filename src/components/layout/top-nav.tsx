@@ -1,13 +1,39 @@
-import { Link } from '@tanstack/react-router'
-import { Menu } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { makeStyles } from '@fluentui/react-components'
+import { Navigation24Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
+
+const useStyles = makeStyles({
+  mobileMenu: {
+    '@media (min-width: 1024px)': {
+      display: 'none',
+    },
+  },
+  desktopNav: {
+    display: 'none',
+    '@media (min-width: 1024px)': {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+    },
+  },
+  navLink: {
+    fontSize: '14px',
+    fontWeight: 500,
+    textDecoration: 'none',
+    color: '#242424',
+  },
+  navLinkMuted: {
+    color: '#616161',
+  },
+})
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: {
@@ -19,47 +45,44 @@ type TopNavProps = React.HTMLAttributes<HTMLElement> & {
 }
 
 export function TopNav({ className, links, ...props }: TopNavProps) {
+  const styles = useStyles()
+  const navigate = useNavigate()
   return (
     <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size='icon'
-            variant='outline'
-            className={cn('md:size-7 lg:hidden', className)}
-          >
-            <Menu />
-            <span className='sr-only'>Toggle navigation menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side='bottom' align='start'>
-          {links.map(({ title, href, isActive, disabled }) => (
-            <DropdownMenuItem key={`${title}-${href}`} asChild>
-              <Link
-                to={href}
-                className={!isActive ? 'text-muted-foreground' : ''}
-                disabled={disabled}
-              >
-                {title}
-              </Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <span className={styles.mobileMenu}>
+        <Menu>
+          <MenuTrigger>
+            <Button
+              appearance='outline'
+              icon={<Navigation24Regular />}
+              aria-label='Toggle navigation menu'
+            />
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              {links.map(({ title, href, disabled }) => (
+                <MenuItem
+                  key={`${title}-${href}`}
+                  disabled={disabled}
+                  onClick={() => {
+                    if (!disabled) navigate({ to: href })
+                  }}
+                >
+                  {title}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </MenuPopover>
+        </Menu>
+      </span>
 
-      <nav
-        className={cn(
-          'hidden items-center space-x-4 lg:flex lg:space-x-4 xl:space-x-6',
-          className
-        )}
-        {...props}
-      >
+      <nav className={`${styles.desktopNav} ${className ?? ''}`} {...props}>
         {links.map(({ title, href, isActive, disabled }) => (
           <Link
             key={`${title}-${href}`}
             to={href}
             disabled={disabled}
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive ? '' : 'text-muted-foreground'}`}
+            className={`${styles.navLink} ${isActive ? '' : styles.navLinkMuted}`}
           >
             {title}
           </Link>

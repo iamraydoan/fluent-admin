@@ -1,9 +1,37 @@
-import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Dismiss20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
 import { DataTableViewOptions } from './view-options'
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  left: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexWrap: 'wrap',
+    flex: '1',
+  },
+  input: {
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    font: 'inherit',
+    padding: '6px 12px',
+    width: '250px',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+  },
+})
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>
@@ -26,14 +54,16 @@ export function DataTableToolbar<TData>({
   searchKey,
   filters = [],
 }: DataTableToolbarProps<TData>) {
+  const styles = useStyles()
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
   return (
-    <div className='flex items-center justify-between'>
-      <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
+    <div className={styles.root}>
+      <div className={styles.left}>
         {searchKey ? (
-          <Input
+          <input
+            className={styles.input}
             placeholder={searchPlaceholder}
             value={
               (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
@@ -41,41 +71,38 @@ export function DataTableToolbar<TData>({
             onChange={(event) =>
               table.getColumn(searchKey)?.setFilterValue(event.target.value)
             }
-            className='h-8 w-37.5 lg:w-62.5'
           />
         ) : (
-          <Input
+          <input
+            className={styles.input}
             placeholder={searchPlaceholder}
             value={table.getState().globalFilter ?? ''}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className='h-8 w-37.5 lg:w-62.5'
           />
         )}
-        <div className='flex gap-x-2'>
-          {filters.map((filter) => {
-            const column = table.getColumn(filter.columnId)
-            if (!column) return null
-            return (
-              <DataTableFacetedFilter
-                key={filter.columnId}
-                column={column}
-                title={filter.title}
-                options={filter.options}
-              />
-            )
-          })}
-        </div>
+        {filters.map((filter) => {
+          const column = table.getColumn(filter.columnId)
+          if (!column) return null
+          return (
+            <DataTableFacetedFilter
+              key={filter.columnId}
+              column={column}
+              title={filter.title}
+              options={filter.options}
+            />
+          )
+        })}
         {isFiltered && (
           <Button
-            variant='ghost'
+            appearance='subtle'
+            size='small'
+            icon={<Dismiss20Regular />}
             onClick={() => {
               table.resetColumnFilters()
               table.setGlobalFilter('')
             }}
-            className='h-8 px-2 lg:px-3'
           >
             Reset
-            <Cross2Icon className='ms-2 h-4 w-4' />
           </Button>
         )}
       </div>

@@ -6,21 +6,14 @@ import { getCookie, setCookie } from '@/lib/cookies'
 import { DirectionProvider } from '@/context/direction-provider'
 import { LayoutProvider } from '@/context/layout-provider'
 import { ThemeProvider } from '@/context/theme-provider'
-import { SidebarProvider } from '@/components/ui/sidebar'
 import { ConfigDrawer } from './config-drawer'
 
-async function renderConfigDrawer({
-  sidebarDefaultOpen = true,
-}: {
-  sidebarDefaultOpen?: boolean
-} = {}) {
+async function renderConfigDrawer() {
   return await render(
     <DirectionProvider>
       <ThemeProvider>
         <LayoutProvider>
-          <SidebarProvider defaultOpen={sidebarDefaultOpen}>
-            <ConfigDrawer />
-          </SidebarProvider>
+          <ConfigDrawer />
         </LayoutProvider>
       </ThemeProvider>
     </DirectionProvider>
@@ -157,7 +150,7 @@ describe('ConfigDrawer (integration)', () => {
   })
 
   it('selecting full layout sets collapsible to offcanvas and closes sidebar', async () => {
-    const screen = await renderConfigDrawer({ sidebarDefaultOpen: true })
+    const screen = await renderConfigDrawer()
     await openDrawer(screen)
 
     await userEvent.click(
@@ -227,7 +220,7 @@ describe('ConfigDrawer (integration)', () => {
     })
 
     it('resets layout via section control after choosing compact', async () => {
-      const screen = await renderConfigDrawer({ sidebarDefaultOpen: true })
+      const screen = await renderConfigDrawer()
       await openDrawer(screen)
 
       await userEvent.click(
@@ -262,7 +255,7 @@ describe('ConfigDrawer (integration)', () => {
   })
 
   it('updates layout: selecting non-default closes sidebar and changes layout cookie', async () => {
-    const screen = await renderConfigDrawer({ sidebarDefaultOpen: true })
+    const screen = await renderConfigDrawer()
 
     await openDrawer(screen)
 
@@ -279,7 +272,7 @@ describe('ConfigDrawer (integration)', () => {
   })
 
   it('reset restores defaults across sidebar/theme/layout/direction', async () => {
-    const screen = await renderConfigDrawer({ sidebarDefaultOpen: true })
+    const screen = await renderConfigDrawer()
 
     await openDrawer(screen)
 

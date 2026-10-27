@@ -1,41 +1,47 @@
 import { Outlet } from '@tanstack/react-router'
-import { getCookie } from '@/lib/cookies'
-import { cn } from '@/lib/utils'
+import { makeStyles } from '@fluentui/react-components'
 import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    minHeight: '100vh',
+    backgroundColor: '#ffffff',
+  },
+  content: {
+    flexGrow: 1,
+    minWidth: '0px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+})
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
 }
 
+// Fluent layout: sidebar + content column. The old shadcn
+// SidebarProvider/SidebarInset/SidebarRail concepts are gone; the
+// sidebar owns its collapsed state (cookie `sidebar_state`) and its
+// toggle button lives in the sidebar header. LayoutProvider and
+// SearchProvider are kept so screens that read them (settings, search)
+// keep working; the sidebar itself does not follow the layout
+// provider's collapsible/variant settings.
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
+  const styles = useStyles()
   return (
     <SearchProvider>
       <LayoutProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
+        <div className={styles.root}>
           <SkipToMain />
           <AppSidebar />
-          <SidebarInset
-            className={cn(
-              // Set content container, so we can use container queries
-              '@container/content',
-
-              // If layout is fixed, set the height
-              // to 100svh to prevent overflow
-              'has-data-[layout=fixed]:h-svh',
-
-              // If layout is fixed and sidebar is inset,
-              // set the height to 100svh - spacing (total margins) to prevent overflow
-              'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
-            )}
-          >
+          <div id='content' className={styles.content}>
             {children ?? <Outlet />}
-          </SidebarInset>
-        </SidebarProvider>
+          </div>
+        </div>
       </LayoutProvider>
     </SearchProvider>
   )

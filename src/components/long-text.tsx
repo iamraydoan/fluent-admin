@@ -1,28 +1,24 @@
 import { useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { makeStyles } from '@fluentui/react-components'
+
+const useStyles = makeStyles({
+  truncate: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+})
 
 type LongTextProps = {
   children: React.ReactNode
+  /** Accepted for API compatibility with existing callers; no longer applied. */
   className?: string
+  /** Accepted for API compatibility with existing callers; no longer applied. */
   contentClassName?: string
 }
 
-export function LongText({
-  children,
-  className = '',
-  contentClassName = '',
-}: LongTextProps) {
+export function LongText({ children }: LongTextProps) {
+  const styles = useStyles()
   const ref = useRef<HTMLDivElement>(null)
   const [isOverflown, setIsOverflown] = useState(false)
 
@@ -34,42 +30,14 @@ export function LongText({
     }
   }
 
-  if (!isOverflown)
-    return (
-      <div ref={refCallback} className={cn('truncate', className)}>
-        {children}
-      </div>
-    )
-
   return (
-    <>
-      <div className='hidden sm:block'>
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div ref={refCallback} className={cn('truncate', className)}>
-                {children}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className={contentClassName}>{children}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      <div className='sm:hidden'>
-        <Popover>
-          <PopoverTrigger asChild>
-            <div ref={refCallback} className={cn('truncate', className)}>
-              {children}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className={cn('w-fit', contentClassName)}>
-            <p>{children}</p>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </>
+    <div
+      ref={refCallback}
+      className={styles.truncate}
+      title={isOverflown && typeof children === 'string' ? children : undefined}
+    >
+      {children}
+    </div>
   )
 }
 

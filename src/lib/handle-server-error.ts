@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { toast } from 'sonner'
+import { toast } from './toast'
 
 export function handleServerError(error: unknown) {
   if (import.meta.env.DEV) {

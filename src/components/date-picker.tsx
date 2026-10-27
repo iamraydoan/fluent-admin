@@ -1,12 +1,18 @@
-import { format } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { makeStyles, tokens } from '@fluentui/react-components'
+
+const useStyles = makeStyles({
+  input: {
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    font: 'inherit',
+    padding: '6px 12px',
+    width: '240px',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+  },
+})
 
 type DatePickerProps = {
   selected: Date | undefined
@@ -14,38 +20,37 @@ type DatePickerProps = {
   placeholder?: string
 }
 
+function toInputValue(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function DatePicker({
   selected,
   onSelect,
   placeholder = 'Pick a date',
 }: DatePickerProps) {
+  const styles = useStyles()
+  const today = toInputValue(new Date())
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          data-empty={!selected}
-          className='w-60 justify-start text-start font-normal data-[empty=true]:text-muted-foreground'
-        >
-          {selected ? (
-            format(selected, 'MMM d, yyyy')
-          ) : (
-            <span>{placeholder}</span>
-          )}
-          <CalendarIcon className='ms-auto h-4 w-4 opacity-50' />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className='w-auto p-0'>
-        <Calendar
-          mode='single'
-          captionLayout='dropdown'
-          selected={selected}
-          onSelect={onSelect}
-          disabled={(date: Date) =>
-            date > new Date() || date < new Date('1900-01-01')
-          }
-        />
-      </PopoverContent>
-    </Popover>
+    <input
+      type='date'
+      className={styles.input}
+      aria-label={placeholder}
+      min='1900-01-01'
+      max={today}
+      value={selected ? toInputValue(selected) : ''}
+      onChange={(event) => {
+        const value = event.target.value
+        if (!value) {
+          onSelect(undefined)
+          return
+        }
+        const [year, month, day] = value.split('-').map(Number)
+        onSelect(new Date(year, month - 1, day))
+      }}
+    />
   )
 }
