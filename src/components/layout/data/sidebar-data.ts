@@ -1,4 +1,5 @@
 import {
+  Bot,
   Construction,
   LayoutDashboard,
   Monitor,
@@ -77,6 +78,11 @@ export const sidebarData: SidebarData = {
           title: 'Users',
           url: '/users',
           icon: Users,
+        },
+        {
+          title: 'CM MES Agent',
+          url: '/mes-agent',
+          icon: Bot,
         },
         {
           title: 'Secured by Clerk',
