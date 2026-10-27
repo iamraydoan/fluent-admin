@@ -17,7 +17,7 @@ import {
 } from '@fluentui/react-icons'
 import { HEADER_GREY } from '../constants'
 import { AGENT_NAME } from '../data'
-import WarningTriangle from './WarningTriangle'
+import { ACCOUNT } from '../menu-data'
 
 const useStyles = makeStyles({
   docTabBar: {
@@ -71,20 +71,10 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground2,
   },
   avatarWrap: {
-    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     marginLeft: '0px',
     flexShrink: 0,
-  },
-  avatarBadge: {
-    position: 'absolute',
-    right: '0px',
-    bottom: '-2px',
-    width: '16px',
-    height: '14px',
-    flexShrink: 0,
-    lineHeight: 0,
   },
 })
 
@@ -141,11 +131,29 @@ export default function DocumentTabBar({
           icon={<Chat20Regular />}
           aria-label='Messages'
         />
-        <div className={styles.avatarWrap}>
-          <Avatar name='A' size={32} color='brand' />
-          <span className={styles.avatarBadge} aria-hidden='true'>
-            <WarningTriangle />
-          </span>
+        {/* Account avatar, from the same account data the original
+            menu used (see menu-data.ts ACCOUNT). The demo's generic
+            blue 'A' agent avatar is replaced here on purpose: the
+            user asked for account info in the header instead of
+            duplicating it in the menu, and the agent identity is
+            already in the document tab and title strip text. The
+            warning-triangle badge belonged to that agent avatar, so
+            it is removed with it, not carried over to a user account.
+            The original avatar image path is kept, with initials
+            fallback: that file does not exist in this repo's public/
+            folder today, so initials render until the asset is added.
+            Name + email are the accessible label and tooltip. */}
+        <div
+          className={styles.avatarWrap}
+          title={`${ACCOUNT.name} (${ACCOUNT.email})`}
+        >
+          <Avatar
+            name={ACCOUNT.name}
+            initials={ACCOUNT.initials}
+            image={{ src: ACCOUNT.avatar }}
+            size={32}
+            aria-label={`${ACCOUNT.name} (${ACCOUNT.email})`}
+          />
         </div>
         {headerCollapsed && (
           <Button

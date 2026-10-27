@@ -17,10 +17,15 @@ const useStyles = makeStyles({
     flexShrink: 0,
     backgroundColor: '#ffffff',
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-    // Curved header block, as the user asked: same 8px radius as
-    // the cards. overflow hidden is required, otherwise the square
-    // white/grey rows inside would paint over the rounded corners.
-    borderRadius: '8px',
+    // Header reads as a top bar, not a floating card: with the page
+    // top padding removed (see index.tsx), the top corners are
+    // square (radius 0) so the header touches the viewport top edge
+    // with no canvas strip and no rounded corner showing above it.
+    // Bottom corners keep the cards' 8px radius, so the header still
+    // curves against the grey content gap below it, as in the demo.
+    // overflow hidden is required, otherwise the square white/grey
+    // rows inside would paint over the rounded bottom corners.
+    borderRadius: '0px 0px 8px 8px',
     overflow: 'hidden',
   },
   objectTabs: {

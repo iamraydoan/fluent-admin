@@ -11,13 +11,8 @@ import {
   webLightTheme,
 } from '@fluentui/react-components'
 import { Dismiss24Regular } from '@fluentui/react-icons'
-import { getCookie } from '@/lib/cookies'
-import { LayoutProvider } from '@/context/layout-provider'
-import { SearchProvider } from '@/context/search-provider'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/app-sidebar'
-import { SkipToMain } from '@/components/skip-to-main'
 import DetailsCard from './components/DetailsCard'
+import FluentMenu from './components/FluentMenu'
 import HeaderBlock from './components/HeaderBlock'
 import MainCard from './components/MainCard'
 import { CANVAS } from './constants'
@@ -25,40 +20,42 @@ import type { SectionId } from './types'
 
 // MesAgentPage is only composition + state. Every visual block lives in
 // its own component under ./components/, each owning its own styles:
+//   FluentMenu      — Fluent Nav menu, demo style, with visible toggle
 //   HeaderBlock     — document tab + object tabs + ribbon + title strip
 //     DocumentTabBar, Ribbon, TitleStrip (inside HeaderBlock)
 //   DetailsCard     — left "Details View" card and its Nav
 //   MainCard        — right card: inner toolbar, title, section content
 //     ToolTable     — grouped MCP tools table
-// Data lives in ./data.ts, shared constants in ./constants.ts.
+// Data lives in ./data.ts and ./menu-data.ts, shared constants in
+// ./constants.ts.
 //
-// FULL-PAGE LAYOUT, NOT A CHILD CONTENT BOX: this page deliberately
-// does NOT use AuthenticatedLayout / SidebarInset (no inset margins,
-// no rounded inset panel, no shadow panel) and does NOT render a
-// shadcn Header bar on top of MES content. Instead it reuses the
-// original menu system exactly as AuthenticatedLayout does —
-// SearchProvider > LayoutProvider > SidebarProvider > AppSidebar —
-// with MES content as the flex-1 full-height sibling of AppSidebar,
-// so the page fills the viewport next to the sidebar, like the demo.
-// The demo's own Rail is NOT rebuilt here, and no new menu is invented.
+// FULL-PAGE LAYOUT, NOT A CHILD CONTENT BOX: the page is a flex row
+// filling the whole viewport — FluentMenu on the left, MES content as
+// the flex-1 sibling on the right. There is no shadcn shell here at
+// all: no SearchProvider / LayoutProvider / SidebarProvider /
+// AppSidebar / SidebarInset / Header, and no team/user footer in the
+// menu (account lives only in the header avatar). The root background
+// is canvas and the root height is 100vh, so there is no white body
+// strip below the content at the footer — the previous white footer
+// strip came from the SidebarProvider wrapper's white background
+// showing below a MES page that did not stretch (FluentProvider broke
+// the flex:1 chain), plus the AppSidebar user footer pinned to the
+// bottom of the sidebar column. Both are gone with this layout.
 //
-// MENU TOGGLE, WITHOUT A SECOND PAGE HEADER: collapse/expand uses
-// the original mechanisms only — SidebarRail, the edge handle already
-// rendered inside AppSidebar (data-slot="sidebar-rail", aria-label
-// "Toggle Sidebar", onClick = SidebarProvider's toggleSidebar), and
-// the Ctrl/Cmd+B keyboard shortcut registered by SidebarProvider.
-// That is why there is no SidebarTrigger / Header bar on this page:
-// adding one would recreate the rejected header-on-top-of-content
-// layout. Sidebar open state persists via the sidebar_state cookie,
-// exactly as in AuthenticatedLayout, so collapsing here carries over
-// when navigating back to the other screens.
+// MENU WIDTH, documented: expanded 232px (the same width as the
+// Details card, and the demo's left-panel width), collapsed 64px
+// (the demo rail width). The original shadcn sidebar was 256px when
+// expanded; 232px was chosen because this menu is now demo-styled,
+// not the shadcn sidebar, and it keeps MES content wider and closer
+// to the demo.
 
 const useStyles = makeStyles({
-  content: {
-    flex: 1,
-    minWidth: 0,
+  root: {
     display: 'flex',
-    flexDirection: 'column',
+    height: '100vh',
+    overflow: 'hidden',
+    backgroundColor: CANVAS,
+    color: tokens.colorNeutralForeground1,
   },
   page: {
     flex: 1,
@@ -66,11 +63,17 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    padding: '8px',
+    // NO top padding, as in the demo: the header block touches the
+    // top edge of the viewport. Left, right and bottom keep 8px, so
+    // the canvas shows as an 8px strip on those three sides only.
+    padding: '0px 8px 8px 8px',
     backgroundColor: CANVAS,
-    color: tokens.colorNeutralForeground1,
+    overflow: 'hidden',
   },
   grid: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
     display: 'grid',
     gridTemplateColumns: '232px minmax(0, 1fr)',
     gap: '8px',
@@ -88,72 +91,64 @@ export function MesAgentPage() {
   })
   const [headerCollapsed, setHeaderCollapsed] = useState(false)
   const [notice, setNotice] = useState('')
+  const [menuExpanded, setMenuExpanded] = useState(true)
 
   const notify = (message: string) =>
     setNotice(`${message} (mock, no API call)`)
 
-  // Same default as AuthenticatedLayout: open unless the cookie says so.
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
-
   return (
-    <SearchProvider>
-      <LayoutProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <SkipToMain />
-          <AppSidebar />
-          <div className={styles.content}>
-            <FluentProvider theme={webLightTheme}>
-              <div className={styles.page}>
-                <HeaderBlock
-                  objectTab={objectTab}
-                  onObjectTabChange={setObjectTab}
-                  headerCollapsed={headerCollapsed}
-                  onCollapseHeader={() => setHeaderCollapsed(true)}
-                  onExpandHeader={() => setHeaderCollapsed(false)}
-                  notify={notify}
-                />
+    <FluentProvider theme={webLightTheme}>
+      <div className={styles.root}>
+        <FluentMenu
+          expanded={menuExpanded}
+          onToggle={() => setMenuExpanded((prev) => !prev)}
+        />
 
-                <div className={styles.grid}>
-                  {notice && (
-                    <MessageBar intent='info' style={{ gridColumn: '1 / -1' }}>
-                      <MessageBarBody>
-                        <Text size={300}>{notice}</Text>
-                      </MessageBarBody>
-                      <MessageBarActions>
-                        <Button
-                          appearance='transparent'
-                          size='small'
-                          icon={<Dismiss24Regular />}
-                          onClick={() => setNotice('')}
-                          aria-label='Dismiss'
-                        />
-                      </MessageBarActions>
-                    </MessageBar>
-                  )}
+        <div className={styles.page}>
+          <HeaderBlock
+            objectTab={objectTab}
+            onObjectTabChange={setObjectTab}
+            headerCollapsed={headerCollapsed}
+            onCollapseHeader={() => setHeaderCollapsed(true)}
+            onExpandHeader={() => setHeaderCollapsed(false)}
+            notify={notify}
+          />
 
-                  <DetailsCard
-                    sectionId={sectionId}
-                    onSectionChange={setSectionId}
+          <div className={styles.grid}>
+            {notice && (
+              <MessageBar intent='info' style={{ gridColumn: '1 / -1' }}>
+                <MessageBarBody>
+                  <Text size={300}>{notice}</Text>
+                </MessageBarBody>
+                <MessageBarActions>
+                  <Button
+                    appearance='transparent'
+                    size='small'
+                    icon={<Dismiss24Regular />}
+                    onClick={() => setNotice('')}
+                    aria-label='Dismiss'
                   />
+                </MessageBarActions>
+              </MessageBar>
+            )}
 
-                  <MainCard
-                    objectTab={objectTab}
-                    sectionId={sectionId}
-                    expanded={expanded}
-                    onToggleGroup={(name) =>
-                      setExpanded((prev) => ({
-                        ...prev,
-                        [name]: !(prev[name] ?? false),
-                      }))
-                    }
-                    notify={notify}
-                  />
-                </div>
-              </div>
-            </FluentProvider>
+            <DetailsCard sectionId={sectionId} onSectionChange={setSectionId} />
+
+            <MainCard
+              objectTab={objectTab}
+              sectionId={sectionId}
+              expanded={expanded}
+              onToggleGroup={(name) =>
+                setExpanded((prev) => ({
+                  ...prev,
+                  [name]: !(prev[name] ?? false),
+                }))
+              }
+              notify={notify}
+            />
           </div>
-        </SidebarProvider>
-      </LayoutProvider>
-    </SearchProvider>
+        </div>
+      </div>
+    </FluentProvider>
   )
 }
