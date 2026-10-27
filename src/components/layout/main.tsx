@@ -1,4 +1,22 @@
-import { cn } from '@/lib/utils'
+import { makeStyles } from '@fluentui/react-components'
+
+const useStyles = makeStyles({
+  main: {
+    padding: '24px 16px',
+  },
+  mainFixed: {
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
+  mainConstrained: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    width: '100%',
+    maxWidth: '1280px',
+  },
+})
 
 type MainProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
@@ -7,20 +25,11 @@ type MainProps = React.HTMLAttributes<HTMLElement> & {
 }
 
 export function Main({ fixed, className, fluid, ...props }: MainProps) {
+  const styles = useStyles()
   return (
     <main
       data-layout={fixed ? 'fixed' : 'auto'}
-      className={cn(
-        'px-4 py-6',
-
-        // If layout is fixed, make the main container flex and grow
-        fixed && 'flex grow flex-col overflow-hidden',
-
-        // If layout is not fluid, set the max-width
-        !fluid &&
-          '@7xl/content:mx-auto @7xl/content:w-full @7xl/content:max-w-7xl',
-        className
-      )}
+      className={`${styles.main} ${fixed ? styles.mainFixed : ''} ${!fluid ? styles.mainConstrained : ''} ${className ?? ''}`}
       {...props}
     />
   )

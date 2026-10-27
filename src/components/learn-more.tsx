@@ -1,44 +1,67 @@
-import { type Root, type Content, type Trigger } from '@radix-ui/react-popover'
-import { CircleQuestionMark } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { QuestionCircle20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
 
-type LearnMoreProps = React.ComponentProps<typeof Root> & {
-  contentProps?: React.ComponentProps<typeof Content>
-  triggerProps?: React.ComponentProps<typeof Trigger>
+const useStyles = makeStyles({
+  wrapper: {
+    position: 'relative',
+    display: 'inline-block',
+  },
+  content: {
+    position: 'absolute',
+    zIndex: 100,
+    bottom: 'calc(100% + 4px)',
+    left: '0',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    boxShadow: tokens.shadow8,
+    padding: '12px',
+    minWidth: '240px',
+    color: tokens.colorNeutralForeground2,
+    fontSize: '14px',
+  },
+})
+
+type LearnMoreProps = {
+  children: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  defaultOpen?: boolean
+  /** Accepted for API compatibility with existing callers; no longer applied. */
+  contentProps?: { side?: string; align?: string; className?: string }
+  /** Accepted for API compatibility with existing callers; no longer applied. */
+  triggerProps?: { className?: string }
 }
 
 export function LearnMore({
   children,
-  contentProps,
-  triggerProps,
-  ...props
+  open,
+  onOpenChange,
+  defaultOpen = false,
 }: LearnMoreProps) {
+  const styles = useStyles()
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
+  const isOpen = open ?? internalOpen
+
+  const toggle = () => {
+    const next = !isOpen
+    if (onOpenChange) onOpenChange(next)
+    else setInternalOpen(next)
+  }
+
   return (
-    <Popover {...props}>
-      <PopoverTrigger
-        asChild
-        {...triggerProps}
-        className={cn('size-5 rounded-full', triggerProps?.className)}
-      >
-        <Button variant='outline' size='icon'>
-          <span className='sr-only'>Learn more</span>
-          <CircleQuestionMark className='size-4 [&>circle]:hidden' />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        side='top'
-        align='start'
-        {...contentProps}
-        className={cn('text-sm text-muted-foreground', contentProps?.className)}
-      >
-        {children}
-      </PopoverContent>
-    </Popover>
+    <span className={styles.wrapper}>
+      <Button
+        appearance='outline'
+        shape='circular'
+        size='small'
+        aria-label='Learn more'
+        icon={<QuestionCircle20Regular />}
+        onClick={toggle}
+      />
+      {isOpen && <span className={styles.content}>{children}</span>}
+    </span>
   )
 }

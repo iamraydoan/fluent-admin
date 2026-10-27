@@ -1,91 +1,192 @@
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { ChevronRight20Regular, Dismiss20Regular } from '@fluentui/react-icons'
 import { useSearch } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Text } from '@/components/ui/text'
 import { sidebarData } from './layout/data/sidebar-data'
-import { ScrollArea } from './ui/scroll-area'
+
+const useStyles = makeStyles({
+  overlay: {
+    position: 'fixed',
+    inset: '0',
+    zIndex: 1000,
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingTop: '96px',
+    paddingLeft: '16px',
+    paddingRight: '16px',
+  },
+  surface: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: tokens.borderRadiusLarge,
+    boxShadow: tokens.shadow16,
+    width: '100%',
+    maxWidth: '560px',
+    maxHeight: '70vh',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px',
+    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+  },
+  list: {
+    overflowY: 'auto',
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  group: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  groupTitle: {
+    padding: '4px 8px',
+    color: tokens.colorNeutralForeground3,
+  },
+  item: {
+    justifyContent: 'flex-start',
+  },
+})
+
+type CommandEntry = {
+  group: string
+  label: string
+  run: () => void
+}
 
 export function CommandMenu() {
+  const styles = useStyles()
   const navigate = useNavigate()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearch()
+  const [query, setQuery] = React.useState('')
 
   const runCommand = React.useCallback(
     (command: () => unknown) => {
       setOpen(false)
+      setQuery('')
       command()
     },
     [setOpen]
   )
 
-  return (
-    <CommandDialog modal open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Type a command or search...' />
-      <CommandList>
-        <ScrollArea type='hover' className='h-72 pe-1'>
-          <CommandEmpty>No results found.</CommandEmpty>
-          {sidebarData.navGroups.map((group) => (
-            <CommandGroup key={group.title} heading={group.title}>
-              {group.items.map((navItem, i) => {
-                if (navItem.url)
-                  return (
-                    <CommandItem
-                      key={`${navItem.url}-${i}`}
-                      value={navItem.title}
-                      onSelect={() => {
-                        runCommand(() => navigate({ to: navItem.url }))
-                      }}
-                    >
-                      <div className='flex size-4 items-center justify-center'>
-                        <ArrowRight className='size-2 text-muted-foreground/80' />
-                      </div>
-                      {navItem.title}
-                    </CommandItem>
-                  )
+  const entries = React.useMemo<CommandEntry[]>(() => {
+    const list: CommandEntry[] = []
+    for (const group of sidebarData.navGroups) {
+      for (const navItem of group.items) {
+        if (navItem.url) {
+          list.push({
+            group: group.title,
+            label: navItem.title,
+            run: () => navigate({ to: navItem.url }),
+          })
+        } else {
+          for (const subItem of navItem.items ?? []) {
+            list.push({
+              group: group.title,
+              label: `${navItem.title} › ${subItem.title}`,
+              run: () => navigate({ to: subItem.url }),
+            })
+          }
+        }
+      }
+    }
+    list.push(
+      { group: 'Theme', label: 'Light', run: () => setTheme('light') },
+      { group: 'Theme', label: 'Dark', run: () => setTheme('dark') },
+      { group: 'Theme', label: 'System', run: () => setTheme('system') }
+    )
+    return list
+  }, [navigate, setTheme])
 
-                return navItem.items?.map((subItem, i) => (
-                  <CommandItem
-                    key={`${navItem.title}-${subItem.url}-${i}`}
-                    value={`${navItem.title}-${subItem.url}`}
-                    onSelect={() => {
-                      runCommand(() => navigate({ to: subItem.url }))
-                    }}
+  if (!open) {
+    return null
+  }
+
+  const q = query.trim().toLowerCase()
+  const filtered = q
+    ? entries.filter(
+        (entry) =>
+          entry.label.toLowerCase().includes(q) ||
+          entry.group.toLowerCase().includes(q)
+      )
+    : entries
+  const groups = Array.from(new Set(filtered.map((entry) => entry.group)))
+
+  return (
+    <div className={styles.overlay} onClick={() => setOpen(false)}>
+      <div
+        role='dialog'
+        aria-label='Search'
+        className={styles.surface}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className={styles.header}>
+          <Input
+            autoFocus
+            placeholder='Type a command or search...'
+            value={query}
+            onChange={(_, data) => setQuery(data.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') setOpen(false)
+            }}
+            // Borderless inside the dialog header (the header already
+            // carries the bottom divider); the style lands on the
+            // Fluent Input root, native props above land on the
+            // inner input element.
+            style={{
+              flex: '1',
+              minWidth: '0',
+              border: 'none',
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+            }}
+          />
+          <Button
+            appearance='subtle'
+            shape='circular'
+            aria-label='Close search'
+            icon={<Dismiss20Regular />}
+            onClick={() => setOpen(false)}
+          />
+        </div>
+        <div className={styles.list}>
+          {filtered.length === 0 && <Text>No results found.</Text>}
+          {groups.map((group) => (
+            <div key={group} className={styles.group}>
+              <Text size={200} weight='semibold' className={styles.groupTitle}>
+                {group}
+              </Text>
+              {filtered
+                .filter((entry) => entry.group === group)
+                .map((entry) => (
+                  <Button
+                    key={`${group}-${entry.label}`}
+                    appearance='subtle'
+                    className={styles.item}
+                    icon={<ChevronRight20Regular />}
+                    onClick={() => runCommand(entry.run)}
                   >
-                    <div className='flex size-4 items-center justify-center'>
-                      <ArrowRight className='size-2 text-muted-foreground/80' />
-                    </div>
-                    {navItem.title} <ChevronRight /> {subItem.title}
-                  </CommandItem>
-                ))
-              })}
-            </CommandGroup>
+                    {entry.label}
+                  </Button>
+                ))}
+            </div>
           ))}
-          <CommandSeparator />
-          <CommandGroup heading='Theme'>
-            <CommandItem onSelect={() => runCommand(() => setTheme('light'))}>
-              <Sun /> <span>Light</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme('dark'))}>
-              <Moon className='scale-90' />
-              <span>Dark</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme('system'))}>
-              <Laptop />
-              <span>System</span>
-            </CommandItem>
-          </CommandGroup>
-        </ScrollArea>
-      </CommandList>
-    </CommandDialog>
+        </div>
+      </div>
+    </div>
   )
 }

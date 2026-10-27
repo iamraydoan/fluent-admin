@@ -1,13 +1,4 @@
-import { Loader } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { FormControl } from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 
 type SelectDropdownProps = {
   onValueChange?: (value: string) => void
@@ -16,6 +7,7 @@ type SelectDropdownProps = {
   isPending?: boolean
   items: { label: string; value: string }[] | undefined
   disabled?: boolean
+  /** Accepted for API compatibility with existing callers; no longer applied. */
   className?: string
   isControlled?: boolean
 }
@@ -27,36 +19,47 @@ export function SelectDropdown({
   items,
   placeholder,
   disabled,
-  className = '',
   isControlled = false,
 }: SelectDropdownProps) {
-  const defaultState = isControlled
-    ? { value: defaultValue, onValueChange }
-    : { defaultValue, onValueChange }
+  // Fluent Select is a native select underneath (see ui/select.tsx):
+  // options stay plain <option> children, and onChange carries
+  // (event, data) with the new value in data.value.
+  const handleChange = (
+    _: React.ChangeEvent<HTMLSelectElement>,
+    data: { value: string }
+  ) => onValueChange?.(data.value)
+  const controlled = isControlled
+    ? {
+        value: defaultValue ?? '',
+        onChange: handleChange,
+      }
+    : {
+        defaultValue: defaultValue ?? '',
+        onChange: handleChange,
+      }
   return (
-    <Select {...defaultState}>
-      <FormControl>
-        <SelectTrigger disabled={disabled} className={cn(className)}>
-          <SelectValue placeholder={placeholder ?? 'Select'} />
-        </SelectTrigger>
-      </FormControl>
-      <SelectContent>
-        {isPending ? (
-          <SelectItem disabled value='loading' className='h-14'>
-            <div className='flex items-center justify-center gap-2'>
-              <Loader className='h-5 w-5 animate-spin' />
-              {'  '}
-              Loading...
-            </div>
-          </SelectItem>
-        ) : (
-          items?.map(({ label, value }) => (
-            <SelectItem key={value} value={value}>
-              {label}
-            </SelectItem>
-          ))
-        )}
-      </SelectContent>
+    <Select
+      {...controlled}
+      disabled={disabled}
+      style={{ width: '100%' }}
+      aria-label={placeholder ?? 'Select'}
+    >
+      {placeholder && (
+        <option value='' disabled>
+          {placeholder}
+        </option>
+      )}
+      {isPending ? (
+        <option value='loading' disabled>
+          Loading...
+        </option>
+      ) : (
+        items?.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))
+      )}
     </Select>
   )
 }

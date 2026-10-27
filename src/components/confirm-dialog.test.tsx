@@ -113,7 +113,7 @@ describe('ConfirmDialog', () => {
         title='Delete tasks'
         form='tasks-multi-delete-form'
         desc={
-          <form id='tasks-multi-delete-form' className='space-y-4'>
+          <form id='tasks-multi-delete-form'>
             <p>Type DELETE to confirm.</p>
           </form>
         }
@@ -141,11 +141,7 @@ describe('ConfirmDialog', () => {
         title='Delete'
         form='users-delete-form'
         desc={
-          <form
-            id='users-delete-form'
-            onSubmit={handleFormSubmit}
-            className='space-y-4'
-          >
+          <form id='users-delete-form' onSubmit={handleFormSubmit}>
             <p>Confirm deletion.</p>
           </form>
         }
@@ -171,11 +167,7 @@ describe('ConfirmDialog', () => {
         title='Delete'
         form='users-delete-form'
         desc={
-          <form
-            id='users-delete-form'
-            onSubmit={handleFormSubmit}
-            className='space-y-4'
-          >
+          <form id='users-delete-form' onSubmit={handleFormSubmit}>
             <input type='text' name='username' placeholder='username' />
           </form>
         }

@@ -1,25 +1,29 @@
-import { useEffect, useRef } from 'react'
 import { useRouterState } from '@tanstack/react-router'
-import LoadingBar, { type LoadingBarRef } from 'react-top-loading-bar'
+import { makeStyles, tokens } from '@fluentui/react-components'
+
+const useStyles = makeStyles({
+  bar: {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    height: '2px',
+    zIndex: 1000,
+    backgroundColor: tokens.colorNeutralForeground3,
+    transitionProperty: 'width, opacity',
+    transitionDuration: '300ms',
+  },
+})
 
 export function NavigationProgress() {
-  const ref = useRef<LoadingBarRef>(null)
+  const styles = useStyles()
   const state = useRouterState()
-
-  useEffect(() => {
-    if (state.status === 'pending') {
-      ref.current?.continuousStart()
-    } else {
-      ref.current?.complete()
-    }
-  }, [state.status])
+  const pending = state.status === 'pending'
 
   return (
-    <LoadingBar
-      color='var(--muted-foreground)'
-      ref={ref}
-      shadow={true}
-      height={2}
+    <div
+      aria-hidden='true'
+      className={styles.bar}
+      style={{ width: pending ? '70%' : '0', opacity: pending ? 1 : 0 }}
     />
   )
 }

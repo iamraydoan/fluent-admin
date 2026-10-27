@@ -1,7 +1,32 @@
 import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { makeStyles } from '@fluentui/react-components'
+import { Divider } from '@/components/ui/divider'
+
+const useStyles = makeStyles({
+  header: {
+    height: '64px',
+    flexShrink: 0,
+    backgroundColor: '#ffffff',
+    borderBottom: '1px solid #edebe9',
+    boxSizing: 'border-box',
+  },
+  headerFixed: {
+    position: 'sticky',
+    top: '0px',
+    zIndex: 50,
+  },
+  headerShadow: {
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+  },
+  inner: {
+    display: 'flex',
+    height: '100%',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '0px 16px',
+    boxSizing: 'border-box',
+  },
+})
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
@@ -9,6 +34,7 @@ type HeaderProps = React.HTMLAttributes<HTMLElement> & {
 }
 
 export function Header({ className, fixed, children, ...props }: HeaderProps) {
+  const styles = useStyles()
   const [offset, setOffset] = useState(0)
 
   useEffect(() => {
@@ -23,26 +49,16 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
     return () => document.removeEventListener('scroll', onScroll)
   }, [])
 
+  // The sidebar toggle used to live here (shadcn SidebarTrigger). It
+  // now lives in the sidebar header itself; Header only renders its
+  // children (page actions, search, profile) after a divider.
   return (
     <header
-      className={cn(
-        'z-50 h-16',
-        fixed && 'header-fixed peer/header sticky top-0 w-[inherit]',
-        offset > 10 && fixed ? 'shadow' : 'shadow-none',
-        className
-      )}
+      className={`${styles.header} ${fixed ? styles.headerFixed : ''} ${offset > 10 && fixed ? styles.headerShadow : ''} ${className ?? ''}`}
       {...props}
     >
-      <div
-        className={cn(
-          'relative flex h-full items-center gap-3 p-4 sm:gap-4',
-          offset > 10 &&
-            fixed &&
-            'after:absolute after:inset-0 after:-z-10 after:bg-background/20 after:backdrop-blur-lg'
-        )}
-      >
-        <SidebarTrigger variant='outline' className='max-md:scale-125' />
-        <Separator orientation='vertical' className='h-6' />
+      <div className={styles.inner}>
+        <Divider vertical />
         {children}
       </div>
     </header>

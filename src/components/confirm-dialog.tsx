@@ -1,14 +1,39 @@
-import { cn } from '@/lib/utils'
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Button } from '@/components/ui/button'
+
+const useStyles = makeStyles({
+  overlay: {
+    position: 'fixed',
+    inset: '0',
+    zIndex: 1000,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    padding: '16px',
+  },
+  surface: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: tokens.borderRadiusLarge,
+    boxShadow: tokens.shadow16,
+    padding: '24px',
+    maxWidth: '480px',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  title: {
+    margin: '0',
+    fontSize: '20px',
+    fontWeight: 600,
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '8px',
+  },
+})
 
 type ConfirmDialogProps = {
   open: boolean
@@ -20,6 +45,7 @@ type ConfirmDialogProps = {
   confirmText?: React.ReactNode
   destructive?: boolean
   isLoading?: boolean
+  /** Accepted for API compatibility with existing callers; no longer applied. */
   className?: string
   children?: React.ReactNode
 } & (
@@ -28,45 +54,50 @@ type ConfirmDialogProps = {
 )
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
+  const styles = useStyles()
   const {
+    open,
+    onOpenChange,
     title,
     desc,
     children,
-    className,
     confirmText,
     cancelBtnText,
-    destructive,
-    isLoading,
     disabled = false,
     form,
     handleConfirm,
-    ...actions
+    isLoading,
   } = props
+
+  if (!open) {
+    return null
+  }
+
   return (
-    <AlertDialog {...actions}>
-      <AlertDialogContent className={cn(className && className)}>
-        <AlertDialogHeader className='text-start'>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription asChild>
-            <div>{desc}</div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+    <div className={styles.overlay}>
+      <div role='dialog' aria-modal='true' className={styles.surface}>
+        <h2 className={styles.title}>{title}</h2>
+        <div>{desc}</div>
         {children}
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
+        <div className={styles.footer}>
+          <Button
+            appearance='secondary'
+            disabled={isLoading}
+            onClick={() => onOpenChange(false)}
+          >
             {cancelBtnText ?? 'Cancel'}
-          </AlertDialogCancel>
+          </Button>
           <Button
             type={form ? 'submit' : 'button'}
             form={form}
             onClick={handleConfirm}
-            variant={destructive ? 'destructive' : 'default'}
+            appearance='primary'
             disabled={disabled || isLoading}
           >
             {confirmText ?? 'Continue'}
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </div>
+      </div>
+    </div>
   )
 }

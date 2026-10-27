@@ -1,8 +1,8 @@
 import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
 
 export function IconThemeSystem({
   className,
+  style,
   ...props
 }: SVGProps<SVGSVGElement>) {
   return (
@@ -10,11 +10,14 @@ export function IconThemeSystem({
       data-name='icon-theme-system'
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 79.86 51.14'
-      className={cn(
-        'overflow-hidden rounded-[6px]',
-        'fill-primary stroke-primary group-data-[state=unchecked]:fill-muted-foreground group-data-[state=unchecked]:stroke-muted-foreground',
-        className
-      )}
+      className={className}
+      style={{
+        overflow: 'hidden',
+        borderRadius: 6,
+        fill: 'var(--primary)',
+        stroke: 'var(--primary)',
+        ...style,
+      }}
       {...props}
     >
       <path opacity={0.2} d='M0 0.03H22.88V51.17H0z' />

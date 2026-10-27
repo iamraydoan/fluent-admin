@@ -32,7 +32,6 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
       confirmText='Sign out'
       destructive
       handleConfirm={handleSignOut}
-      className='sm:max-w-sm'
     />
   )
 }
