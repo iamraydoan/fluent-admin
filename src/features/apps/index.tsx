@@ -1,16 +1,12 @@
-import { type ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { SlidersHorizontal, ArrowUpAZ, ArrowDownAZ } from 'lucide-react'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { Text } from '@/components/ui/text'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -23,13 +19,74 @@ const route = getRouteApi('/_authenticated/apps/')
 
 type AppType = 'all' | 'connected' | 'notConnected'
 
-const appText = new Map<AppType, string>([
-  ['all', 'All Apps'],
-  ['connected', 'Connected'],
-  ['notConnected', 'Not Connected'],
-])
+const useStyles = makeStyles({
+  heading: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+  },
+  filterRow: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: '16px',
+    flexWrap: 'wrap',
+    marginTop: '16px',
+    marginBottom: '16px',
+  },
+  filterGroup: {
+    display: 'flex',
+    gap: '16px',
+    flexWrap: 'wrap',
+  },
+  filterInput: {
+    width: '200px',
+  },
+  grid: {
+    display: 'grid',
+    gap: '16px',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    listStyleType: 'none',
+    margin: '0',
+    padding: '16px 0 64px',
+    overflow: 'auto',
+    '@media (max-width: 1024px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    '@media (max-width: 640px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+  appCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+  },
+  appTop: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: tokens.colorNeutralBackground3,
+    padding: '8px',
+  },
+  appDesc: {
+    color: tokens.colorNeutralForeground3,
+  },
+})
 
 export function Apps() {
+  const styles = useStyles()
   const {
     filter = '',
     type = 'all',
@@ -56,12 +113,12 @@ export function Apps() {
     )
     .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
+  const handleSearch = (value: string) => {
+    setSearchTerm(value)
     navigate({
       search: (prev) => ({
         ...prev,
-        filter: e.target.value || undefined,
+        filter: value || undefined,
       }),
     })
   }
@@ -76,16 +133,16 @@ export function Apps() {
     })
   }
 
-  const handleSortChange = (sort: 'asc' | 'desc') => {
-    setSort(sort)
-    navigate({ search: (prev) => ({ ...prev, sort }) })
+  const handleSortChange = (value: 'asc' | 'desc') => {
+    setSort(value)
+    navigate({ search: (prev) => ({ ...prev, sort: value }) })
   }
 
   return (
     <>
       {/* ===== Top Heading ===== */}
       <Header>
-        <Search className='me-auto' />
+        <Search />
         <ThemeSwitch />
         <ConfigDrawer />
         <ProfileDropdown />
@@ -93,81 +150,63 @@ export function Apps() {
 
       {/* ===== Content ===== */}
       <Main fixed>
-        <div>
-          <h1 className='text-2xl font-bold tracking-tight'>
+        <div className={styles.heading}>
+          <Text size={600} weight='bold'>
             App Integrations
-          </h1>
-          <p className='text-muted-foreground'>
+          </Text>
+          <Text className={styles.subtitle}>
             Here&apos;s a list of your apps for the integration!
-          </p>
+          </Text>
         </div>
-        <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
-          <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
+        <div className={styles.filterRow}>
+          <div className={styles.filterGroup}>
             <Input
               placeholder='Filter apps...'
-              className='h-9 w-40 lg:w-62.5'
+              className={styles.filterInput}
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={(_, data) => handleSearch(data.value)}
             />
-            <Select value={appType} onValueChange={handleTypeChange}>
-              <SelectTrigger className='w-36'>
-                <SelectValue>{appText.get(appType)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All Apps</SelectItem>
-                <SelectItem value='connected'>Connected</SelectItem>
-                <SelectItem value='notConnected'>Not Connected</SelectItem>
-              </SelectContent>
+            <Select
+              value={appType}
+              onChange={(_, data) => handleTypeChange(data.value as AppType)}
+            >
+              <option value='all'>All Apps</option>
+              <option value='connected'>Connected</option>
+              <option value='notConnected'>Not Connected</option>
             </Select>
           </div>
 
-          <Select value={sort} onValueChange={handleSortChange}>
-            <SelectTrigger className='w-16'>
-              <SelectValue>
-                <SlidersHorizontal size={18} />
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent align='end'>
-              <SelectItem value='asc'>
-                <div className='flex items-center gap-4'>
-                  <ArrowUpAZ size={16} />
-                  <span>Ascending</span>
-                </div>
-              </SelectItem>
-              <SelectItem value='desc'>
-                <div className='flex items-center gap-4'>
-                  <ArrowDownAZ size={16} />
-                  <span>Descending</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
+          <Select
+            value={sort}
+            onChange={(_, data) =>
+              handleSortChange(data.value as 'asc' | 'desc')
+            }
+          >
+            <option value='asc'>Ascending</option>
+            <option value='desc'>Descending</option>
           </Select>
         </div>
-        <Separator className='shadow-sm' />
-        <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
+        <Separator />
+        <ul className={styles.grid}>
           {filteredApps.map((app) => (
-            <li
-              key={app.name}
-              className='rounded-lg border p-4 hover:shadow-md'
-            >
-              <div className='mb-8 flex items-center justify-between'>
-                <div
-                  className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}
-                >
-                  {app.logo}
+            <li key={app.name}>
+              <Card className={styles.appCard}>
+                <div className={styles.appTop}>
+                  <div className={styles.logo}>{app.logo}</div>
+                  <Button
+                    appearance={app.connected ? 'primary' : 'outline'}
+                    size='small'
+                  >
+                    {app.connected ? 'Connected' : 'Connect'}
+                  </Button>
                 </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className={`${app.connected ? 'border border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950 dark:hover:bg-blue-900' : ''}`}
-                >
-                  {app.connected ? 'Connected' : 'Connect'}
-                </Button>
-              </div>
-              <div>
-                <h2 className='mb-1 font-semibold'>{app.name}</h2>
-                <p className='line-clamp-2 text-gray-500'>{app.desc}</p>
-              </div>
+                <div>
+                  <Text weight='semibold'>{app.name}</Text>
+                  <Text size={200} className={styles.appDesc}>
+                    {app.desc}
+                  </Text>
+                </div>
+              </Card>
             </li>
           ))}
         </ul>

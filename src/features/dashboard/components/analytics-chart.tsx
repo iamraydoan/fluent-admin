@@ -58,17 +58,15 @@ export function AnalyticsChart() {
         <Area
           type='monotone'
           dataKey='clicks'
-          stroke='currentColor'
-          className='text-primary'
-          fill='currentColor'
+          stroke='#0f6cbd'
+          fill='#0f6cbd'
           fillOpacity={0.15}
         />
         <Area
           type='monotone'
           dataKey='uniques'
-          stroke='currentColor'
-          className='text-muted-foreground'
-          fill='currentColor'
+          stroke='#8a8886'
+          fill='#8a8886'
           fillOpacity={0.1}
         />
       </AreaChart>
