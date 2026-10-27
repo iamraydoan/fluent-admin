@@ -49,10 +49,26 @@ export const tasksColumns: ColumnDef<Task>[] = [
       const label = labels.find((label) => label.value === row.original.label)
 
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {label && <Badge appearance='outline'>{label.label}</Badge>}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            minWidth: 0,
+          }}
+        >
+          {label && (
+            <Badge
+              appearance='outline'
+              style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+            >
+              {label.label}
+            </Badge>
+          )}
           <span
             style={{
+              minWidth: 0,
+              flex: 1,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',

@@ -65,7 +65,9 @@ export const usersColumns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='Email' />
     ),
     cell: ({ row }) => (
-      <div style={{ whiteSpace: 'nowrap' }}>{row.getValue('email')}</div>
+      <div style={{ maxWidth: 200 }}>
+        <LongText>{row.getValue('email')}</LongText>
+      </div>
     ),
   },
   {
