@@ -13,19 +13,17 @@ export const tasksColumns: ColumnDef<Task>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() && 'mixed')
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onChange={(_, data) => table.toggleAllPageRowsSelected(!!data.checked)}
         aria-label='Select all'
-        className='translate-y-0.5'
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onChange={(_, data) => row.toggleSelected(!!data.checked)}
         aria-label='Select row'
-        className='translate-y-0.5'
       />
     ),
     enableSorting: false,
@@ -36,7 +34,9 @@ export const tasksColumns: ColumnDef<Task>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Task' />
     ),
-    cell: ({ row }) => <div className='w-20'>{row.getValue('id')}</div>,
+    cell: ({ row }) => (
+      <div style={{ width: '80px' }}>{row.getValue('id')}</div>
+    ),
     enableSorting: false,
     enableHiding: false,
   },
@@ -45,17 +45,22 @@ export const tasksColumns: ColumnDef<Task>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Title' />
     ),
-    meta: {
-      className: 'ps-1 max-w-0 w-2/3',
-      tdClassName: 'ps-4',
-    },
     cell: ({ row }) => {
       const label = labels.find((label) => label.value === row.original.label)
 
       return (
-        <div className='flex space-x-2'>
-          {label && <Badge variant='outline'>{label.label}</Badge>}
-          <span className='truncate font-medium'>{row.getValue('title')}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {label && <Badge appearance='outline'>{label.label}</Badge>}
+          <span
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontWeight: 600,
+            }}
+          >
+            {row.getValue('title')}
+          </span>
         </div>
       )
     },
@@ -65,7 +70,6 @@ export const tasksColumns: ColumnDef<Task>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Status' />
     ),
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row }) => {
       const status = statuses.find(
         (status) => status.value === row.getValue('status')
@@ -75,11 +79,17 @@ export const tasksColumns: ColumnDef<Task>[] = [
         return null
       }
 
+      const StatusIcon = status.icon
       return (
-        <div className='flex w-25 items-center gap-2'>
-          {status.icon && (
-            <status.icon className='size-4 text-muted-foreground' />
-          )}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100px',
+          }}
+        >
+          <StatusIcon aria-hidden='true' />
           <span>{status.label}</span>
         </div>
       )
@@ -93,7 +103,6 @@ export const tasksColumns: ColumnDef<Task>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Priority' />
     ),
-    meta: { className: 'ps-1', tdClassName: 'ps-3' },
     cell: ({ row }) => {
       const priority = priorities.find(
         (priority) => priority.value === row.getValue('priority')
@@ -103,11 +112,10 @@ export const tasksColumns: ColumnDef<Task>[] = [
         return null
       }
 
+      const PriorityIcon = priority.icon
       return (
-        <div className='flex items-center gap-2'>
-          {priority.icon && (
-            <priority.icon className='size-4 text-muted-foreground' />
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <PriorityIcon aria-hidden='true' />
           <span>{priority.label}</span>
         </div>
       )

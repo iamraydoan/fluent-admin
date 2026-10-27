@@ -1,3 +1,5 @@
+import { makeStyles } from '@fluentui/react-components'
+import { Text } from '@/components/ui/text'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -10,27 +12,54 @@ import { TasksProvider } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
 import { tasks } from './data/tasks'
 
+const useStyles = makeStyles({
+  search: {
+    marginRight: 'auto',
+  },
+  pageHead: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: '8px',
+  },
+  title: {
+    margin: '0',
+    fontSize: '24px',
+    fontWeight: 700,
+  },
+  content: {
+    display: 'flex',
+    flex: '1',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+})
+
 export function Tasks() {
+  const styles = useStyles()
   return (
     <TasksProvider>
       <Header fixed>
-        <Search className='me-auto' />
+        <div className={styles.search}>
+          <Search />
+        </div>
         <ThemeSwitch />
         <ConfigDrawer />
         <ProfileDropdown />
       </Header>
 
-      <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
-        <div className='flex flex-wrap items-end justify-between gap-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Tasks</h2>
-            <p className='text-muted-foreground'>
-              Here&apos;s a list of your tasks for this month!
-            </p>
+      <Main>
+        <div className={styles.content}>
+          <div className={styles.pageHead}>
+            <div>
+              <h2 className={styles.title}>Tasks</h2>
+              <Text>Here&apos;s a list of your tasks for this month!</Text>
+            </div>
+            <TasksPrimaryButtons />
           </div>
-          <TasksPrimaryButtons />
+          <TasksTable data={tasks} />
         </div>
-        <TasksTable data={tasks} />
       </Main>
 
       <TasksDialogs />

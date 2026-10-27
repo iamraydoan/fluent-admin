@@ -1,20 +1,24 @@
-import { Download, Plus } from 'lucide-react'
+import { Add20Regular, ArrowDownload20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { useTasks } from './tasks-provider'
 
 export function TasksPrimaryButtons() {
   const { setOpen } = useTasks()
   return (
-    <div className='flex gap-2'>
+    <div style={{ display: 'flex', gap: '8px' }}>
       <Button
-        variant='outline'
-        className='space-x-1'
+        appearance='outline'
+        icon={<ArrowDownload20Regular />}
         onClick={() => setOpen('import')}
       >
-        <span>Import</span> <Download size={18} />
+        Import
       </Button>
-      <Button className='space-x-1' onClick={() => setOpen('create')}>
-        <span>Create</span> <Plus size={18} />
+      <Button
+        appearance='primary'
+        icon={<Add20Regular />}
+        onClick={() => setOpen('create')}
+      >
+        Create
       </Button>
     </div>
   )

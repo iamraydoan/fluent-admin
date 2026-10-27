@@ -1,14 +1,26 @@
-'use client'
-
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
-import { AlertTriangle } from 'lucide-react'
-import { toast } from 'sonner'
+import { makeStyles } from '@fluentui/react-components'
+import { toast } from '@/lib/toast'
 import { sleep } from '@/lib/utils'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  confirmField: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '6px',
+  },
+})
 
 type TaskMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -23,6 +35,7 @@ export function TasksMultiDeleteDialog<TData>({
   onOpenChange,
   table,
 }: TaskMultiDeleteDialogProps<TData>) {
+  const styles = useStyles()
   const [value, setValue] = useState('')
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -35,16 +48,15 @@ export function TasksMultiDeleteDialog<TData>({
 
     onOpenChange(false)
 
-    toast.promise(sleep(2000), {
-      loading: 'Deleting tasks...',
-      success: () => {
-        setValue('')
-        table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
+    toast.info('Deleting tasks...')
+    void sleep(2000).then(() => {
+      setValue('')
+      table.resetRowSelection()
+      toast.success(
+        `Deleted ${selectedRows.length} ${
           selectedRows.length > 1 ? 'tasks' : 'task'
         }`
-      },
-      error: 'Error',
+      )
     })
   }
 
@@ -54,16 +66,9 @@ export function TasksMultiDeleteDialog<TData>({
       onOpenChange={onOpenChange}
       form='tasks-multi-delete-form'
       disabled={value.trim() !== CONFIRM_WORD}
-      title={
-        <span className='text-destructive'>
-          <AlertTriangle
-            className='me-1 inline-block stroke-destructive'
-            size={18}
-          />{' '}
-          Delete {selectedRows.length}{' '}
-          {selectedRows.length > 1 ? 'tasks' : 'task'}
-        </span>
-      }
+      title={`Delete ${selectedRows.length} ${
+        selectedRows.length > 1 ? 'tasks' : 'task'
+      }`}
       desc={
         <form
           id='tasks-multi-delete-form'
@@ -71,15 +76,15 @@ export function TasksMultiDeleteDialog<TData>({
             e.preventDefault()
             handleDelete()
           }}
-          className='space-y-4'
+          className={styles.form}
         >
-          <p className='mb-2'>
+          <p>
             Are you sure you want to delete the selected tasks? <br />
             This action cannot be undone.
           </p>
 
-          <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span className=''>Confirm by typing "{CONFIRM_WORD}":</span>
+          <Label className={styles.confirmField}>
+            <span>Confirm by typing &quot;{CONFIRM_WORD}&quot;:</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -88,12 +93,11 @@ export function TasksMultiDeleteDialog<TData>({
             />
           </Label>
 
-          <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>
-              Please be careful, this operation can not be rolled back.
-            </AlertDescription>
-          </Alert>
+          <MessageBar intent='warning'>
+            <MessageBarBody>
+              Warning! Please be careful, this operation can not be rolled back.
+            </MessageBarBody>
+          </MessageBar>
         </form>
       }
       confirmText='Delete'
