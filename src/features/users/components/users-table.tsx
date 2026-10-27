@@ -28,14 +28,24 @@ import { DataTableBulkActions } from './data-table-bulk-actions'
 import { usersColumns as columns } from './users-columns'
 
 const useStyles = makeStyles({
+  // Full-height list layout: this root fills the card body (which
+  // fills the card, which fills the page column bounded by the
+  // 100vh shell), and only tableWrap below scrolls. Toolbar and
+  // pagination are flexShrink 0 in their shared components, so they
+  // stay put above / below the scroll area and never get pushed
+  // below the viewport fold, even with 25 rows x 35px.
   root: {
     display: 'flex',
     flex: '1',
+    minHeight: 0,
+    overflow: 'hidden',
     flexDirection: 'column',
     gap: '16px',
   },
   tableWrap: {
-    overflow: 'hidden',
+    flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
@@ -46,8 +56,17 @@ const useStyles = makeStyles({
   headerRow: {
     height: '35px',
   },
+  // Sticky header: stays at the top of the scroll container while
+  // the body scrolls underneath. The background must be a solid
+  // theme token (not transparent, not hardcoded white) or scrolling
+  // rows would show through; Background3 matches the MES ToolTable
+  // header band in both light and dark themes.
   headerCell: {
     textTransform: 'uppercase',
+    position: 'sticky',
+    top: 0,
+    backgroundColor: tokens.colorNeutralBackground3,
+    zIndex: 1,
   },
   dividerCell: {
     borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -93,11 +112,12 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
   } = useTableUrlState({
     search,
     navigate,
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
+    pagination: { defaultPage: 1, defaultPageSize: 25 },
     globalFilter: { enabled: false },
     columnFilters: [
       // username per-column text filter
       { columnId: 'username', searchKey: 'username', type: 'string' },
+      { columnId: 'email', searchKey: 'email', type: 'string' },
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'role', searchKey: 'role', type: 'array' },
     ],
@@ -139,12 +159,10 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
       <DataTableToolbar
         table={table}
         heading={`Users (${filteredCount})`}
-        searchPlaceholder='Search'
-        searchKey='username'
-        filters={[
+        singleSelectFilters={[
           {
             columnId: 'status',
-            title: 'Status',
+            title: 'STATUS',
             options: [
               { label: 'Active', value: 'active' },
               { label: 'Inactive', value: 'inactive' },
@@ -154,10 +172,11 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           },
           {
             columnId: 'role',
-            title: 'Role',
+            title: 'ROLE',
             options: roles.map(({ label, value }) => ({ label, value })),
           },
         ]}
+        fieldFilters={[{ columnId: 'email', label: 'EMAIL' }]}
       />
       <div className={styles.tableWrap}>
         <Table>

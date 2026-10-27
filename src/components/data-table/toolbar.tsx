@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { DataTableFacetedFilter } from './faceted-filter'
+import { DataTableFieldFilter } from './field-filter'
+import { DataTableSingleSelectFilter } from './single-select-filter'
 import { DataTableViewOptions } from './view-options'
 
 const useStyles = makeStyles({
   root: {
+    flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -24,6 +27,7 @@ const useStyles = makeStyles({
   },
   // Entity Types list pattern: two header rows inside the main card.
   listRoot: {
+    flexShrink: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
@@ -61,6 +65,41 @@ type DataTableToolbarProps<TData> = {
     }[]
   }[]
   /**
+   * List-header (heading) filters, in the reference-image style.
+   * Single-select dropdowns (label "STATUS:" outside the box, value
+   * "ALL"/"Done" inside) replace the old faceted multi-select menus
+   * on list screens; the old `filters` prop is kept only for the
+   * legacy non-heading layout below. Field filters are label + input
+   * + funnel-button filters for one specific text column
+   * (Integration Handler "NAME:" style).
+   *
+   * Deliberately absent from the list heading, by user correction:
+   * there is NO global Search box here — the original list screens
+   * do not have one in this filter row, and the header already has
+   * a Search icon button in the document tab strip. The `searchInput`
+   * below is only used by the legacy non-heading layout.
+   *
+   * Deliberately absent here, by data type, not by omission:
+   * - checkbox filters (SAP "TERMINATED", Queries "SYSTEM ITEMS")
+   *   only exist for a boolean field, and neither Tasks nor Users
+   *   has one, so no checkbox control is rendered;
+   * - an "Advanced" button only exists for a screen complex enough
+   *   to need a real multi-field panel, and Tasks/Users filters all
+   *   fit in this header row, so no dead Advanced button is added.
+   */
+  singleSelectFilters?: {
+    columnId: string
+    title: string
+    options: {
+      label: string
+      value: string
+    }[]
+  }[]
+  fieldFilters?: {
+    columnId: string
+    label: string
+  }[]
+  /**
    * Entity Types list heading, e.g. "Tasks (42)". When provided, the
    * toolbar renders the two-row list header (row 1: heading left,
    * filters + search right; row 2: view options right) instead of the
@@ -74,6 +113,8 @@ export function DataTableToolbar<TData>({
   searchPlaceholder = 'Filter...',
   searchKey,
   filters = [],
+  singleSelectFilters = [],
+  fieldFilters = [],
   heading,
 }: DataTableToolbarProps<TData>) {
   const styles = useStyles()
@@ -125,6 +166,23 @@ export function DataTableToolbar<TData>({
     </Button>
   ) : null
 
+  const singleSelectMenus = singleSelectFilters.map((filter) => (
+    <DataTableSingleSelectFilter
+      key={filter.columnId}
+      column={table.getColumn(filter.columnId)}
+      title={filter.title}
+      options={filter.options}
+    />
+  ))
+
+  const fieldFilterControls = fieldFilters.map((filter) => (
+    <DataTableFieldFilter
+      key={filter.columnId}
+      column={table.getColumn(filter.columnId)}
+      label={filter.label}
+    />
+  ))
+
   if (heading) {
     return (
       <div className={styles.listRoot}>
@@ -133,8 +191,8 @@ export function DataTableToolbar<TData>({
             {heading}
           </Text>
           <div className={styles.listRight}>
-            {filterMenus}
-            {searchInput}
+            {singleSelectMenus}
+            {fieldFilterControls}
             {resetButton}
           </div>
         </div>

@@ -35,6 +35,10 @@ export function DatePicker({
   const styles = useStyles()
   const today = toInputValue(new Date())
   return (
+    // Kept native on purpose (Phase 2E): Fluent has no date picker
+    // component, and ui/input's text-based types do not cover a
+    // calendar date input, so there is no equivalent wrapper to swap
+    // this for. Revisit only if a Fluent date picker lands.
     <input
       type='date'
       className={styles.input}

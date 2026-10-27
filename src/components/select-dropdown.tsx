@@ -1,16 +1,4 @@
-import { makeStyles, tokens } from '@fluentui/react-components'
-
-const useStyles = makeStyles({
-  select: {
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium,
-    backgroundColor: tokens.colorNeutralBackground1,
-    color: tokens.colorNeutralForeground1,
-    font: 'inherit',
-    padding: '6px 8px',
-    width: '100%',
-  },
-})
+import { Select } from '@/components/ui/select'
 
 type SelectDropdownProps = {
   onValueChange?: (value: string) => void
@@ -33,23 +21,27 @@ export function SelectDropdown({
   disabled,
   isControlled = false,
 }: SelectDropdownProps) {
-  const styles = useStyles()
+  // Fluent Select is a native select underneath (see ui/select.tsx):
+  // options stay plain <option> children, and onChange carries
+  // (event, data) with the new value in data.value.
+  const handleChange = (
+    _: React.ChangeEvent<HTMLSelectElement>,
+    data: { value: string }
+  ) => onValueChange?.(data.value)
   const controlled = isControlled
     ? {
         value: defaultValue ?? '',
-        onChange: (event: React.ChangeEvent<HTMLSelectElement>) =>
-          onValueChange?.(event.target.value),
+        onChange: handleChange,
       }
     : {
         defaultValue: defaultValue ?? '',
-        onChange: (event: React.ChangeEvent<HTMLSelectElement>) =>
-          onValueChange?.(event.target.value),
+        onChange: handleChange,
       }
   return (
-    <select
+    <Select
       {...controlled}
       disabled={disabled}
-      className={styles.select}
+      style={{ width: '100%' }}
       aria-label={placeholder ?? 'Select'}
     >
       {placeholder && (
@@ -68,6 +60,6 @@ export function SelectDropdown({
           </option>
         ))
       )}
-    </select>
+    </Select>
   )
 }

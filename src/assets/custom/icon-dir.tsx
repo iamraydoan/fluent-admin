@@ -1,18 +1,21 @@
 import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
 import { type Direction } from '@/context/direction-provider'
 
 type IconDirProps = SVGProps<SVGSVGElement> & {
   dir: Direction
 }
 
-export function IconDir({ dir, className, ...props }: IconDirProps) {
+export function IconDir({ dir, className, style, ...props }: IconDirProps) {
   return (
     <svg
       data-name={`icon-dir-${dir}`}
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 79.86 51.14'
-      className={cn(dir === 'rtl' && 'rotate-y-180', className)}
+      className={className}
+      style={{
+        ...(dir === 'rtl' ? { transform: 'rotateY(180deg)' } : null),
+        ...style,
+      }}
       {...props}
     >
       <path

@@ -17,19 +17,35 @@ import { users } from './data/users'
 const route = getRouteApi('/_authenticated/users/')
 
 const useStyles = makeStyles({
+  // List full-height chain (see users-table): the page itself must
+  // never scroll — only the table body scrolls. So this content
+  // column is overflow hidden (not auto), and the card below fills
+  // exactly the remaining viewport height after the header block.
   content: {
     flex: '1',
     minHeight: 0,
-    overflowY: 'auto',
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
   },
+  // Same pattern as the MES MainCard: the card is a flex column that
+  // fills its parent, so the table inside can flex and scroll while
+  // the pagination footer stays pinned at the card bottom.
+  card: {
+    flex: '1 1 auto',
+    minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
   cardBody: {
+    flex: '1 1 auto',
+    minHeight: 0,
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
     padding: '16px',
-    minHeight: 0,
   },
 })
 
@@ -45,7 +61,14 @@ function UsersScreen() {
 
   const handleRefresh = () => {
     void navigate({
-      search: { page: 1, pageSize: 10, status: [], role: [], username: '' },
+      search: {
+        page: 1,
+        pageSize: 25,
+        status: [],
+        role: [],
+        username: '',
+        email: '',
+      },
     })
     setRefreshKey((key) => key + 1)
   }
@@ -88,6 +111,7 @@ function UsersScreen() {
       />
       <div className={styles.content}>
         <Card
+          className={styles.card}
           style={{
             borderRadius: '8px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',

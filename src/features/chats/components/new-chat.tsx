@@ -156,9 +156,10 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
                 </div>
               )}
               {filteredUsers.map((user) => (
-                <button
+                <Button
                   key={user.id}
                   type='button'
+                  appearance='transparent'
                   className={styles.userRow}
                   onClick={() => handleSelectUser(user)}
                 >
@@ -184,7 +185,7 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
                   {selectedUsers.find((u) => u.id === user.id) && (
                     <Checkmark20Regular />
                   )}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

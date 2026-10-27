@@ -100,6 +100,12 @@ function OptionGroup({
         const checked = item.value === value
         return (
           <label key={item.value} className={styles.option}>
+            {/* Kept native on purpose (Phase 2E): this is a radio
+            option, not a text input/select/button. Swapping it means
+            restructuring OptionGroup into a RadioGroup (ui/radio-group)
+            and re-checking the grid-card layout plus the data-state
+            contract asserted in config-drawer.test.tsx — a separate
+            follow-up, not this phase's input/select/button swap. */}
             <input
               type='radio'
               name={name}

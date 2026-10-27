@@ -19,6 +19,27 @@ export type ShellTab = {
   url: string
 }
 
+// Settings is one document, not five: its object tabs (Profile /
+// Account / Appearance / Notifications / Display) are sub-routes
+// under /settings, but they must NOT each open a document tab.
+// Every registration path (layout registerRoute on route change,
+// FluentMenu openTab on menu click) funnels through this store, so
+// the canonicalisation lives here: any /settings* route collapses
+// to the single '/settings' document tab titled 'Settings'.
+// (The layout and menu files themselves are owned by other workers,
+// so they are deliberately NOT touched.) MES object tabs are local
+// state, not routes, so they never reach this code and are unaffected.
+export const SETTINGS_TAB_URL = '/settings'
+
+function isSettingsRoute(url: string): boolean {
+  return url === SETTINGS_TAB_URL || url.startsWith(`${SETTINGS_TAB_URL}/`)
+}
+
+function canonicalTab(tab: ShellTab): ShellTab {
+  if (!isSettingsRoute(tab.url)) return tab
+  return { id: SETTINGS_TAB_URL, title: 'Settings', url: SETTINGS_TAB_URL }
+}
+
 function flattenTitles(): { title: string; url: string }[] {
   const out: { title: string; url: string }[] = []
   const walk = (items: FluentMenuItem[]) => {
@@ -32,9 +53,14 @@ function flattenTitles(): { title: string; url: string }[] {
 }
 
 // Title for a route, by exact url match against the flattened
-// MENU_GROUPS. Fallback: the last pathname segment, hyphen-split and
+// MENU_GROUPS. Settings is special-cased BEFORE the flatten lookup:
+// the menu lists '/settings' as the 'Profile' child, so the flatten
+// match would title the document tab 'Profile'; every /settings*
+// route is the single 'Settings' document instead.
+// Fallback: the last pathname segment, hyphen-split and
 // capitalised per word (e.g. /settings/display -> Display).
 export function titleForRoute(url: string): string {
+  if (isSettingsRoute(url)) return 'Settings'
   const match = flattenTitles().find((entry) => entry.url === url)
   if (match) return match.title
   const segments = url.split('/').filter(Boolean)
@@ -70,18 +96,21 @@ export const useShellStore = create<ShellState>()((set, get) => ({
   tabs: [],
   activeUrl: '',
   menuExpanded: true,
-  openTab: (tab) =>
+  openTab: (tab) => {
+    const canonical = canonicalTab(tab)
     set((state) => ({
-      tabs: state.tabs.some((t) => t.url === tab.url)
+      tabs: state.tabs.some((t) => t.url === canonical.url)
         ? state.tabs
-        : [...state.tabs, tab],
-      activeUrl: tab.url,
-    })),
+        : [...state.tabs, canonical],
+      activeUrl: canonical.url,
+    }))
+  },
   closeTab: (url) => {
+    const canonicalUrl = canonicalTab({ id: url, title: '', url }).url
     const { tabs, activeUrl } = get()
-    const index = tabs.findIndex((t) => t.url === url)
+    const index = tabs.findIndex((t) => t.url === canonicalUrl)
     if (index === -1) return activeUrl || '/'
-    const remaining = tabs.filter((t) => t.url !== url)
+    const remaining = tabs.filter((t) => t.url !== canonicalUrl)
     const next =
       remaining.length === 0
         ? '/'
@@ -90,16 +119,28 @@ export const useShellStore = create<ShellState>()((set, get) => ({
           : remaining[0].url
     set({
       tabs: remaining,
-      activeUrl: url === activeUrl ? next : activeUrl,
+      activeUrl: canonicalUrl === activeUrl ? next : activeUrl,
     })
     return next
   },
-  setActive: (url) =>
+  setActive: (url) => {
+    const canonicalUrl = canonicalTab({ id: url, title: '', url }).url
     set((state) =>
-      state.tabs.some((t) => t.url === url) ? { activeUrl: url } : state
-    ),
+      state.tabs.some((t) => t.url === canonicalUrl)
+        ? { activeUrl: canonicalUrl }
+        : state
+    )
+  },
+  // Register the current route as a tab (direct URL navigation).
+  // Idempotent by url: re-registering an open tab only activates it.
+  // Settings sub-routes collapse to the single Settings tab.
   registerRoute: (url) => {
-    get().openTab({ id: url, title: titleForRoute(url), url })
+    const canonical = canonicalTab({ id: url, title: '', url })
+    get().openTab({
+      id: canonical.url,
+      title: titleForRoute(url),
+      url: canonical.url,
+    })
   },
   toggleMenu: () => set((state) => ({ menuExpanded: !state.menuExpanded })),
 }))

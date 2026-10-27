@@ -35,8 +35,10 @@ const useStyles = makeStyles({
   menu: {
     flexShrink: 0,
     height: '100vh',
-    backgroundColor: '#ffffff',
-    borderRight: '1px solid #edebe9',
+    // Theme token, not a hardcoded white: light resolves to #ffffff
+    // (unchanged), dark to the dark surface so menu text stays readable.
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
@@ -75,11 +77,14 @@ const useStyles = makeStyles({
     // so the active item never shows a fill, even on hover.
     '& button:not([aria-current="page"]):hover, & a:not([aria-current="page"]):hover':
       {
-        backgroundColor: '#f3f2f1',
+        // Theme token: light ~#f5f5f5 (was #f3f2f1), dark a dark
+        // grey — never a pale fill under dark-mode light text.
+        backgroundColor: tokens.colorNeutralBackground1Hover,
       },
-    // Icons are dark #424242, as in the demo rail, not brand blue.
+    // Icons follow the theme foreground token (light dark-grey,
+    // dark light-grey), not a hardcoded #424242 that vanishes on dark.
     '& svg': {
-      color: '#424242',
+      color: tokens.colorNeutralForeground2,
     },
   },
   // Demo toggle: the top button of the demo rail. Hamburger icon,
@@ -99,7 +104,7 @@ const useStyles = makeStyles({
     width: '40px',
     height: '40px',
     padding: '0px',
-    color: '#424242',
+    color: tokens.colorNeutralForeground2,
   },
   navList: {
     flex: 1,
@@ -114,12 +119,12 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
   },
   badge: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: tokens.colorNeutralBackground3,
     borderRadius: '10px',
     padding: '0px 6px',
     fontSize: '11px',
     lineHeight: '18px',
-    color: '#424242',
+    color: tokens.colorNeutralForeground2,
     flexShrink: 0,
   },
   labelRow: {

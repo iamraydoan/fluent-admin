@@ -19,11 +19,7 @@ function RootComponent() {
   // ThemeProvider (in main.tsx) wraps the router, so the resolved
   // theme is available here. Dark maps to webDarkTheme, light and
   // system-resolved-light to webLightTheme. MES keeps its own nested
-  // FluentProvider with webLightTheme; a nested same-theme provider
-  // does not change MES visuals.
-  // Note: errorComponent/notFoundComponent render outside this
-  // component, so they are not covered by this provider (Phase B
-  // screens will bring their own coverage if needed).
+  // FluentProvider, which now follows the same resolved theme.
   const { resolvedTheme } = useTheme()
   return (
     <FluentProvider
@@ -49,10 +45,37 @@ function RootComponent() {
   )
 }
 
+// errorComponent/notFoundComponent render outside RootComponent,
+// so they do NOT inherit its FluentProvider. This shell wraps them
+// in their own theme-following provider instead, so 404/500 pages
+// get the same light/dark Fluent theme as the rest of the app.
+// It works because ThemeProvider (main.tsx) wraps the whole router,
+// so useTheme resolves here too. GeneralError/NotFoundError take no
+// router error props, so no props need forwarding.
+// eslint-disable-next-line react-refresh/only-export-components
+function ThemedErrorShell({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme()
+  return (
+    <FluentProvider
+      theme={resolvedTheme === 'dark' ? webDarkTheme : webLightTheme}
+    >
+      {children}
+    </FluentProvider>
+  )
+}
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
 }>()({
   component: RootComponent,
-  notFoundComponent: NotFoundError,
-  errorComponent: GeneralError,
+  notFoundComponent: () => (
+    <ThemedErrorShell>
+      <NotFoundError />
+    </ThemedErrorShell>
+  ),
+  errorComponent: () => (
+    <ThemedErrorShell>
+      <GeneralError />
+    </ThemedErrorShell>
+  ),
 })

@@ -5,7 +5,7 @@ import { roles } from '@/features/users/data/data'
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
-  pageSize: z.number().optional().catch(10),
+  pageSize: z.number().optional().catch(25),
   // Facet filters
   status: z
     .array(
@@ -24,6 +24,7 @@ const usersSearchSchema = z.object({
     .catch([]),
   // Per-column text filter (example for username)
   username: z.string().optional().catch(''),
+  email: z.string().optional().catch(''),
 })
 
 export const Route = createFileRoute('/_authenticated/users/')({

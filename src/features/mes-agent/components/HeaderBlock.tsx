@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   // and touches the next row, separated only by a 1px divider.
   headerBlock: {
     flexShrink: 0,
-    backgroundColor: '#ffffff',
+    backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
     // Header reads as a top bar, not a floating card: with the page
     // top padding removed (see index.tsx), the top corners are
@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     overflow: 'hidden',
   },
   objectTabs: {
-    backgroundColor: '#ffffff',
+    backgroundColor: tokens.colorNeutralBackground1,
     paddingLeft: '16px',
     // Reference selected tab text is brand blue, not black bold.
     '& [aria-selected="true"]': {
@@ -58,6 +58,12 @@ export type HeaderBlockProps = {
   headerCollapsed?: boolean
   onCollapseHeader?: () => void
   onExpandHeader?: () => void
+  // Optional account slot, passed straight through to DocumentTabBar
+  // (Phase 2F): e.g. the Clerk user-management page passes its
+  // Clerk UserButton here so it sits in the tab strip instead of the
+  // unified avatar. Absent everywhere else, so other screens are
+  // untouched. HeaderBlock itself never imports Clerk.
+  accountAction?: ReactNode
   // NOTE (Phase 1 deviation from the brief's prop list): the brief
   // listed notify? here, but the ribbon is now a ReactNode owned by
   // the caller, so notify lives on Ribbon, not on HeaderBlock. MES
@@ -78,6 +84,7 @@ export default function HeaderBlock({
   headerCollapsed = false,
   onCollapseHeader,
   onExpandHeader,
+  accountAction,
 }: HeaderBlockProps) {
   const styles = useStyles()
   const navigate = useNavigate()
@@ -118,6 +125,7 @@ export default function HeaderBlock({
         onBack={handleBack}
         headerCollapsed={headerCollapsed}
         onExpandHeader={onExpandHeader ?? (() => {})}
+        accountSlot={accountAction}
       />
       {!headerCollapsed && (
         <>

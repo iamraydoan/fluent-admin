@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     display: 'flex',
     gap: '32px',
     alignItems: 'flex-start',
-    backgroundColor: '#ffffff',
+    backgroundColor: tokens.colorNeutralBackground1,
     padding: '8px 16px 8px 16px',
   },
   ribbonGroup: {

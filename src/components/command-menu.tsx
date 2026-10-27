@@ -5,6 +5,7 @@ import { ChevronRight20Regular, Dismiss20Regular } from '@fluentui/react-icons'
 import { useSearch } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { sidebarData } from './layout/data/sidebar-data'
 
@@ -38,14 +39,6 @@ const useStyles = makeStyles({
     gap: '8px',
     padding: '8px',
     borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
-  },
-  input: {
-    flex: '1',
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    font: 'inherit',
-    padding: '8px',
   },
   list: {
     overflowY: 'auto',
@@ -142,14 +135,24 @@ export function CommandMenu() {
         onClick={(event) => event.stopPropagation()}
       >
         <div className={styles.header}>
-          <input
+          <Input
             autoFocus
-            className={styles.input}
             placeholder='Type a command or search...'
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(_, data) => setQuery(data.value)}
             onKeyDown={(event) => {
               if (event.key === 'Escape') setOpen(false)
+            }}
+            // Borderless inside the dialog header (the header already
+            // carries the bottom divider); the style lands on the
+            // Fluent Input root, native props above land on the
+            // inner input element.
+            style={{
+              flex: '1',
+              minWidth: '0',
+              border: 'none',
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
             }}
           />
           <Button

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { format } from 'date-fns'
-import { makeStyles, tokens } from '@fluentui/react-components'
+import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components'
 import {
   Add20Regular,
   ArrowClockwise24Regular,
@@ -210,16 +210,6 @@ const useStyles = makeStyles({
     display: 'flex',
     gap: '4px',
   },
-  composerInput: {
-    flex: 1,
-    minWidth: 0,
-    border: 'none',
-    backgroundColor: 'transparent',
-    outline: 'none',
-    height: '32px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-  },
   composerLabel: {
     display: 'flex',
     flex: 1,
@@ -383,9 +373,17 @@ export function Chats() {
                     : lastConvo.message
                 return (
                   <Fragment key={id}>
-                    <button
+                    <Button
                       type='button'
-                      className={`${styles.chatRow} ${selectedUser?.id === id ? styles.chatRowSelected : ''}`}
+                      appearance='transparent'
+                      // mergeClasses (not string concatenation): Fluent
+                      // Button merges its className via Griffel, and a
+                      // concatenated pair of makeStyles classes trips
+                      // its "multiple atomic identifiers" warning.
+                      className={mergeClasses(
+                        styles.chatRow,
+                        selectedUser?.id === id && styles.chatRowSelected
+                      )}
                       onClick={() => setSelectedUser(chatUsr)}
                     >
                       <Avatar
@@ -398,7 +396,7 @@ export function Chats() {
                           {lastMsg}
                         </Text>
                       </div>
-                    </button>
+                    </Button>
                     <Divider />
                   </Fragment>
                 )
@@ -504,10 +502,19 @@ export function Chats() {
                   </div>
                   <label className={styles.composerLabel}>
                     <span hidden>Chat Text Box</span>
-                    <input
+                    <Input
                       type='text'
                       placeholder='Type your messages...'
-                      className={styles.composerInput}
+                      // Borderless inside the composer box (the box
+                      // already carries the border); the style lands
+                      // on the Fluent Input root.
+                      style={{
+                        flex: '1',
+                        minWidth: '0',
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        boxShadow: 'none',
+                      }}
                     />
                   </label>
                   <Button

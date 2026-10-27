@@ -9,7 +9,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#ffffff',
+    backgroundColor: tokens.colorNeutralBackground1,
     padding: '8px 16px',
     height: '40px',
     boxSizing: 'border-box',
@@ -17,12 +17,12 @@ const useStyles = makeStyles({
   titleIcon: {
     width: '20px',
     height: '20px',
-    border: '1px solid #8a8a8a',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: '3px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#333333',
+    color: tokens.colorNeutralForeground2,
     flexShrink: 0,
   },
   collapseButton: {

@@ -59,6 +59,8 @@ const useStyles = makeStyles({
   dividerLabel: {
     color: tokens.colorNeutralForeground2,
     textTransform: 'uppercase',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
   },
   socialRow: {
     display: 'grid',

@@ -10,8 +10,11 @@ import { Text } from '@/components/ui/text'
 
 const useStyles = makeStyles({
   // Entity Types pattern: fully right-aligned, no first/last buttons and
-  // no direct page-number jumps.
+  // no direct page-number jumps. This footer sits OUTSIDE the table
+  // scroll container and must never shrink or scroll away, so it
+  // stays visible at the card bottom even with 25 rows.
   root: {
+    flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -52,7 +55,13 @@ export function DataTablePagination<TData>({
             table.setPageSize(Number(data.value))
           }}
         >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
+          {/* 25 is the system default page size (see the tables'
+          // defaultPageSize), so it must be a selectable option:
+          // a native select cannot display a value that is not one
+          // of its options, and without 25 here it fell back to
+          // showing 10 while the table actually paged 25. The
+          // original 10/20/30/40/50 options are all kept. */}
+          {[10, 20, 25, 30, 40, 50].map((pageSize) => (
             <option key={pageSize} value={`${pageSize}`}>
               {pageSize}
             </option>

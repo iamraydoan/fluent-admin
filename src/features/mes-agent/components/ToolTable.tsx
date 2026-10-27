@@ -20,13 +20,18 @@ import { TOOL_GROUPS } from '../data'
 
 const useStyles = makeStyles({
   tableWrap: { padding: '8px 0 8px 0' },
-  tableHeaderRow: { backgroundColor: '#eeeeee' },
+  // Theme tokens, not hardcoded greys: light resolves close to the
+  // old #eeeeee header / #e0e0e0 dividers, dark resolves to dark
+  // surfaces / dark strokes so the header and dividers stop painting
+  // white-on-dark. (Phase 2F: these were the last hardcoded whites
+  // in the MES content — MainCard/DetailsCard already use tokens.)
+  tableHeaderRow: { backgroundColor: tokens.colorNeutralBackground3 },
   headerCell: {
     fontSize: '12px',
     color: tokens.colorNeutralForeground3,
     padding: '4px 16px',
     height: '27px',
-    borderRight: '1px solid #e0e0e0',
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   headerCellCenter: {
     textAlign: 'center',
@@ -41,14 +46,14 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
     padding: '4px 8px',
     height: '27px',
-    borderRight: '1px solid #e0e0e0',
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   centerCell: { textAlign: 'center', padding: '4px 8px', height: '26px' },
   centerCellDivider: {
     textAlign: 'center',
     padding: '4px 8px',
     height: '26px',
-    borderRight: '1px solid #e0e0e0',
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   // Tool text sits 27px beyond the group link, as in the reference:
   // group link offset is ~41px from the card left, so tool padding
@@ -57,10 +62,10 @@ const useStyles = makeStyles({
   toolCell: {
     padding: '4px 8px 4px 68px',
     height: '26px',
-    borderRight: '1px solid #e0e0e0',
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   groupCell: { padding: '4px 8px', height: '26px' },
-  groupRow: { backgroundColor: '#ffffff' },
+  groupRow: { backgroundColor: tokens.colorNeutralBackground1 },
   diamond: {
     display: 'inline-block',
     width: '9px',

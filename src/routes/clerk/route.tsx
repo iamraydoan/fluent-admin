@@ -6,10 +6,8 @@ import { Open20Regular } from '@fluentui/react-icons'
 import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import { ConfigDrawer } from '@/components/config-drawer'
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
-import { Main } from '@/components/layout/main'
-import { ThemeSwitch } from '@/components/theme-switch'
+import HeaderBlock from '@/features/mes-agent/components/HeaderBlock'
 
 export const Route = createFileRoute('/clerk')({
   component: RouteComponent,
@@ -38,19 +36,14 @@ function RouteComponent() {
 }
 
 const useStyles = makeStyles({
-  topBar: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: '16px',
-  },
-  topBarActions: {
-    display: 'flex',
-    gap: '16px',
-  },
   content: {
+    flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    padding: '16px',
   },
   inner: {
     width: '100%',
@@ -128,95 +121,93 @@ function MissingClerkPubKey() {
   const styles = useStyles()
   return (
     <AuthenticatedLayout>
-      <div className={styles.topBar}>
-        <div className={styles.topBarActions}>
-          <ThemeSwitch />
-          <ConfigDrawer />
+      {/* Unified shell: AuthenticatedLayout already renders FluentMenu;
+          HeaderBlock adds the multi-tab document strip + title strip,
+          replacing the old standalone top bar (ThemeSwitch +
+          ConfigDrawer) and Main wrapper. Guard logic above (the
+          PUBLISHABLE_KEY check and ClerkProvider) is untouched. */}
+      <HeaderBlock title='Clerk' />
+      <div className={styles.content}>
+        <div className={styles.inner}>
+          <MessageBar intent='warning'>
+            <MessageBarBody>
+              <Text className={styles.messageTitle}>
+                No Publishable Key Found!
+              </Text>
+              <Text>
+                You need to generate a publishable key from Clerk and put it
+                inside the <code className={styles.code}>.env</code> file.
+              </Text>
+            </MessageBarBody>
+          </MessageBar>
+
+          <Text size={700} weight='bold' className={styles.heading}>
+            Set your Clerk API key
+          </Text>
+          <div className={styles.body}>
+            <ol className={styles.steps}>
+              <li>
+                In the{' '}
+                <a
+                  href='https://go.clerk.com/GttUAaK'
+                  target='_blank'
+                  rel='noreferrer'
+                  className={styles.link}
+                >
+                  Clerk <Open20Regular />
+                </a>{' '}
+                Dashboard, navigate to the API keys page.
+              </li>
+              <li>
+                In the <strong>Quick Copy</strong> section, copy your Clerk
+                Publishable Key.
+              </li>
+              <li>
+                Rename <code className={styles.code}>.env.example</code> to{' '}
+                <code className={styles.code}>.env</code>
+              </li>
+              <li>
+                Paste your key into your{' '}
+                <code className={styles.code}>.env</code> file.
+              </li>
+            </ol>
+            <Text>The final result should resemble the following:</Text>
+
+            <div className={styles.sample}>
+              <span>.env</span>
+              <pre className={styles.samplePre}>
+                <code>VITE_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY</code>
+              </pre>
+            </div>
+          </div>
+
+          <Separator className={styles.separator} />
+
+          <MessageBar intent='info'>
+            <MessageBarBody>
+              <Text className={styles.messageTitle}>
+                Clerk Integration is Optional
+              </Text>
+              <Text>
+                The Clerk integration lives entirely inside{' '}
+                <code className={styles.code}>src/routes/clerk</code>. If you
+                plan to use Clerk as your auth service, you might want to place{' '}
+                <code className={styles.code}>ClerkProvider</code> at the root
+                route.
+              </Text>
+              <Text className={styles.note}>
+                However, if you don&apos;t plan to use Clerk, you can safely
+                remove this directory and related dependency{' '}
+                <code className={styles.code}>@clerk/react</code>.
+              </Text>
+              <Text className={styles.note}>
+                This setup is modular by design and won&apos;t affect the rest
+                of the application.
+              </Text>
+            </MessageBarBody>
+          </MessageBar>
         </div>
       </div>
-      <Main>
-        <div className={styles.content}>
-          <div className={styles.inner}>
-            <MessageBar intent='warning'>
-              <MessageBarBody>
-                <Text className={styles.messageTitle}>
-                  No Publishable Key Found!
-                </Text>
-                <Text>
-                  You need to generate a publishable key from Clerk and put it
-                  inside the <code className={styles.code}>.env</code> file.
-                </Text>
-              </MessageBarBody>
-            </MessageBar>
-
-            <Text size={700} weight='bold' className={styles.heading}>
-              Set your Clerk API key
-            </Text>
-            <div className={styles.body}>
-              <ol className={styles.steps}>
-                <li>
-                  In the{' '}
-                  <a
-                    href='https://go.clerk.com/GttUAaK'
-                    target='_blank'
-                    rel='noreferrer'
-                    className={styles.link}
-                  >
-                    Clerk <Open20Regular />
-                  </a>{' '}
-                  Dashboard, navigate to the API keys page.
-                </li>
-                <li>
-                  In the <strong>Quick Copy</strong> section, copy your Clerk
-                  Publishable Key.
-                </li>
-                <li>
-                  Rename <code className={styles.code}>.env.example</code> to{' '}
-                  <code className={styles.code}>.env</code>
-                </li>
-                <li>
-                  Paste your key into your{' '}
-                  <code className={styles.code}>.env</code> file.
-                </li>
-              </ol>
-              <Text>The final result should resemble the following:</Text>
-
-              <div className={styles.sample}>
-                <span>.env</span>
-                <pre className={styles.samplePre}>
-                  <code>VITE_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY</code>
-                </pre>
-              </div>
-            </div>
-
-            <Separator className={styles.separator} />
-
-            <MessageBar intent='info'>
-              <MessageBarBody>
-                <Text className={styles.messageTitle}>
-                  Clerk Integration is Optional
-                </Text>
-                <Text>
-                  The Clerk integration lives entirely inside{' '}
-                  <code className={styles.code}>src/routes/clerk</code>. If you
-                  plan to use Clerk as your auth service, you might want to
-                  place <code className={styles.code}>ClerkProvider</code> at
-                  the root route.
-                </Text>
-                <Text className={styles.note}>
-                  However, if you don&apos;t plan to use Clerk, you can safely
-                  remove this directory and related dependency{' '}
-                  <code className={styles.code}>@clerk/react</code>.
-                </Text>
-                <Text className={styles.note}>
-                  This setup is modular by design and won&apos;t affect the rest
-                  of the application.
-                </Text>
-              </MessageBarBody>
-            </MessageBar>
-          </div>
-        </div>
-      </Main>
     </AuthenticatedLayout>
   )
 }

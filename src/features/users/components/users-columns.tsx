@@ -63,7 +63,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'username',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
+      <DataTableColumnHeader column={column} title='USERNAME' />
     ),
     cell: ({ row }) => <UserUsernameCell row={row} />,
     enableHiding: false,
@@ -71,7 +71,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     id: 'fullName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title='NAME' />
     ),
     cell: ({ row }) => {
       const { firstName, lastName } = row.original
@@ -86,18 +86,23 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'email',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
+      <DataTableColumnHeader column={column} title='EMAIL' />
     ),
     cell: ({ row }) => (
       <div style={{ maxWidth: 200 }}>
         <LongText>{row.getValue('email')}</LongText>
       </div>
     ),
+    filterFn: (row, id, value) => {
+      return String(row.getValue(id))
+        .toLowerCase()
+        .includes(String(value).toLowerCase())
+    },
   },
   {
     accessorKey: 'phoneNumber',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
+      <DataTableColumnHeader column={column} title='PHONE NUMBER' />
     ),
     cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
     enableSorting: false,
@@ -105,7 +110,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='STATUS' />
     ),
     cell: ({ row }) => {
       const { status } = row.original
@@ -128,7 +133,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'role',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
+      <DataTableColumnHeader column={column} title='ROLE' />
     ),
     cell: ({ row }) => {
       const { role } = row.original

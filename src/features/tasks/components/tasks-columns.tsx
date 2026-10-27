@@ -78,7 +78,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task' />
+      <DataTableColumnHeader column={column} title='TASK' />
     ),
     cell: ({ row }) => (
       <div style={{ width: '80px' }}>{row.getValue('id')}</div>
@@ -89,14 +89,19 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Title' />
+      <DataTableColumnHeader column={column} title='TITLE' />
     ),
     cell: ({ row }) => <TaskTitleCell row={row} />,
+    filterFn: (row, id, value) => {
+      return String(row.getValue(id))
+        .toLowerCase()
+        .includes(String(value).toLowerCase())
+    },
   },
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='STATUS' />
     ),
     cell: ({ row }) => {
       const status = statuses.find(
@@ -129,7 +134,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'priority',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Priority' />
+      <DataTableColumnHeader column={column} title='PRIORITY' />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   BarcodeScanner20Regular,
@@ -11,6 +12,7 @@ import {
 } from '@fluentui/react-icons'
 import type { ShellTab } from '@/stores/shell-store'
 import { useSearch } from '@/context/search-provider'
+import { useTheme } from '@/context/theme-provider'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
@@ -27,6 +29,9 @@ const useStyles = makeStyles({
     // contributes 8px, so the avatar's right edge still sits ~16px
     // from the viewport edge, as in the reference.
     padding: '4px 8px 0 16px',
+    // Light keeps the exact HEADER_GREY strip (see the inline style
+    // override in the component: dark swaps it for a dark token,
+    // because no light token equals #e6e8eb).
     backgroundColor: HEADER_GREY,
   },
   // Soft rounded top corners, clean 1px border, no square edge.
@@ -36,8 +41,8 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#ffffff',
-    border: '1px solid #c8c8c8',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderBottom: 'none',
     borderRadius: '8px 8px 0 0',
     boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.06)',
@@ -51,13 +56,15 @@ const useStyles = makeStyles({
   },
   // Inactive tab: same shape, but a flat grey fill (darker than the
   // strip so the tab shape still reads) and no shadow, so only the
-  // active tab merges into the white block below.
+  // active tab merges into the white block below. Light keeps the
+  // exact #d9dcdf (see the inline style override: dark swaps it for
+  // a darker-than-strip token, mirroring the light relationship).
   docTabInactive: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
     backgroundColor: '#d9dcdf',
-    border: '1px solid #c8c8c8',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderBottom: 'none',
     borderRadius: '8px 8px 0 0',
     padding: '8px 8px 8px 8px',
@@ -107,6 +114,15 @@ export type DocumentTabBarProps = {
   onBack: () => void
   headerCollapsed: boolean
   onExpandHeader: () => void
+  // Optional account slot (Phase 2F): when a screen supplies it, it
+  // REPLACES the unified SN avatar at the right of the strip; when
+  // absent (every non-Clerk screen) the avatar renders exactly as
+  // before. The slot is a plain ReactNode so this shared shell never
+  // imports Clerk itself and never calls Clerk hooks: the only caller
+  // is the Clerk user-management page, whose element is rendered
+  // inside its ClerkProvider, so provider/key gating stays with that
+  // page and the shared strip cannot crash on screens without Clerk.
+  accountSlot?: ReactNode
 }
 
 // Multi-document tab strip, generalised from the MES single tab.
@@ -125,11 +141,22 @@ export default function DocumentTabBar({
   onBack,
   headerCollapsed,
   onExpandHeader,
+  accountSlot,
 }: DocumentTabBarProps) {
   const styles = useStyles()
   const { setOpen } = useSearch()
+  // Dark palette mirrors the light relationships: strip mid-dark,
+  // inactive tab darker than the strip, active tab the header
+  // surface (Background1) so it merges into the block below.
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   return (
-    <div className={styles.docTabBar}>
+    <div
+      className={styles.docTabBar}
+      style={
+        isDark ? { backgroundColor: tokens.colorNeutralBackground2 } : undefined
+      }
+    >
       <Button
         appearance='transparent'
         size='small'
@@ -144,6 +171,11 @@ export default function DocumentTabBar({
           <div
             key={tab.url}
             className={isActive ? styles.docTab : styles.docTabInactive}
+            style={
+              !isActive && isDark
+                ? { backgroundColor: tokens.colorNeutralBackground3 }
+                : undefined
+            }
             onClick={() => {
               if (!isActive) onSelectTab(tab.url)
             }}
@@ -203,18 +235,20 @@ export default function DocumentTabBar({
             fallback: that file does not exist in this repo's public/
             folder today, so initials render until the asset is added.
             Name + email are the accessible label and tooltip. */}
-        <div
-          className={styles.avatarWrap}
-          title={`${ACCOUNT.name} (${ACCOUNT.email})`}
-        >
-          <Avatar
-            name={ACCOUNT.name}
-            initials={ACCOUNT.initials}
-            image={{ src: ACCOUNT.avatar }}
-            size={32}
-            aria-label={`${ACCOUNT.name} (${ACCOUNT.email})`}
-          />
-        </div>
+        {accountSlot ?? (
+          <div
+            className={styles.avatarWrap}
+            title={`${ACCOUNT.name} (${ACCOUNT.email})`}
+          >
+            <Avatar
+              name={ACCOUNT.name}
+              initials={ACCOUNT.initials}
+              image={{ src: ACCOUNT.avatar }}
+              size={32}
+              aria-label={`${ACCOUNT.name} (${ACCOUNT.email})`}
+            />
+          </div>
+        )}
         {headerCollapsed && (
           <Button
             appearance='transparent'

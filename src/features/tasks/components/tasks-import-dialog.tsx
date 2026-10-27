@@ -124,6 +124,10 @@ export function TasksImportDialog({
                 render={({ field, fieldState }) => (
                   <div className={styles.field}>
                     <Label htmlFor='task-import-file'>File</Label>
+                    {/* Kept native on purpose (Phase 2E): Fluent Input
+                    rejects type='file' (its text-based types do not
+                    include file), so there is no equivalent ui/input
+                    wrapper for a file picker. */}
                     <input
                       id='task-import-file'
                       type='file'

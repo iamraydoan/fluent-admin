@@ -4,10 +4,12 @@ import {
   FluentProvider,
   makeStyles,
   tokens,
+  webDarkTheme,
   webLightTheme,
 } from '@fluentui/react-components'
 import { Dismiss24Regular } from '@fluentui/react-icons'
 import { useShellStore } from '@/stores/shell-store'
+import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import {
   MessageBar,
@@ -111,12 +113,26 @@ export function MesAgentPage() {
   const notify = (message: string) =>
     setNotice(`${message} (mock, no API call)`)
 
+  // MES no longer pins webLightTheme: its nested provider follows the
+  // same resolved theme as the root provider, so MES goes dark with
+  // the app instead of staying stuck on light. Same-theme nesting
+  // does not change MES visuals in light mode.
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
+  // Canvas: same rule as the authenticated layout — light keeps the
+  // exact CANVAS (#dee1e6) from the classes, dark swaps it for the
+  // darkest neutral surface. The token var resolves under this
+  // page's own (now theme-following) provider.
+  const canvasStyle = isDark
+    ? { backgroundColor: tokens.colorNeutralBackground3 }
+    : undefined
+
   return (
-    <FluentProvider theme={webLightTheme}>
-      <div className={styles.root}>
+    <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
+      <div className={styles.root} style={canvasStyle}>
         <FluentMenu expanded={menuExpanded} onToggle={toggleMenu} />
 
-        <div className={styles.page}>
+        <div className={styles.page} style={canvasStyle}>
           <HeaderBlock
             title={AGENT_NAME}
             titleState={AGENT_STATE}
@@ -133,7 +149,7 @@ export function MesAgentPage() {
             onExpandHeader={() => setHeaderCollapsed(false)}
           />
 
-          <div className={styles.grid}>
+          <div className={styles.grid} style={canvasStyle}>
             {notice && (
               <MessageBar intent='info' style={{ gridColumn: '1 / -1' }}>
                 <MessageBarBody>

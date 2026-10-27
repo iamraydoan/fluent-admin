@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from '@tanstack/react-router'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { useShellStore } from '@/stores/shell-store'
 import { LayoutProvider } from '@/context/layout-provider'
+import { useTheme } from '@/context/theme-provider'
 import { SkipToMain } from '@/components/skip-to-main'
 import FluentMenu from '@/features/mes-agent/components/FluentMenu'
 import { CANVAS } from '@/features/mes-agent/constants'
@@ -53,12 +54,23 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     registerRoute(pathname)
   }, [pathname, registerRoute])
 
+  // Canvas: light keeps the exact CANVAS (#dee1e6) from the class;
+  // dark swaps it for the darkest neutral surface via an inline
+  // override (no light token equals #dee1e6, so a token class alone
+  // would shift light mode). The token var resolves under the root
+  // FluentProvider, which follows the same resolved theme.
+  const { resolvedTheme } = useTheme()
+  const canvasStyle =
+    resolvedTheme === 'dark'
+      ? { backgroundColor: tokens.colorNeutralBackground3 }
+      : undefined
+
   return (
     <LayoutProvider>
-      <div className={styles.root}>
+      <div className={styles.root} style={canvasStyle}>
         <SkipToMain />
         <FluentMenu expanded={menuExpanded} onToggle={toggleMenu} />
-        <div id='content' className={styles.page}>
+        <div id='content' className={styles.page} style={canvasStyle}>
           {children ?? <Outlet />}
         </div>
       </div>

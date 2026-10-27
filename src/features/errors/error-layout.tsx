@@ -6,6 +6,13 @@ const useStyles = makeStyles({
     display: 'flex',
     minHeight: '100svh',
     width: '100%',
+    // Themed surface so error pages are not a white page with dark
+    // text in dark mode (or vice versa): light resolves to #ffffff,
+    // dark to the dark surface. Works under the ThemedErrorShell
+    // provider in __root.tsx; without a provider the var is invalid
+    // and the background stays transparent, as before.
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
   },
   inner: {
     margin: 'auto',
