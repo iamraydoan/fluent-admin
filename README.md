@@ -1,12 +1,10 @@
-# Shadcn Admin Dashboard
+# Fluent Admin Dashboard
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+Admin Dashboard UI crafted with Fluent UI and Vite. Built with responsiveness and accessibility in mind.
 
 ![alt text](public/images/shadcn-admin.png)
 
-[![Sponsored by Clerk](https://img.shields.io/badge/Sponsored%20by-Clerk-5b6ee1?logo=clerk)](https://go.clerk.com/GttUAaK)
-
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
+I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from the original template's examples.
 
 > This is not a starter project (template) though. I'll probably make one in the future.
 
@@ -24,11 +22,11 @@ I've been creating dashboard UIs at work and for my personal projects. I always 
 <details>
 <summary>Customized Components (click to expand)</summary>
 
-This project uses Shadcn UI components, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
+This project uses Fluent UI components under the original component names, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
 
-If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest add <component>`), it's generally safe for non-customized components. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
+The components in `src/components/ui/` are Fluent-backed and cannot be updated via the Shadcn CLI. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
 
-> If you don't require RTL support, you can safely update the 'RTL Updated Components' via the Shadcn CLI, as these changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
+> If you don't require RTL support, the 'RTL Updated Components' changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
 
 ### Modified Components
 
@@ -54,13 +52,13 @@ If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest 
 - **Modified Components**: These have general updates, potentially including RTL adjustments.
 - **RTL Updated Components**: These have specific changes for RTL language support (e.g., layout, positioning).
 - For implementation details, check the source files in `src/components/ui/`.
-- All other Shadcn UI components in the project are standard and can be safely updated via the CLI.
+- All other components in the project are standard Fluent-backed adapters.
 
 </details>
 
 ## Tech Stack
 
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+**UI:** [Fluent UI](https://fluent2.microsoft.design/) (Fluent UI React v9)
 
 **Build Tool:** [Vite](https://vitejs.dev/)
 
@@ -70,7 +68,7 @@ If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest 
 
 **Linting/Formatting:** [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
 
-**Icons:** [Lucide Icons](https://lucide.dev/icons/), [Tabler Icons](https://tabler.io/icons) (Brand icons only)
+**Icons:** [Fluent UI Icons](https://react.fluentui.dev/), custom brand icons
 
 **Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
 
@@ -79,13 +77,13 @@ If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest 
 Clone the project
 
 ```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
+  git clone https://github.com/iamraydoan/fluent-admin.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd shadcn-admin
+  cd fluent-admin
 ```
 
 Install dependencies
@@ -100,19 +98,10 @@ Start the server
   pnpm run dev
 ```
 
-## Sponsoring this project ❤️
-
-If you find this project helpful or use this in your own work, consider [sponsoring me](https://github.com/sponsors/satnaing) to support development and maintenance. You can [buy me a coffee](https://buymeacoffee.com/satnaing) as well. Don’t worry, every penny helps. Thank you! 🙏
-
-For questions or sponsorship inquiries, feel free to reach out at [satnaingdev@gmail.com](mailto:satnaingdev@gmail.com).
-
-### Current Sponsor
-
-- [Clerk](https://go.clerk.com/GttUAaK) - authentication and user management for the modern web
 
 ## Author
 
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
+Based on [shadcn-admin](https://github.com/satnaing/shadcn-admin) by [@satnaing](https://github.com/satnaing). Maintained by [Ray Doan](https://github.com/iamraydoan).
 
 ## License
 
