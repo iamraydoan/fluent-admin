@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useLocation, useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ChevronDown20Regular,
   ChevronRight20Regular,
   Navigation24Regular,
 } from '@fluentui/react-icons'
+import { useShellStore } from '@/stores/shell-store'
 import { Button } from '@/components/ui/button'
 import { Nav, NavItem, NavSectionHeader } from '@/components/ui/nav'
 import { Text } from '@/components/ui/text'
@@ -142,6 +143,8 @@ type FluentMenuProps = {
 export default function FluentMenu({ expanded, onToggle }: FluentMenuProps) {
   const styles = useStyles()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const openTab = useShellStore((state) => state.openTab)
   const [openParents, setOpenParents] = useState<Record<string, boolean>>({})
 
   const toggleParent = (title: string) =>
@@ -177,14 +180,20 @@ export default function FluentMenu({ expanded, onToggle }: FluentMenuProps) {
     // No inline background here on purpose: the menu styles set every
     // NavItem transparent at rest (see the '& button, & a' rule), so
     // an inline transparent would only block the hover rule. The
-    // selected item (CM MES Agent on this page) stays fill-free via
-    // the [aria-current="page"] rule in the menu styles.
+    // selected item stays fill-free via the [aria-current="page"]
+    // rule in the menu styles.
+    // Clicking a leaf navigates AND opens (or activates) its
+    // document tab in the shell store; selection follows the current
+    // route, never a hardcoded url.
     return (
       <NavItem
         key={item.url ?? item.title}
         value={item.url ?? item.title}
         onClick={() => {
-          if (item.url) navigate({ to: item.url })
+          if (item.url) {
+            openTab({ id: item.url, title: item.title, url: item.url })
+            navigate({ to: item.url })
+          }
         }}
         icon={Icon ? <Icon /> : undefined}
         aria-label={
@@ -247,7 +256,7 @@ export default function FluentMenu({ expanded, onToggle }: FluentMenuProps) {
       <Nav
         className={styles.navList}
         aria-label='Main navigation'
-        selectedValue='/mes-agent'
+        selectedValue={pathname}
       >
         {MENU_GROUPS.map((group) => (
           <div key={group.title}>

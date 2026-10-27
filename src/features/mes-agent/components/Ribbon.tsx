@@ -1,3 +1,4 @@
+import { Fragment, type ReactElement } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ArrowClockwise24Regular,
@@ -40,70 +41,123 @@ const useStyles = makeStyles({
   },
 })
 
-type RibbonProps = {
-  notify: (message: string) => void
+export type RibbonAction = {
+  label: string
+  // Icon element (e.g. <ArrowClockwise24Regular />), rendered inside
+  // the button.
+  icon?: ReactElement
+  onClick?: () => void
+  // When set, the action renders as a menu trigger with these items
+  // instead of a plain button.
+  menuItems?: { label: string; onClick?: () => void }[]
 }
 
-export default function Ribbon({ notify }: RibbonProps) {
+export type RibbonGroup = {
+  label: string
+  actions: RibbonAction[]
+}
+
+export type RibbonProps = {
+  notify?: (message: string) => void
+  // When omitted, the MES default groups are kept (General:
+  // Refresh/Edit, Actions: More with Save/Reset/Publish To Runtime),
+  // so MES renders unchanged without passing groups.
+  groups?: RibbonGroup[]
+}
+
+const DEFAULT_GROUPS = (notify?: (message: string) => void): RibbonGroup[] => [
+  {
+    label: 'General',
+    actions: [
+      {
+        label: 'Refresh',
+        icon: <ArrowClockwise24Regular />,
+        onClick: () => notify?.('Refresh'),
+      },
+      {
+        label: 'Edit',
+        icon: <Edit24Regular />,
+        onClick: () => notify?.('Edit'),
+      },
+    ],
+  },
+  {
+    label: 'Actions',
+    actions: [
+      {
+        label: 'More',
+        icon: <MoreHorizontal24Regular />,
+        menuItems: [
+          { label: 'Save', onClick: () => notify?.('Save') },
+          { label: 'Reset', onClick: () => notify?.('Reset') },
+          {
+            label: 'Publish To Runtime',
+            onClick: () => notify?.('Publish To Runtime'),
+          },
+        ],
+      },
+    ],
+  },
+]
+
+export default function Ribbon({ notify, groups }: RibbonProps) {
   const styles = useStyles()
+  const resolved = groups ?? DEFAULT_GROUPS(notify)
   return (
     <Toolbar className={styles.ribbon}>
-      <div className={styles.ribbonGroup}>
-        <ToolbarGroup>
-          <ToolbarButton
-            vertical
-            appearance='subtle'
-            icon={<ArrowClockwise24Regular />}
-            onClick={() => notify('Refresh')}
-          >
-            Refresh
-          </ToolbarButton>
-          <ToolbarButton
-            vertical
-            appearance='subtle'
-            icon={<Edit24Regular />}
-            onClick={() => notify('Edit')}
-          >
-            Edit
-          </ToolbarButton>
-        </ToolbarGroup>
-        <Text size={200} className={styles.ribbonLabel}>
-          General
-        </Text>
-      </div>
-      {/* Vertical divider between groups, as in the reference:
-          tall, spanning most of the ribbon band, not the
-          short default ToolbarDivider. */}
-      <ToolbarDivider style={{ height: '64px', alignSelf: 'center' }} />
-      <div className={styles.ribbonGroup}>
-        <ToolbarGroup>
-          <Menu>
-            <MenuTrigger>
-              <ToolbarButton
-                vertical
-                appearance='subtle'
-                icon={<MoreHorizontal24Regular />}
-              >
-                More
-              </ToolbarButton>
-            </MenuTrigger>
-            <MenuPopover>
-              <MenuList>
-                <MenuItem onClick={() => notify('Save')}>Save</MenuItem>
-                <MenuItem onClick={() => notify('Reset')}>Reset</MenuItem>
-                <MenuItem onClick={() => notify('Publish To Runtime')}>
-                  Publish To Runtime
-                </MenuItem>
-              </MenuList>
-            </MenuPopover>
-          </Menu>
-        </ToolbarGroup>
-        <Text size={200} className={styles.ribbonLabel}>
-          Actions
-        </Text>
-      </div>
-      {/* Trailing vertical divider after the last group, as in the reference. */}
-      <ToolbarDivider style={{ height: '64px', alignSelf: 'center' }} />
+      {resolved.map((group) => (
+        <Fragment key={group.label}>
+          <div className={styles.ribbonGroup}>
+            <ToolbarGroup>
+              {group.actions.map((action) =>
+                action.menuItems ? (
+                  <Menu key={action.label}>
+                    <MenuTrigger>
+                      <ToolbarButton
+                        vertical
+                        appearance='subtle'
+                        icon={action.icon}
+                      >
+                        {action.label}
+                      </ToolbarButton>
+                    </MenuTrigger>
+                    <MenuPopover>
+                      <MenuList>
+                        {action.menuItems.map((item) => (
+                          <MenuItem key={item.label} onClick={item.onClick}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </MenuList>
+                    </MenuPopover>
+                  </Menu>
+                ) : (
+                  <ToolbarButton
+                    key={action.label}
+                    vertical
+                    appearance='subtle'
+                    icon={action.icon}
+                    onClick={action.onClick}
+                  >
+                    {action.label}
+                  </ToolbarButton>
+                )
+              )}
+            </ToolbarGroup>
+            <Text size={200} className={styles.ribbonLabel}>
+              {group.label}
+            </Text>
+          </div>
+          {/* Vertical divider between groups, as in the reference:
+              tall, spanning most of the ribbon band, not the
+              short default ToolbarDivider. A trailing divider after
+              the last group, as in the reference. */}
+          <ToolbarDivider
+            key={`${group.label}-divider`}
+            style={{ height: '64px', alignSelf: 'center' }}
+          />
+        </Fragment>
+      ))}
     </Toolbar>
   )
 }

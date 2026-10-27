@@ -9,11 +9,12 @@ import {
   Home24Regular,
   Search20Regular,
 } from '@fluentui/react-icons'
+import type { ShellTab } from '@/stores/shell-store'
+import { useSearch } from '@/context/search-provider'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { HEADER_GREY } from '../constants'
-import { AGENT_NAME } from '../data'
 import { ACCOUNT } from '../menu-data'
 
 const useStyles = makeStyles({
@@ -43,9 +44,32 @@ const useStyles = makeStyles({
     padding: '8px 8px 8px 8px',
     height: '44px',
     boxSizing: 'border-box',
+    cursor: 'pointer',
     // Tab bottom-right flare removed at the user's word (v13): it did
     // not look like the reference curve, so the tab keeps rounded top
     // corners only and a straight bottom-right edge.
+  },
+  // Inactive tab: same shape, but a flat grey fill (darker than the
+  // strip so the tab shape still reads) and no shadow, so only the
+  // active tab merges into the white block below.
+  docTabInactive: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    backgroundColor: '#d9dcdf',
+    border: '1px solid #c8c8c8',
+    borderBottom: 'none',
+    borderRadius: '8px 8px 0 0',
+    padding: '8px 8px 8px 8px',
+    height: '44px',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+    color: tokens.colorNeutralForeground1,
+  },
+  backButton: {
+    alignSelf: 'center',
+    marginBottom: '4px',
+    flexShrink: 0,
   },
   // Even, tight spacing, 20px icons, centred, padded from the edge.
   docTabRight: {
@@ -75,34 +99,72 @@ const useStyles = makeStyles({
   },
 })
 
-type DocumentTabBarProps = {
+export type DocumentTabBarProps = {
+  tabs: ShellTab[]
+  activeUrl: string
+  onSelectTab: (url: string) => void
+  onCloseTab: (url: string) => void
+  onBack: () => void
   headerCollapsed: boolean
   onExpandHeader: () => void
 }
 
+// Multi-document tab strip, generalised from the MES single tab.
+// One Back button at the start of the strip (goes to the preceding
+// tab, or '/' when only one tab remains), then one tab per open
+// document: the Home icon only on the first tab, every tab with its
+// own Dismiss X. Active tab keeps the MES style (white, 8px top
+// radius, #c8c8c8 border except the bottom); inactive tabs are flat
+// grey but still readable. Right-hand icons keep the MES order:
+// More, Scan, Search, Messages, account avatar.
 export default function DocumentTabBar({
+  tabs,
+  activeUrl,
+  onSelectTab,
+  onCloseTab,
+  onBack,
   headerCollapsed,
   onExpandHeader,
 }: DocumentTabBarProps) {
   const styles = useStyles()
+  const { setOpen } = useSearch()
   return (
     <div className={styles.docTabBar}>
-      <div className={styles.docTab}>
-        <Button
-          appearance='transparent'
-          size='small'
-          icon={<ChevronLeft24Regular />}
-          aria-label='Back'
-        />
-        <Home24Regular />
-        <Text weight='semibold'>{AGENT_NAME}</Text>
-        <Button
-          appearance='transparent'
-          size='small'
-          icon={<Dismiss24Regular />}
-          aria-label='Close tab'
-        />
-      </div>
+      <Button
+        appearance='transparent'
+        size='small'
+        className={styles.backButton}
+        icon={<ChevronLeft24Regular />}
+        aria-label='Back'
+        onClick={onBack}
+      />
+      {tabs.map((tab, index) => {
+        const isActive = tab.url === activeUrl
+        return (
+          <div
+            key={tab.url}
+            className={isActive ? styles.docTab : styles.docTabInactive}
+            onClick={() => {
+              if (!isActive) onSelectTab(tab.url)
+            }}
+            role='tab'
+            aria-selected={isActive}
+          >
+            {index === 0 && <Home24Regular />}
+            <Text weight={isActive ? 'semibold' : 'regular'}>{tab.title}</Text>
+            <Button
+              appearance='transparent'
+              size='small'
+              icon={<Dismiss24Regular />}
+              aria-label={`Close tab ${tab.title}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                onCloseTab(tab.url)
+              }}
+            />
+          </div>
+        )
+      })}
       <div className={styles.docTabRight}>
         <Button
           appearance='transparent'
@@ -121,6 +183,7 @@ export default function DocumentTabBar({
           className={styles.topIconButton}
           icon={<Search20Regular />}
           aria-label='Search'
+          onClick={() => setOpen(true)}
         />
         <Button
           appearance='transparent'

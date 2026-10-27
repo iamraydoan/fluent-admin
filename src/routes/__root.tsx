@@ -7,6 +7,7 @@ import {
 } from '@fluentui/react-components'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { SearchProvider } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
 import { NavigationProgress } from '@/components/navigation-progress'
 import { ToastHost } from '@/components/toast-host'
@@ -30,7 +31,14 @@ function RootComponent() {
     >
       <NavigationProgress />
       <ToastHost />
-      <Outlet />
+      {/* SearchProvider lives at the root (Phase 1 unification) so the
+          CommandMenu renders exactly once and the Search button /
+          Ctrl/Cmd+K work on every route — including /mes-agent,
+          which previously had no provider and whose Search button
+          did nothing. It was removed from AuthenticatedLayout. */}
+      <SearchProvider>
+        <Outlet />
+      </SearchProvider>
       {import.meta.env.MODE === 'development' && (
         <>
           <ReactQueryDevtools buttonPosition='bottom-left' />

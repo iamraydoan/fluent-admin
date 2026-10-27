@@ -3,7 +3,6 @@ import { ChevronUp24Regular, Settings20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import { AGENT_NAME, AGENT_STATE } from '../data'
 
 const useStyles = makeStyles({
   titleStrip: {
@@ -35,11 +34,19 @@ const useStyles = makeStyles({
   },
 })
 
-type TitleStripProps = {
-  onCollapse: () => void
+export type TitleStripProps = {
+  title: string
+  // Optional state, rendered as "title (state)", e.g. "CM MES Agent (Active)".
+  state?: string
+  // When omitted, no collapse button is rendered.
+  onCollapse?: () => void
 }
 
-export default function TitleStrip({ onCollapse }: TitleStripProps) {
+export default function TitleStrip({
+  title,
+  state,
+  onCollapse,
+}: TitleStripProps) {
   const styles = useStyles()
   return (
     <CardHeader
@@ -50,18 +57,18 @@ export default function TitleStrip({ onCollapse }: TitleStripProps) {
         </span>
       }
       header={
-        <Text weight='medium'>
-          {AGENT_NAME} ({AGENT_STATE})
-        </Text>
+        <Text weight='medium'>{state ? `${title} (${state})` : title}</Text>
       }
       action={
-        <Button
-          appearance='transparent'
-          className={styles.collapseButton}
-          icon={<ChevronUp24Regular />}
-          aria-label='Collapse header'
-          onClick={onCollapse}
-        />
+        onCollapse ? (
+          <Button
+            appearance='transparent'
+            className={styles.collapseButton}
+            icon={<ChevronUp24Regular />}
+            aria-label='Collapse header'
+            onClick={onCollapse}
+          />
+        ) : undefined
       }
     />
   )

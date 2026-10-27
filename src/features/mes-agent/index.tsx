@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation } from '@tanstack/react-router'
 import {
   FluentProvider,
   makeStyles,
@@ -6,6 +7,7 @@ import {
   webLightTheme,
 } from '@fluentui/react-components'
 import { Dismiss24Regular } from '@fluentui/react-icons'
+import { useShellStore } from '@/stores/shell-store'
 import { Button } from '@/components/ui/button'
 import {
   MessageBar,
@@ -17,7 +19,9 @@ import DetailsCard from './components/DetailsCard'
 import FluentMenu from './components/FluentMenu'
 import HeaderBlock from './components/HeaderBlock'
 import MainCard from './components/MainCard'
+import Ribbon from './components/Ribbon'
 import { CANVAS } from './constants'
+import { AGENT_NAME, AGENT_STATE } from './data'
 import type { SectionId } from './types'
 
 // MesAgentPage is only composition + state. Every visual block lives in
@@ -93,7 +97,16 @@ export function MesAgentPage() {
   })
   const [headerCollapsed, setHeaderCollapsed] = useState(false)
   const [notice, setNotice] = useState('')
-  const [menuExpanded, setMenuExpanded] = useState(true)
+  // Menu state is shared with the _authenticated shell via the shell
+  // store, so it survives MES <-> screen navigation.
+  const menuExpanded = useShellStore((state) => state.menuExpanded)
+  const toggleMenu = useShellStore((state) => state.toggleMenu)
+  const registerRoute = useShellStore((state) => state.registerRoute)
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    registerRoute(pathname)
+  }, [pathname, registerRoute])
 
   const notify = (message: string) =>
     setNotice(`${message} (mock, no API call)`)
@@ -101,19 +114,23 @@ export function MesAgentPage() {
   return (
     <FluentProvider theme={webLightTheme}>
       <div className={styles.root}>
-        <FluentMenu
-          expanded={menuExpanded}
-          onToggle={() => setMenuExpanded((prev) => !prev)}
-        />
+        <FluentMenu expanded={menuExpanded} onToggle={toggleMenu} />
 
         <div className={styles.page}>
           <HeaderBlock
+            title={AGENT_NAME}
+            titleState={AGENT_STATE}
+            objectTabs={[
+              { value: 'Details', label: 'Details' },
+              { value: 'References', label: 'References' },
+              { value: 'History', label: 'History' },
+            ]}
             objectTab={objectTab}
             onObjectTabChange={setObjectTab}
+            ribbon={<Ribbon notify={notify} />}
             headerCollapsed={headerCollapsed}
             onCollapseHeader={() => setHeaderCollapsed(true)}
             onExpandHeader={() => setHeaderCollapsed(false)}
-            notify={notify}
           />
 
           <div className={styles.grid}>
