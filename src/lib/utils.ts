@@ -1,8 +1,38 @@
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+/**
+ * Minimal class-name joiner (clsx-compatible input shape, no dependency).
+ *
+ * Tailwind was removed from this app, so there is nothing to merge: this
+ * only concatenates truthy class names. Unlike the old clsx + tailwind-merge
+ * version it does NOT resolve conflicting utilities (e.g. two widths) —
+ * later classes no longer override earlier ones. For Fluent UI / Griffel
+ * classes use `mergeClasses` from '@fluentui/react-components' instead,
+ * which is the tool that actually deduplicates atomic classes.
+ */
+export type ClassValue =
+  | string
+  | number
+  | false
+  | null
+  | undefined
+  | ClassValue[]
+  | Record<string, boolean | null | undefined>
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export function cn(...inputs: ClassValue[]): string {
+  const out: string[] = []
+  const push = (value: ClassValue) => {
+    if (!value) return
+    if (typeof value === 'string' || typeof value === 'number') {
+      out.push(String(value))
+    } else if (Array.isArray(value)) {
+      value.forEach(push)
+    } else {
+      for (const [key, enabled] of Object.entries(value)) {
+        if (enabled) out.push(key)
+      }
+    }
+  }
+  inputs.forEach(push)
+  return out.join(' ')
 }
 
 export function sleep(ms: number = 1000) {
