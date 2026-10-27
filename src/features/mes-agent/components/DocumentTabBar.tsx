@@ -1,10 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Text,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   BarcodeScanner20Regular,
   Chat20Regular,
@@ -15,6 +9,9 @@ import {
   Home24Regular,
   Search20Regular,
 } from '@fluentui/react-icons'
+import { Avatar } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 import { HEADER_GREY } from '../constants'
 import { AGENT_NAME } from '../data'
 import { ACCOUNT } from '../menu-data'

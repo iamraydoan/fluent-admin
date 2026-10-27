@@ -1,10 +1,6 @@
-import {
-  Divider,
-  Tab,
-  TabList,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Divider } from '@/components/ui/divider'
+import { Tab, TabList } from '@/components/ui/tabs'
 import DocumentTabBar from './DocumentTabBar'
 import Ribbon from './Ribbon'
 import TitleStrip from './TitleStrip'

@@ -1,22 +1,23 @@
+import { makeStyles, tokens } from '@fluentui/react-components'
+import {
+  ArrowClockwise24Regular,
+  Edit24Regular,
+  MoreHorizontal24Regular,
+} from '@fluentui/react-icons'
 import {
   Menu,
   MenuItem,
   MenuList,
   MenuPopover,
   MenuTrigger,
-  Text,
+} from '@/components/ui/menu'
+import { Text } from '@/components/ui/text'
+import {
   Toolbar,
   ToolbarButton,
   ToolbarDivider,
   ToolbarGroup,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
-import {
-  ArrowClockwise24Regular,
-  Edit24Regular,
-  MoreHorizontal24Regular,
-} from '@fluentui/react-icons'
+} from '@/components/ui/toolbar'
 
 const useStyles = makeStyles({
   ribbon: {

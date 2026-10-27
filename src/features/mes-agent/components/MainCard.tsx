@@ -1,26 +1,22 @@
-import {
-  Button,
-  Card,
-  CardHeader,
-  Divider,
-  Menu,
-  MenuItem,
-  MenuList,
-  MenuPopover,
-  MenuTrigger,
-  Text,
-  Toolbar,
-  ToolbarButton,
-  ToolbarDivider,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ArrowClockwise20Regular,
   MoreVertical20Regular,
   MoreVertical24Regular,
   Table24Regular,
 } from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader } from '@/components/ui/card'
+import { Divider } from '@/components/ui/divider'
+import {
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
+import { Text } from '@/components/ui/text'
+import { Toolbar, ToolbarButton, ToolbarDivider } from '@/components/ui/toolbar'
 import { DETAIL_CARDS, INSTRUCTIONS, TOTAL_TOOLS } from '../data'
 import type { SectionId } from '../types'
 import ToolTable from './ToolTable'

@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import {
-  Button,
   FluentProvider,
-  MessageBar,
-  MessageBarActions,
-  MessageBarBody,
-  Text,
   makeStyles,
   tokens,
   webLightTheme,
 } from '@fluentui/react-components'
 import { Dismiss24Regular } from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import {
+  MessageBar,
+  MessageBarActions,
+  MessageBarBody,
+} from '@/components/ui/message-bar'
+import { Text } from '@/components/ui/text'
 import DetailsCard from './components/DetailsCard'
 import FluentMenu from './components/FluentMenu'
 import HeaderBlock from './components/HeaderBlock'

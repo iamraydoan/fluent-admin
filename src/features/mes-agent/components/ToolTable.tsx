@@ -1,22 +1,21 @@
 import { Fragment } from 'react'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
-  Button,
-  Link,
+  ChevronDown24Regular,
+  ChevronRight24Regular,
+  Eye24Filled,
+} from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import { Link } from '@/components/ui/link'
+import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableHeaderCell,
   TableRow,
-  Text,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
-import {
-  ChevronDown24Regular,
-  ChevronRight24Regular,
-  Eye24Filled,
-} from '@fluentui/react-icons'
+} from '@/components/ui/table'
+import { Text } from '@/components/ui/text'
 import { TOOL_GROUPS } from '../data'
 
 const useStyles = makeStyles({

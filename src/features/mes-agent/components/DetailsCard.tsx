@@ -1,14 +1,10 @@
-import {
-  Button,
-  Card,
-  CardHeader,
-  Divider,
-  Nav,
-  NavItem,
-  Text,
-  makeStyles,
-} from '@fluentui/react-components'
+import { makeStyles } from '@fluentui/react-components'
 import { ChevronRight24Regular } from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader } from '@/components/ui/card'
+import { Divider } from '@/components/ui/divider'
+import { Nav, NavItem } from '@/components/ui/nav'
+import { Text } from '@/components/ui/text'
 import { SECTIONS, type SectionId } from '../types'
 
 const useStyles = makeStyles({

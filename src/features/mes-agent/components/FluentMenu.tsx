@@ -1,19 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  Button,
-  Nav,
-  NavItem,
-  NavSectionHeader,
-  Text,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ChevronDown20Regular,
   ChevronRight20Regular,
   Navigation24Regular,
 } from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import { Nav, NavItem, NavSectionHeader } from '@/components/ui/nav'
+import { Text } from '@/components/ui/text'
 import { MENU_GROUPS, type FluentMenuItem } from '../menu-data'
 
 // Fluent Nav menu for the MES page, in demo style. This replaces the

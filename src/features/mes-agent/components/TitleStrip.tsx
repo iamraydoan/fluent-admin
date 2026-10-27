@@ -1,11 +1,8 @@
-import {
-  Button,
-  CardHeader,
-  Text,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { ChevronUp24Regular, Settings20Regular } from '@fluentui/react-icons'
+import { Button } from '@/components/ui/button'
+import { CardHeader } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 import { AGENT_NAME, AGENT_STATE } from '../data'
 
 const useStyles = makeStyles({
