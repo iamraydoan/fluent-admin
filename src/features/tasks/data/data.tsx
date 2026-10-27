@@ -1,14 +1,14 @@
 import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
-  Circle,
-  CheckCircle,
-  AlertCircle,
-  Timer,
-  HelpCircle,
-  CircleOff,
-} from 'lucide-react'
+  ArrowDown20Regular,
+  ArrowRight20Regular,
+  ArrowUp20Regular,
+  CheckmarkCircle20Regular,
+  Circle20Regular,
+  DismissCircle20Regular,
+  ErrorCircle20Regular,
+  QuestionCircle20Regular,
+  Timer20Regular,
+} from '@fluentui/react-icons'
 
 export const labels = [
   {
@@ -29,27 +29,27 @@ export const statuses = [
   {
     label: 'Backlog',
     value: 'backlog' as const,
-    icon: HelpCircle,
+    icon: QuestionCircle20Regular,
   },
   {
     label: 'Todo',
     value: 'todo' as const,
-    icon: Circle,
+    icon: Circle20Regular,
   },
   {
     label: 'In Progress',
     value: 'in progress' as const,
-    icon: Timer,
+    icon: Timer20Regular,
   },
   {
     label: 'Done',
     value: 'done' as const,
-    icon: CheckCircle,
+    icon: CheckmarkCircle20Regular,
   },
   {
     label: 'Canceled',
     value: 'canceled' as const,
-    icon: CircleOff,
+    icon: DismissCircle20Regular,
   },
 ]
 
@@ -57,21 +57,21 @@ export const priorities = [
   {
     label: 'Low',
     value: 'low' as const,
-    icon: ArrowDown,
+    icon: ArrowDown20Regular,
   },
   {
     label: 'Medium',
     value: 'medium' as const,
-    icon: ArrowRight,
+    icon: ArrowRight20Regular,
   },
   {
     label: 'High',
     value: 'high' as const,
-    icon: ArrowUp,
+    icon: ArrowUp20Regular,
   },
   {
     label: 'Critical',
     value: 'critical' as const,
-    icon: AlertCircle,
+    icon: ErrorCircle20Regular,
   },
 ]

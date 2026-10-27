@@ -1,18 +1,24 @@
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { makeStyles } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Field } from '@/components/ui/field'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+})
 
 const items = [
   {
@@ -55,67 +61,54 @@ const defaultValues: Partial<DisplayFormValues> = {
 }
 
 export function DisplayForm() {
+  const styles = useStyles()
   const form = useForm<DisplayFormValues>({
     resolver: zodResolver(displayFormSchema),
     defaultValues,
   })
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
-        className='space-y-8'
-      >
-        <FormField
-          control={form.control}
-          name='items'
-          render={() => (
-            <FormItem>
-              <div className='mb-4'>
-                <FormLabel className='text-base'>Sidebar</FormLabel>
-                <FormDescription>
-                  Select the items you want to display in the sidebar.
-                </FormDescription>
-              </div>
-              {items.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name='items'
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className='flex flex-row items-start'
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className='font-normal'>
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <form
+      onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
+      className={styles.form}
+    >
+      <Controller
+        control={form.control}
+        name='items'
+        render={({ field, fieldState }) => (
+          <Field
+            label='Sidebar'
+            hint='Select the items you want to display in the sidebar.'
+            validationMessage={fieldState.error?.message}
+            validationState={fieldState.error ? 'error' : 'none'}
+          >
+            <div className={styles.list}>
+              {items.map((item) => {
+                const checked = field.value?.includes(item.id) ?? false
+                return (
+                  <Checkbox
+                    key={item.id}
+                    label={item.label}
+                    checked={checked}
+                    onChange={(_, data) => {
+                      field.onChange(
+                        data.checked
+                          ? [...(field.value ?? []), item.id]
+                          : (field.value ?? []).filter(
+                              (value) => value !== item.id
+                            )
+                      )
+                    }}
+                  />
+                )
+              })}
+            </div>
+          </Field>
+        )}
+      />
+      <div>
         <Button type='submit'>Update display</Button>
-      </form>
-    </Form>
+      </div>
+    </form>
   )
 }

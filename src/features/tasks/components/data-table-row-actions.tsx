@@ -1,21 +1,13 @@
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Trash2 } from 'lucide-react'
+import { Delete20Regular, MoreHorizontal20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { labels } from '../data/data'
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
 import { taskSchema } from '../data/schema'
 import { useTasks } from './tasks-provider'
 
@@ -31,53 +23,38 @@ export function DataTableRowActions<TData>({
   const { setOpen, setCurrentRow } = useTasks()
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
+    <Menu>
+      <MenuTrigger>
         <Button
-          variant='ghost'
-          className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
-        >
-          <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-40'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(task)
-            setOpen('update')
-          }}
-        >
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(task)
-            setOpen('delete')
-          }}
-        >
-          Delete
-          <DropdownMenuShortcut>
-            <Trash2 size={16} />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          appearance='subtle'
+          size='small'
+          icon={<MoreHorizontal20Regular />}
+          aria-label='Open menu'
+        />
+      </MenuTrigger>
+      <MenuPopover>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              setCurrentRow(task)
+              setOpen('update')
+            }}
+          >
+            Edit
+          </MenuItem>
+          <MenuItem disabled>Make a copy</MenuItem>
+          <MenuItem disabled>Favorite</MenuItem>
+          <MenuItem
+            icon={<Delete20Regular />}
+            onClick={() => {
+              setCurrentRow(task)
+              setOpen('delete')
+            }}
+          >
+            Delete
+          </MenuItem>
+        </MenuList>
+      </MenuPopover>
+    </Menu>
   )
 }

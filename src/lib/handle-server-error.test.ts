@@ -4,9 +4,11 @@ import { handleServerError } from './handle-server-error'
 
 const toastError = vi.hoisted(() => vi.fn())
 
-vi.mock('sonner', () => ({
+vi.mock('./toast', () => ({
   toast: {
     error: toastError,
+    success: vi.fn(),
+    info: vi.fn(),
   },
 }))
 

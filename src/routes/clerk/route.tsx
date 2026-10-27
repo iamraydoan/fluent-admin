@@ -1,14 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { ClerkProvider } from '@clerk/react'
-import { ExternalLink, Key } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Open20Regular } from '@fluentui/react-icons'
+import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { ConfigDrawer } from '@/components/config-drawer'
+import { Text } from '@/components/ui/text'
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
-import { Main } from '@/components/layout/main'
-import { ThemeSwitch } from '@/components/theme-switch'
+import HeaderBlock from '@/components/layout/header-block'
 
 export const Route = createFileRoute('/clerk')({
   component: RouteComponent,
@@ -36,45 +35,126 @@ function RouteComponent() {
   )
 }
 
+const useStyles = makeStyles({
+  content: {
+    flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '16px',
+  },
+  inner: {
+    width: '100%',
+    maxWidth: '672px',
+  },
+  messageTitle: {
+    fontWeight: 600,
+    display: 'block',
+    marginBottom: '4px',
+  },
+  heading: {
+    marginTop: '16px',
+  },
+  body: {
+    marginTop: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    color: tokens.colorNeutralForeground2,
+  },
+  steps: {
+    listStyleType: 'decimal',
+    listStylePosition: 'inside',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    paddingLeft: '0px',
+    marginTop: '0px',
+    marginBottom: '0px',
+  },
+  link: {
+    textDecoration: 'underline',
+    textDecorationStyle: 'dashed',
+    textUnderlineOffset: '4px',
+    color: tokens.colorBrandForegroundLink,
+  },
+  code: {
+    backgroundColor: tokens.colorNeutralBackground3,
+    borderRadius: tokens.borderRadiusSmall,
+    padding: '2px 4px',
+    fontSize: '12px',
+    fontWeight: 700,
+  },
+  sample: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: '#1e293b',
+    padding: '12px 12px',
+    fontSize: '14px',
+    color: '#e2e8f0',
+  },
+  samplePre: {
+    overflowX: 'auto',
+    borderRadius: tokens.borderRadiusSmall,
+    backgroundColor: '#0f172a',
+    padding: '4px 8px',
+    fontSize: '12px',
+    marginTop: '0px',
+    marginBottom: '0px',
+  },
+  separator: {
+    marginTop: '16px',
+    marginBottom: '16px',
+    width: '100%',
+  },
+  note: {
+    marginTop: '8px',
+    fontSize: '14px',
+  },
+})
+
 function MissingClerkPubKey() {
-  const codeBlock =
-    'bg-foreground/10 rounded-sm py-0.5 px-1 text-xs text-foreground font-bold'
+  const styles = useStyles()
   return (
     <AuthenticatedLayout>
-      <div className='bg-backgroundh-16 flex justify-between p-4'>
-        <SidebarTrigger variant='outline' className='scale-125 sm:scale-100' />
-        <div className='space-x-4'>
-          <ThemeSwitch />
-          <ConfigDrawer />
-        </div>
-      </div>
-      <Main className='flex flex-col items-center justify-start'>
-        <div className='max-w-2xl'>
-          <Alert>
-            <Key className='size-4' />
-            <AlertTitle>No Publishable Key Found!</AlertTitle>
-            <AlertDescription>
-              <p className='text-balance'>
+      {/* Unified shell: AuthenticatedLayout already renders AppSidebar;
+          HeaderBlock adds the multi-tab document strip + title strip,
+          replacing the old standalone top bar (ThemeSwitch +
+          ConfigDrawer) and Main wrapper. Guard logic above (the
+          PUBLISHABLE_KEY check and ClerkProvider) is untouched. */}
+      <HeaderBlock title='Clerk' />
+      <div className={styles.content}>
+        <div className={styles.inner}>
+          <MessageBar intent='warning'>
+            <MessageBarBody>
+              <Text className={styles.messageTitle}>
+                No Publishable Key Found!
+              </Text>
+              <Text>
                 You need to generate a publishable key from Clerk and put it
-                inside the <code className={codeBlock}>.env</code> file.
-              </p>
-            </AlertDescription>
-          </Alert>
+                inside the <code className={styles.code}>.env</code> file.
+              </Text>
+            </MessageBarBody>
+          </MessageBar>
 
-          <h1 className='mt-4 text-2xl font-bold'>Set your Clerk API key</h1>
-          <div className='mt-4 flex flex-col gap-y-4 text-foreground/75'>
-            <ol className='list-inside list-decimal space-y-1.5'>
+          <Text size={700} weight='bold' className={styles.heading}>
+            Set your Clerk API key
+          </Text>
+          <div className={styles.body}>
+            <ol className={styles.steps}>
               <li>
                 In the{' '}
                 <a
                   href='https://go.clerk.com/GttUAaK'
                   target='_blank'
-                  className='underline decoration-dashed underline-offset-4 hover:decoration-solid'
+                  rel='noreferrer'
+                  className={styles.link}
                 >
-                  Clerk
-                  <sup>
-                    <ExternalLink className='inline-block size-4' />
-                  </sup>
+                  Clerk <Open20Regular />
                 </a>{' '}
                 Dashboard, navigate to the API keys page.
               </li>
@@ -83,53 +163,51 @@ function MissingClerkPubKey() {
                 Publishable Key.
               </li>
               <li>
-                Rename <code className={codeBlock}>.env.example</code> to{' '}
-                <code className={codeBlock}>.env</code>
+                Rename <code className={styles.code}>.env.example</code> to{' '}
+                <code className={styles.code}>.env</code>
               </li>
               <li>
-                Paste your key into your <code className={codeBlock}>.env</code>{' '}
-                file.
+                Paste your key into your{' '}
+                <code className={styles.code}>.env</code> file.
               </li>
             </ol>
-            <p>The final result should resemble the following:</p>
+            <Text>The final result should resemble the following:</Text>
 
-            <div className='@container space-y-2 rounded-md bg-slate-800 px-3 py-3 text-sm text-slate-200'>
-              <span className='ps-1'>.env</span>
-              <pre className='overflow-auto overscroll-x-contain rounded bg-slate-950 px-2 py-1 text-xs'>
-                <code>
-                  <span className='before:text-slate-400 md:before:pe-2 md:before:content-["1."]'>
-                    VITE_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
-                  </span>
-                </code>
+            <div className={styles.sample}>
+              <span>.env</span>
+              <pre className={styles.samplePre}>
+                <code>VITE_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY</code>
               </pre>
             </div>
           </div>
 
-          <Separator className='my-4 w-full' />
+          <Separator className={styles.separator} />
 
-          <Alert>
-            <AlertTitle>Clerk Integration is Optional</AlertTitle>
-            <AlertDescription>
-              <p className='text-balance'>
+          <MessageBar intent='info'>
+            <MessageBarBody>
+              <Text className={styles.messageTitle}>
+                Clerk Integration is Optional
+              </Text>
+              <Text>
                 The Clerk integration lives entirely inside{' '}
-                <code className={codeBlock}>src/routes/clerk</code>. If you plan
-                to use Clerk as your auth service, you might want to place{' '}
-                <code className={codeBlock}>ClerkProvider</code> at the root
+                <code className={styles.code}>src/routes/clerk</code>. If you
+                plan to use Clerk as your auth service, you might want to place{' '}
+                <code className={styles.code}>ClerkProvider</code> at the root
                 route.
-              </p>
-              <p>
-                However, if you don't plan to use Clerk, you can safely remove
-                this directory and related dependency_{' '}
-                <code className={codeBlock}>@clerk/react</code>.
-              </p>
-              <p className='mt-2 text-sm'>
-                This setup is modular by design and won't affect the rest of the
-                application.
-              </p>
-            </AlertDescription>
-          </Alert>
+              </Text>
+              <Text className={styles.note}>
+                However, if you don&apos;t plan to use Clerk, you can safely
+                remove this directory and related dependency{' '}
+                <code className={styles.code}>@clerk/react</code>.
+              </Text>
+              <Text className={styles.note}>
+                This setup is modular by design and won&apos;t affect the rest
+                of the application.
+              </Text>
+            </MessageBarBody>
+          </MessageBar>
         </div>
-      </Main>
+      </div>
     </AuthenticatedLayout>
   )
 }

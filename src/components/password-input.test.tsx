@@ -2,13 +2,6 @@ import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
 import { PasswordInput } from './password-input'
 
 describe('PasswordInput', () => {
@@ -61,29 +54,17 @@ describe('PasswordInput', () => {
     await expect.element(passwordInput).toBeDisabled()
   })
 
-  it('works with FormLabel and react-hook-form field spread', async () => {
+  it('works with a label and react-hook-form field spread', async () => {
     function PasswordInLabeledForm() {
-      const form = useForm<{ password: string }>({
+      const { register } = useForm<{ password: string }>({
         defaultValues: { password: '' },
       })
 
       return (
-        <Form {...form}>
-          <form>
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+        <form>
+          <label htmlFor='password'>Password</label>
+          <PasswordInput id='password' {...register('password')} />
+        </form>
       )
     }
 

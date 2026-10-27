@@ -1,4 +1,42 @@
-import { Separator } from '@/components/ui/separator'
+import { makeStyles } from '@fluentui/react-components'
+import { Divider } from '@/components/ui/divider'
+import { Text } from '@/components/ui/text'
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'column',
+  },
+  header: {
+    flexShrink: 0,
+  },
+  title: {
+    display: 'block',
+  },
+  desc: {
+    display: 'block',
+    marginTop: '4px',
+  },
+  divider: {
+    // Fluent Divider ships flex-grow: 1 by design (to fill a flex row).
+    // This parent is a flex column, so without flexGrow: 0 the divider
+    // stretches vertically to fill the card (measured 375px on Account)
+    // instead of rendering as a 1px line. Original shadcn Separator was
+    // a plain 1px div with no flex-grow, so it never stretched.
+    flexGrow: 0,
+    flexShrink: 0,
+    marginTop: '16px',
+    marginBottom: '16px',
+  },
+  scroll: {
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  inner: {
+    maxWidth: '576px',
+  },
+})
 
 type ContentSectionProps = {
   title: string
@@ -7,15 +45,20 @@ type ContentSectionProps = {
 }
 
 export function ContentSection({ title, desc, children }: ContentSectionProps) {
+  const styles = useStyles()
   return (
-    <div className='flex flex-1 flex-col'>
-      <div className='flex-none'>
-        <h3 className='text-lg font-medium'>{title}</h3>
-        <p className='text-sm text-muted-foreground'>{desc}</p>
+    <div className={styles.root}>
+      <div className={styles.header}>
+        <Text size={500} weight='semibold' className={styles.title}>
+          {title}
+        </Text>
+        <Text size={300} className={styles.desc}>
+          {desc}
+        </Text>
       </div>
-      <Separator className='my-4 flex-none' />
-      <div className='faded-bottom h-full w-full overflow-y-auto scroll-smooth pe-4 pb-12'>
-        <div className='-mx-1 px-1.5 lg:max-w-xl'>{children}</div>
+      <Divider className={styles.divider} />
+      <div className={styles.scroll}>
+        <div className={styles.inner}>{children}</div>
       </div>
     </div>
   )

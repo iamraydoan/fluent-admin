@@ -1,20 +1,22 @@
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
-import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react'
-import { toast } from 'sonner'
+import {
+  ArrowDownload20Regular,
+  ArrowSwap20Regular,
+  ArrowUpload20Regular,
+  Delete20Regular,
+} from '@fluentui/react-icons'
+import { toast } from '@/lib/toast'
 import { sleep } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@/components/ui/menu'
+import { Tooltip } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
@@ -30,156 +32,119 @@ export function DataTableBulkActions<TData>({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  const handleBulkStatusChange = (status: string) => {
+  const handleBulkStatusChange = async (status: string) => {
     const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Updating status...',
-      success: () => {
-        table.resetRowSelection()
-        return `Status updated to "${status}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
-      },
-      error: 'Error',
-    })
+    toast.info('Updating status...')
+    await sleep(2000)
     table.resetRowSelection()
+    toast.success(
+      `Status updated to "${status}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
+    )
   }
 
-  const handleBulkPriorityChange = (priority: string) => {
+  const handleBulkPriorityChange = async (priority: string) => {
     const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Updating priority...',
-      success: () => {
-        table.resetRowSelection()
-        return `Priority updated to "${priority}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
-      },
-      error: 'Error',
-    })
+    toast.info('Updating priority...')
+    await sleep(2000)
     table.resetRowSelection()
+    toast.success(
+      `Priority updated to "${priority}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
+    )
   }
 
-  const handleBulkExport = () => {
+  const handleBulkExport = async () => {
     const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Exporting tasks...',
-      success: () => {
-        table.resetRowSelection()
-        return `Exported ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} to CSV.`
-      },
-      error: 'Error',
-    })
+    toast.info('Exporting tasks...')
+    await sleep(2000)
     table.resetRowSelection()
+    toast.success(
+      `Exported ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} to CSV.`
+    )
   }
 
   return (
     <>
       <BulkActionsToolbar table={table} entityName='task'>
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  className='size-8'
-                  aria-label='Update status'
-                  title='Update status'
-                >
-                  <CircleArrowUp />
-                  <span className='sr-only'>Update status</span>
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Update status</p>
-            </TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent sideOffset={14}>
-            {statuses.map((status) => (
-              <DropdownMenuItem
-                key={status.value}
-                defaultValue={status.value}
-                onClick={() => handleBulkStatusChange(status.value)}
-              >
-                {status.icon && (
-                  <status.icon className='size-4 text-muted-foreground' />
-                )}
-                {status.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Menu>
+          <MenuTrigger>
+            <Tooltip content='Update status' relationship='label'>
+              <Button
+                appearance='outline'
+                size='small'
+                shape='circular'
+                icon={<ArrowUpload20Regular />}
+                aria-label='Update status'
+              />
+            </Tooltip>
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              {statuses.map((status) => {
+                const StatusIcon = status.icon
+                return (
+                  <MenuItem
+                    key={status.value}
+                    icon={<StatusIcon />}
+                    onClick={() => handleBulkStatusChange(status.value)}
+                  >
+                    {status.label}
+                  </MenuItem>
+                )
+              })}
+            </MenuList>
+          </MenuPopover>
+        </Menu>
 
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  className='size-8'
-                  aria-label='Update priority'
-                  title='Update priority'
-                >
-                  <ArrowUpDown />
-                  <span className='sr-only'>Update priority</span>
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Update priority</p>
-            </TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent sideOffset={14}>
-            {priorities.map((priority) => (
-              <DropdownMenuItem
-                key={priority.value}
-                defaultValue={priority.value}
-                onClick={() => handleBulkPriorityChange(priority.value)}
-              >
-                {priority.icon && (
-                  <priority.icon className='size-4 text-muted-foreground' />
-                )}
-                {priority.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Menu>
+          <MenuTrigger>
+            <Tooltip content='Update priority' relationship='label'>
+              <Button
+                appearance='outline'
+                size='small'
+                shape='circular'
+                icon={<ArrowSwap20Regular />}
+                aria-label='Update priority'
+              />
+            </Tooltip>
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              {priorities.map((priority) => {
+                const PriorityIcon = priority.icon
+                return (
+                  <MenuItem
+                    key={priority.value}
+                    icon={<PriorityIcon />}
+                    onClick={() => handleBulkPriorityChange(priority.value)}
+                  >
+                    {priority.label}
+                  </MenuItem>
+                )
+              })}
+            </MenuList>
+          </MenuPopover>
+        </Menu>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkExport()}
-              className='size-8'
-              aria-label='Export tasks'
-              title='Export tasks'
-            >
-              <Download />
-              <span className='sr-only'>Export tasks</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Export tasks</p>
-          </TooltipContent>
+        <Tooltip content='Export tasks' relationship='label'>
+          <Button
+            appearance='outline'
+            size='small'
+            shape='circular'
+            onClick={() => handleBulkExport()}
+            icon={<ArrowDownload20Regular />}
+            aria-label='Export tasks'
+          />
         </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='destructive'
-              size='icon'
-              onClick={() => setShowDeleteConfirm(true)}
-              className='size-8'
-              aria-label='Delete selected tasks'
-              title='Delete selected tasks'
-            >
-              <Trash2 />
-              <span className='sr-only'>Delete selected tasks</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Delete selected tasks</p>
-          </TooltipContent>
+        <Tooltip content='Delete selected tasks' relationship='label'>
+          <Button
+            appearance='primary'
+            size='small'
+            shape='circular'
+            onClick={() => setShowDeleteConfirm(true)}
+            icon={<Delete20Regular />}
+            aria-label='Delete selected tasks'
+          />
         </Tooltip>
       </BulkActionsToolbar>
 

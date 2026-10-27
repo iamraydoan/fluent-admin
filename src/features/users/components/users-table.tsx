@@ -11,14 +11,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { makeStyles, tokens } from '@fluentui/react-components'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
+  TableHeaderCell,
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
@@ -27,6 +27,68 @@ import { type User } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { usersColumns as columns } from './users-columns'
 
+const useStyles = makeStyles({
+  // Full-height list layout: this root fills the card body (which
+  // fills the card, which fills the page column bounded by the
+  // 100vh shell), and only tableWrap below scrolls. Toolbar and
+  // pagination are flexShrink 0 in their shared components, so they
+  // stay put above / below the scroll area and never get pushed
+  // below the viewport fold, even with 25 rows x 35px.
+  root: {
+    display: 'flex',
+    flex: '1',
+    minHeight: 0,
+    overflow: 'hidden',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  tableWrap: {
+    flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+  },
+  // Entity Types pattern: 35px rows, uppercase headers, vertical dividers.
+  bodyRow: {
+    height: '35px',
+  },
+  headerRow: {
+    height: '35px',
+  },
+  // Sticky header: stays at the top of the scroll container while
+  // the body scrolls underneath. The background must be a solid
+  // theme token (not transparent, not hardcoded white) or scrolling
+  // rows would show through; Background3 matches the MES ToolTable
+  // header band in both light and dark themes.
+  headerCell: {
+    textTransform: 'uppercase',
+    position: 'sticky',
+    top: 0,
+    backgroundColor: tokens.colorNeutralBackground3,
+    zIndex: 1,
+  },
+  dividerCell: {
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+  },
+  // Body rows are driven by the 32px Fluent Checkbox, so 1px vertical
+  // padding lands the row at ~35px; header sort buttons are shorter,
+  // so header cells get 5px to land at the same height.
+  padBodyCell: {
+    paddingTop: '1px',
+    paddingBottom: '1px',
+  },
+  padHeaderCell: {
+    paddingTop: '5px',
+    paddingBottom: '5px',
+  },
+  emptyCell: {
+    textAlign: 'center',
+    paddingTop: '48px',
+    paddingBottom: '48px',
+  },
+})
+
 type DataTableProps = {
   data: User[]
   search: Record<string, unknown>
@@ -34,14 +96,11 @@ type DataTableProps = {
 }
 
 export function UsersTable({ data, search, navigate }: DataTableProps) {
+  const styles = useStyles()
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
-
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
 
   // Synced with URL states (keys/defaults mirror users route search schema)
   const {
@@ -53,11 +112,12 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
   } = useTableUrlState({
     search,
     navigate,
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
+    pagination: { defaultPage: 1, defaultPageSize: 25 },
     globalFilter: { enabled: false },
     columnFilters: [
       // username per-column text filter
       { columnId: 'username', searchKey: 'username', type: 'string' },
+      { columnId: 'email', searchKey: 'email', type: 'string' },
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'role', searchKey: 'role', type: 'array' },
     ],
@@ -92,21 +152,19 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     ensurePageInRange(table.getPageCount())
   }, [table, ensurePageInRange])
 
+  const filteredCount = table.getFilteredRowModel().rows.length
+
   return (
-    <div
-      className={cn(
-        'max-sm:has-[div[role="toolbar"]]:mb-16', // Add margin bottom to the table on mobile when the toolbar is visible
-        'flex flex-1 flex-col gap-4'
-      )}
-    >
+    <div className={styles.root}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter users...'
+        heading={`Users (${filteredCount})`}
+        searchPlaceholder='Search'
         searchKey='username'
-        filters={[
+        singleSelectFilters={[
           {
             columnId: 'status',
-            title: 'Status',
+            title: 'STATUS',
             options: [
               { label: 'Active', value: 'active' },
               { label: 'Inactive', value: 'inactive' },
@@ -116,26 +174,23 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           },
           {
             columnId: 'role',
-            title: 'Role',
-            options: roles.map((role) => ({ ...role })),
+            title: 'ROLE',
+            options: roles.map(({ label, value }) => ({ label, value })),
           },
         ]}
+        fieldFilters={[{ columnId: 'email', label: 'EMAIL' }]}
       />
-      <div className='overflow-hidden rounded-md border'>
+      <div className={styles.tableWrap}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className='group/row'>
-                {headerGroup.headers.map((header) => {
+              <TableRow key={headerGroup.id} className={styles.headerRow}>
+                {headerGroup.headers.map((header, headerIndex) => {
                   return (
-                    <TableHead
+                    <TableHeaderCell
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cn(
-                        'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-                        header.column.columnDef.meta?.className,
-                        header.column.columnDef.meta?.thClassName
-                      )}
+                      className={`${styles.headerCell} ${styles.padHeaderCell} ${headerIndex < headerGroup.headers.length - 1 ? styles.dividerCell : ''}`}
                     >
                       {header.isPlaceholder
                         ? null
@@ -143,7 +198,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableHead>
+                    </TableHeaderCell>
                   )
                 })}
               </TableRow>
@@ -152,19 +207,14 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className='group/row'
-                >
-                  {row.getVisibleCells().map((cell) => (
+                <TableRow key={row.id} className={styles.bodyRow}>
+                  {row.getVisibleCells().map((cell, cellIndex, cells) => (
                     <TableCell
                       key={cell.id}
-                      className={cn(
-                        'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-                        cell.column.columnDef.meta?.className,
-                        cell.column.columnDef.meta?.tdClassName
-                      )}
+                      className={`${styles.padBodyCell} ${cellIndex < cells.length - 1 ? styles.dividerCell : ''}`}
+                      // Fluent's default cell height floors rows at 44px;
+                      // inline height overrides it to the 35px list pattern.
+                      style={{ height: '35px' }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -178,7 +228,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className='h-24 text-center'
+                  className={styles.emptyCell}
                 >
                   No results.
                 </TableCell>
@@ -187,7 +237,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} className='mt-auto' />
+      <DataTablePagination table={table} />
       <DataTableBulkActions table={table} />
     </div>
   )

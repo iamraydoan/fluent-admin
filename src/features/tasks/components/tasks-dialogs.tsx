@@ -11,13 +11,17 @@ export function TasksDialogs() {
       <TasksMutateDrawer
         key='task-create'
         open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setOpen(null)
+        }}
       />
 
       <TasksImportDialog
         key='tasks-import'
         open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setOpen(null)
+        }}
       />
 
       {currentRow && (
@@ -25,11 +29,13 @@ export function TasksDialogs() {
           <TasksMutateDrawer
             key={`task-update-${currentRow.id}`}
             open={open === 'update'}
-            onOpenChange={() => {
-              setOpen('update')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
             }}
             currentRow={currentRow}
           />
@@ -38,11 +44,13 @@ export function TasksDialogs() {
             key='task-delete'
             destructive
             open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
             }}
             handleConfirm={() => {
               setOpen(null)
@@ -54,7 +62,6 @@ export function TasksDialogs() {
                 'The following task has been deleted:'
               )
             }}
-            className='max-w-md'
             title={`Delete this task: ${currentRow.id} ?`}
             desc={
               <>

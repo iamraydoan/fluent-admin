@@ -1,14 +1,34 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createFileRoute } from '@tanstack/react-router'
 import { SignIn } from '@clerk/react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { makeStyles } from '@fluentui/react-components'
+import { Skeleton, SkeletonItem } from '@/components/ui/skeleton'
+
+const useStyles = makeStyles({
+  fallback: {
+    width: '400px',
+    height: '480px',
+  },
+})
 
 export const Route = createFileRoute('/clerk/(auth)/sign-in')({
-  component: () => (
+  component: ClerkSignIn,
+})
+
+function ClerkSignIn() {
+  const styles = useStyles()
+  return (
     <SignIn
       initialValues={{
         emailAddress: 'your_mail+shadcn_admin@gmail.com',
       }}
-      fallback={<Skeleton className='h-120 w-100' />}
+      fallback={
+        <div className={styles.fallback}>
+          <Skeleton>
+            <SkeletonItem />
+          </Skeleton>
+        </div>
+      }
     />
-  ),
-})
+  )
+}

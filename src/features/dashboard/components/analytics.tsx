@@ -1,150 +1,145 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { Card, CardHeader } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 import { AnalyticsChart } from './analytics-chart'
 
+const useStyles = makeStyles({
+  stack: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  statGrid: {
+    display: 'grid',
+    gap: '16px',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    '@media (max-width: 1024px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    '@media (max-width: 640px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+  statCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  statValue: {
+    fontSize: tokens.fontSizeHero700,
+    fontWeight: tokens.fontWeightBold,
+  },
+  statDelta: {
+    color: tokens.colorNeutralForeground3,
+  },
+  splitGrid: {
+    display: 'grid',
+    gap: '16px',
+    gridTemplateColumns: '4fr 3fr',
+    '@media (max-width: 1024px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    listStyleType: 'none',
+    margin: '0',
+    padding: '0',
+  },
+  barRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+  },
+  barTrack: {
+    height: '10px',
+    width: '100%',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorNeutralBackground3,
+    overflow: 'hidden',
+  },
+  barFillPrimary: {
+    height: '10px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorBrandBackground,
+  },
+  barFillMuted: {
+    height: '10px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorNeutralForeground3,
+  },
+  barLabel: {
+    color: tokens.colorNeutralForeground3,
+    marginBottom: '4px',
+  },
+})
+
+const stats = [
+  { label: 'Total Clicks', value: '1,248', delta: '+12.4% vs last week' },
+  { label: 'Unique Visitors', value: '832', delta: '+5.8% vs last week' },
+  { label: 'Bounce Rate', value: '42%', delta: '-3.2% vs last week' },
+  { label: 'Avg. Session', value: '3m 24s', delta: '+18s vs last week' },
+]
+
 export function Analytics() {
+  const styles = useStyles()
+
   return (
-    <div className='space-y-4'>
+    <div className={styles.stack}>
       <Card>
-        <CardHeader>
-          <CardTitle>Traffic Overview</CardTitle>
-          <CardDescription>Weekly clicks and unique visitors</CardDescription>
-        </CardHeader>
-        <CardContent className='px-6'>
-          <AnalyticsChart />
-        </CardContent>
+        <CardHeader
+          header={<Text weight='semibold'>Traffic Overview</Text>}
+          description={
+            <Text size={200}>Weekly clicks and unique visitors</Text>
+          }
+        />
+        <AnalyticsChart />
       </Card>
-      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Total Clicks</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
-              <path d='M3 3v18h18' />
-              <path d='M7 15l4-4 4 4 4-6' />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>1,248</div>
-            <p className='text-xs text-muted-foreground'>+12.4% vs last week</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
-              Unique Visitors
-            </CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
-              <circle cx='12' cy='7' r='4' />
-              <path d='M6 21v-2a6 6 0 0 1 12 0v2' />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>832</div>
-            <p className='text-xs text-muted-foreground'>+5.8% vs last week</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Bounce Rate</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
-              <path d='M3 12h6l3 6 3-6h6' />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>42%</div>
-            <p className='text-xs text-muted-foreground'>-3.2% vs last week</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Avg. Session</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
-              <circle cx='12' cy='12' r='10' />
-              <path d='M12 6v6l4 2' />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>3m 24s</div>
-            <p className='text-xs text-muted-foreground'>+18s vs last week</p>
-          </CardContent>
-        </Card>
+      <div className={styles.statGrid}>
+        {stats.map((stat) => (
+          <Card key={stat.label} className={styles.statCard}>
+            <CardHeader header={<Text weight='semibold'>{stat.label}</Text>} />
+            <Text className={styles.statValue}>{stat.value}</Text>
+            <Text size={200} className={styles.statDelta}>
+              {stat.delta}
+            </Text>
+          </Card>
+        ))}
       </div>
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-        <Card className='col-span-1 lg:col-span-4'>
-          <CardHeader>
-            <CardTitle>Referrers</CardTitle>
-            <CardDescription>Top sources driving traffic</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SimpleBarList
-              items={[
-                { name: 'Direct', value: 512 },
-                { name: 'Product Hunt', value: 238 },
-                { name: 'Twitter', value: 174 },
-                { name: 'Blog', value: 104 },
-              ]}
-              barClass='bg-primary'
-              valueFormatter={(n) => `${n}`}
-            />
-          </CardContent>
+      <div className={styles.splitGrid}>
+        <Card>
+          <CardHeader
+            header={<Text weight='semibold'>Referrers</Text>}
+            description={<Text size={200}>Top sources driving traffic</Text>}
+          />
+          <SimpleBarList
+            items={[
+              { name: 'Direct', value: 512 },
+              { name: 'Product Hunt', value: 238 },
+              { name: 'Twitter', value: 174 },
+              { name: 'Blog', value: 104 },
+            ]}
+            muted={false}
+            valueFormatter={(n) => `${n}`}
+          />
         </Card>
-        <Card className='col-span-1 lg:col-span-3'>
-          <CardHeader>
-            <CardTitle>Devices</CardTitle>
-            <CardDescription>How users access your app</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SimpleBarList
-              items={[
-                { name: 'Desktop', value: 74 },
-                { name: 'Mobile', value: 22 },
-                { name: 'Tablet', value: 4 },
-              ]}
-              barClass='bg-muted-foreground'
-              valueFormatter={(n) => `${n}%`}
-            />
-          </CardContent>
+        <Card>
+          <CardHeader
+            header={<Text weight='semibold'>Devices</Text>}
+            description={<Text size={200}>How users access your app</Text>}
+          />
+          <SimpleBarList
+            items={[
+              { name: 'Desktop', value: 74 },
+              { name: 'Mobile', value: 22 },
+              { name: 'Tablet', value: 4 },
+            ]}
+            muted
+            valueFormatter={(n) => `${n}%`}
+          />
         </Card>
       </div>
     </div>
@@ -154,32 +149,35 @@ export function Analytics() {
 function SimpleBarList({
   items,
   valueFormatter,
-  barClass,
+  muted,
 }: {
   items: { name: string; value: number }[]
   valueFormatter: (n: number) => string
-  barClass: string
+  muted: boolean
 }) {
+  const styles = useStyles()
   const max = Math.max(...items.map((i) => i.value), 1)
   return (
-    <ul className='space-y-3'>
+    <ul className={styles.list}>
       {items.map((i) => {
         const width = `${Math.round((i.value / max) * 100)}%`
         return (
-          <li key={i.name} className='flex items-center justify-between gap-3'>
-            <div className='min-w-0 flex-1'>
-              <div className='mb-1 truncate text-xs text-muted-foreground'>
-                {i.name}
-              </div>
-              <div className='h-2.5 w-full rounded-full bg-muted'>
+          <li key={i.name}>
+            <div className={styles.barLabel}>
+              <Text size={200}>{i.name}</Text>
+            </div>
+            <div className={styles.barRow}>
+              <div className={styles.barTrack}>
                 <div
-                  className={`h-2.5 rounded-full ${barClass}`}
+                  className={
+                    muted ? styles.barFillMuted : styles.barFillPrimary
+                  }
                   style={{ width }}
                 />
               </div>
-            </div>
-            <div className='ps-2 text-xs font-medium tabular-nums'>
-              {valueFormatter(i.value)}
+              <Text size={200} weight='semibold'>
+                {valueFormatter(i.value)}
+              </Text>
             </div>
           </li>
         )

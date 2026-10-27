@@ -1,72 +1,61 @@
-import { Outlet } from '@tanstack/react-router'
-import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { SidebarNav } from './components/sidebar-nav'
+import { Outlet, useLocation, useNavigate } from '@tanstack/react-router'
+import { makeStyles } from '@fluentui/react-components'
+import { Card } from '@/components/ui/card'
+import HeaderBlock from '@/components/layout/header-block'
 
-const sidebarNavItems = [
-  {
-    title: 'Profile',
-    href: '/settings',
-    icon: <UserCog size={18} />,
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    height: '100%',
+    minHeight: 0,
+    flexDirection: 'column',
+    gap: '8px',
   },
-  {
-    title: 'Account',
-    href: '/settings/account',
-    icon: <Wrench size={18} />,
+  card: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
   },
-  {
-    title: 'Appearance',
-    href: '/settings/appearance',
-    icon: <Palette size={18} />,
-  },
-  {
-    title: 'Notifications',
-    href: '/settings/notifications',
-    icon: <Bell size={18} />,
-  },
-  {
-    title: 'Display',
-    href: '/settings/display',
-    icon: <Monitor size={18} />,
-  },
+})
+
+// Object tabs replace the old left SidebarNav: one tab per settings
+// sub-route, with the tab value equal to the route so selecting a tab
+// navigates to it.
+const SETTINGS_TABS = [
+  { value: '/settings', label: 'Profile' },
+  { value: '/settings/account', label: 'Account' },
+  { value: '/settings/appearance', label: 'Appearance' },
+  { value: '/settings/notifications', label: 'Notifications' },
+  { value: '/settings/display', label: 'Display' },
 ]
 
 export function Settings() {
-  return (
-    <>
-      {/* ===== Top Heading ===== */}
-      <Header>
-        <Search className='me-auto' />
-        <ThemeSwitch />
-        <ConfigDrawer />
-        <ProfileDropdown />
-      </Header>
+  const styles = useStyles()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
 
-      <Main fixed>
-        <div className='space-y-0.5'>
-          <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-            Settings
-          </h1>
-          <p className='text-muted-foreground'>
-            Manage your account settings and set e-mail preferences.
-          </p>
-        </div>
-        <Separator className='my-4 lg:my-6' />
-        <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <aside className='top-0 lg:sticky lg:w-1/5'>
-            <SidebarNav items={sidebarNavItems} />
-          </aside>
-          <div className='flex w-full overflow-y-hidden p-1'>
-            <Outlet />
-          </div>
-        </div>
-      </Main>
-    </>
+  return (
+    <div className={styles.root}>
+      <HeaderBlock
+        title='Settings'
+        objectTabs={SETTINGS_TABS}
+        objectTab={pathname}
+        onObjectTabChange={(value) => navigate({ to: value })}
+        // No ribbon: the settings screens have no Refresh/Save/Reset
+        // action — each form keeps its own Update submit button, so no
+        // ribbon row is rendered rather than inventing an action.
+        ribbon={undefined}
+      />
+      <Card
+        className={styles.card}
+        style={{
+          padding: '24px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+        }}
+      >
+        <Outlet />
+      </Card>
+    </div>
   )
 }

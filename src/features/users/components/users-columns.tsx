@@ -1,12 +1,39 @@
-import { type ColumnDef } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { type ColumnDef, type Row } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Link } from '@/components/ui/link'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
 import { callTypes, roles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
+import { useUsers } from './users-provider'
+
+// Username is the natural first-column link: clicking it opens the same
+// edit dialog the row-actions Edit menu opens (no new route invented).
+// eslint-disable-next-line react-refresh/only-export-components
+function UserUsernameCell({ row }: { row: Row<User> }) {
+  const { setOpen, setCurrentRow } = useUsers()
+
+  return (
+    <div style={{ maxWidth: 144 }}>
+      <Link
+        onClick={() => {
+          setCurrentRow(row.original)
+          setOpen('edit')
+        }}
+        style={{
+          display: 'block',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {row.getValue('username')}
+      </Link>
+    </div>
+  )
+}
 
 export const usersColumns: ColumnDef<User>[] = [
   {
@@ -15,22 +42,19 @@ export const usersColumns: ColumnDef<User>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() && 'mixed')
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onChange={(_, data) =>
+          table.toggleAllPageRowsSelected(data.checked === true)
+        }
         aria-label='Select all'
-        className='translate-y-0.5'
       />
     ),
-    meta: {
-      className: cn('inset-s-0 z-10 rounded-tl-[inherit] max-md:sticky'),
-    },
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onChange={(_, data) => row.toggleSelected(data.checked === true)}
         aria-label='Select row'
-        className='translate-y-0.5'
       />
     ),
     enableSorting: false,
@@ -39,44 +63,46 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'username',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
+      <DataTableColumnHeader column={column} title='USERNAME' />
     ),
-    cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
-    ),
-    meta: {
-      className: cn(
-        'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
-        'inset-s-6 ps-0.5 max-md:sticky @4xl/content:table-cell @4xl/content:drop-shadow-none'
-      ),
-    },
+    cell: ({ row }) => <UserUsernameCell row={row} />,
     enableHiding: false,
   },
   {
     id: 'fullName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title='NAME' />
     ),
     cell: ({ row }) => {
       const { firstName, lastName } = row.original
       const fullName = `${firstName} ${lastName}`
-      return <LongText className='max-w-36'>{fullName}</LongText>
+      return (
+        <div style={{ maxWidth: 144 }}>
+          <LongText>{fullName}</LongText>
+        </div>
+      )
     },
-    meta: { className: 'w-36' },
   },
   {
     accessorKey: 'email',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
+      <DataTableColumnHeader column={column} title='EMAIL' />
     ),
     cell: ({ row }) => (
-      <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>
+      <div style={{ maxWidth: 200 }}>
+        <LongText>{row.getValue('email')}</LongText>
+      </div>
     ),
+    filterFn: (row, id, value) => {
+      return String(row.getValue(id))
+        .toLowerCase()
+        .includes(String(value).toLowerCase())
+    },
   },
   {
     accessorKey: 'phoneNumber',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
+      <DataTableColumnHeader column={column} title='PHONE NUMBER' />
     ),
     cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
     enableSorting: false,
@@ -84,17 +110,18 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='STATUS' />
     ),
     cell: ({ row }) => {
       const { status } = row.original
-      const badgeColor = callTypes.get(status)
       return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
+        <Badge
+          appearance='tint'
+          color={callTypes.get(status)}
+          style={{ textTransform: 'capitalize' }}
+        >
+          {row.getValue('status')}
+        </Badge>
       )
     },
     filterFn: (row, id, value) => {
@@ -106,7 +133,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'role',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
+      <DataTableColumnHeader column={column} title='ROLE' />
     ),
     cell: ({ row }) => {
       const { role } = row.original
@@ -116,12 +143,13 @@ export const usersColumns: ColumnDef<User>[] = [
         return null
       }
 
+      const RoleIcon = userType.icon
       return (
-        <div className='flex items-center gap-x-2'>
-          {userType.icon && (
-            <userType.icon size={16} className='text-muted-foreground' />
-          )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <RoleIcon />
+          <span style={{ textTransform: 'capitalize' }}>
+            {row.getValue('role')}
+          </span>
         </div>
       )
     },
