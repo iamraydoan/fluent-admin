@@ -15,46 +15,15 @@ const useStyles = makeStyles({
     flexShrink: 0,
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-    // HEADER LEFT-EDGE CONTINUITY (2026-10-27): the page column
-    // (authenticated-layout.tsx) has 8px side padding, so a plain
-    // HeaderBlock sat 8px in from the sidebar, leaving a vertical
-    // canvas-colour bar (light #dee1e6, dark Background3) between
-    // the sidebar and the header for the header's full height —
-    // grey against the tab strip above AND against the header
-    // white below, so the header never read as continuous with
-    // the sidebar. The fix is these -8px side margins: the header
-    // escapes the page column's side padding and touches the
-    // sidebar's 1px border on the left and the viewport edge on
-    // the right, so the tab strip grey runs continuously from the
-    // sidebar edge and the header white runs continuously with
-    // the sidebar white below it (apart from that 1px border,
-    // which is a proper thin divider, not an 8px bar). The
-    // margins are relative to the page column, NOT a fixed
-    // sidebar width, so the header stays flush when the sidebar
-    // collapses from 232px to 64px. The page column's
-    // overflow hidden clips the widened block, so there is no
-    // horizontal overflow, and the side padding still applies
-    // to everything below the header — the main content card
-    // keeps its normal 8px inset, untouched.
-    // RIGHT-EDGE DECISION: the header spans the FULL page-column
-    // width (both sides flush), not left-flush-only. A left-only
-    // flush would leave an asymmetric bar — square on the
-    // sidebar side, rounded over a canvas gap on the viewport
-    // side — and the right gap would be the same defect mirrored.
-    // A top bar spanning edge to edge is not a floating card, so
-    // ALL corners are square (radius 0): the top corners were
-    // already square (the header touches the viewport top), and
-    // the bottom corners are now square too, so no rounded
-    // corner floats over a canvas gap on either side and no
-    // canvas notch shows at the header's bottom corners. The
-    // content card below keeps its own 8px radius, so the
-    // rounded-card look survives where it belongs. overflow
-    // hidden is still required, otherwise the square white/grey
-    // rows inside would paint over the (now square) corners —
-    // kept for the row clipping, not for corner rounding.
-    marginLeft: '-8px',
-    marginRight: '-8px',
-    borderRadius: '0px',
+    // Header reads as a top bar, not a floating card: with the page
+    // top padding removed (see index.tsx), the top corners are
+    // square (radius 0) so the header touches the viewport top edge
+    // with no canvas strip and no rounded corner showing above it.
+    // Bottom corners keep the cards' 8px radius, so the header still
+    // curves against the grey content gap below it, as in the demo.
+    // overflow hidden is required, otherwise the square white/grey
+    // rows inside would paint over the rounded bottom corners.
+    borderRadius: '0px 0px 8px 8px',
     overflow: 'hidden',
   },
   objectTabs: {

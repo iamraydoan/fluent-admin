@@ -23,15 +23,6 @@ const useStyles = makeStyles({
     gap: '8px',
     // Same geometry as the MES page: no top padding (the screen's
     // own HeaderBlock touches the top edge), 8px on the other sides.
-    // The 8px side padding applies to the content BELOW the header
-    // only: HeaderBlock escapes it with -8px side margins (see
-    // header-block.tsx), so the header is flush with the sidebar
-    // on the left and the viewport on the right, while the main
-    // content card below keeps its normal 8px inset. Do not
-    // remove the side padding here — that would flush the content
-    // card too — and do not "fix" the header edge by changing the
-    // canvas colour, which would still leave a grey bar against
-    // the white header below.
     padding: '0px 8px 8px 8px',
     backgroundColor: CANVAS,
     overflow: 'hidden',
@@ -63,15 +54,19 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     registerRoute(pathname)
   }, [pathname, registerRoute])
 
-  // Canvas: light keeps the exact CANVAS (#dee1e6) from the class;
-  // dark swaps it for the darkest neutral surface via an inline
-  // override (no light token equals #dee1e6, so a token class alone
-  // would shift light mode). The token var resolves under the root
+  // Canvas: light keeps the exact CANVAS (#e6e8eb, now equal to the
+  // tab-strip HEADER_GREY — see shell-constants.ts) from the class;
+  // dark swaps it for the dark tab-strip colour
+  // (colorNeutralBackground2, the dark strip in DocumentTabBar)
+  // instead of the previous Background3, so the dark 8px gap at the
+  // header's left edge blends with the dark tab strip exactly as
+  // light does, while the dark header surface (Background1) still
+  // reads as a card on it. The token var resolves under the root
   // FluentProvider, which follows the same resolved theme.
   const { resolvedTheme } = useTheme()
   const canvasStyle =
     resolvedTheme === 'dark'
-      ? { backgroundColor: tokens.colorNeutralBackground3 }
+      ? { backgroundColor: tokens.colorNeutralBackground2 }
       : undefined
 
   return (
