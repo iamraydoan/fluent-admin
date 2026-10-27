@@ -24,11 +24,7 @@ const useStyles = makeStyles({
     marginBottom: '16px',
   },
   scroll: {
-    height: '100%',
     width: '100%',
-    overflowY: 'auto',
-    paddingBottom: '48px',
-    paddingRight: '16px',
     boxSizing: 'border-box',
   },
   inner: {

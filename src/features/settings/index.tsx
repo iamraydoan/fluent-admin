@@ -1,124 +1,61 @@
-import { Outlet } from '@tanstack/react-router'
+import { Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { makeStyles } from '@fluentui/react-components'
-import {
-  Alert20Regular,
-  Desktop20Regular,
-  PaintBrush20Regular,
-  PersonSettings20Regular,
-  Wrench20Regular,
-} from '@fluentui/react-icons'
-import { Separator } from '@/components/ui/separator'
-import { Text } from '@/components/ui/text'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { SidebarNav } from './components/sidebar-nav'
+import { Card } from '@/components/ui/card'
+import HeaderBlock from '@/features/mes-agent/components/HeaderBlock'
 
 const useStyles = makeStyles({
-  heading: {
+  root: {
     display: 'flex',
+    height: '100%',
+    minHeight: 0,
     flexDirection: 'column',
-    gap: '2px',
-  },
-  separator: {
-    marginTop: '16px',
-    marginBottom: '24px',
-  },
-  body: {
-    display: 'flex',
-    flexGrow: 1,
-    flexDirection: 'column',
-    overflow: 'hidden',
     gap: '8px',
-    '@media (min-width: 1024px)': {
-      flexDirection: 'row',
-      gap: '48px',
-    },
   },
-  aside: {
-    flexShrink: 0,
-    '@media (min-width: 1024px)': {
-      position: 'sticky',
-      top: '0px',
-      width: '20%',
-    },
-  },
-  outlet: {
-    display: 'flex',
-    width: '100%',
-    overflowY: 'hidden',
-    padding: '4px',
-    boxSizing: 'border-box',
-  },
-  search: {
-    marginRight: 'auto',
+  card: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
   },
 })
 
-const sidebarNavItems = [
-  {
-    title: 'Profile',
-    href: '/settings',
-    icon: <PersonSettings20Regular />,
-  },
-  {
-    title: 'Account',
-    href: '/settings/account',
-    icon: <Wrench20Regular />,
-  },
-  {
-    title: 'Appearance',
-    href: '/settings/appearance',
-    icon: <PaintBrush20Regular />,
-  },
-  {
-    title: 'Notifications',
-    href: '/settings/notifications',
-    icon: <Alert20Regular />,
-  },
-  {
-    title: 'Display',
-    href: '/settings/display',
-    icon: <Desktop20Regular />,
-  },
+// Object tabs replace the old left SidebarNav: one tab per settings
+// sub-route, with the tab value equal to the route so selecting a tab
+// navigates to it.
+const SETTINGS_TABS = [
+  { value: '/settings', label: 'Profile' },
+  { value: '/settings/account', label: 'Account' },
+  { value: '/settings/appearance', label: 'Appearance' },
+  { value: '/settings/notifications', label: 'Notifications' },
+  { value: '/settings/display', label: 'Display' },
 ]
 
 export function Settings() {
   const styles = useStyles()
-  return (
-    <>
-      {/* ===== Top Heading ===== */}
-      <Header>
-        <div className={styles.search}>
-          <Search />
-        </div>
-        <ThemeSwitch />
-        <ConfigDrawer />
-        <ProfileDropdown />
-      </Header>
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
 
-      <Main fixed>
-        <div className={styles.heading}>
-          <Text size={700} weight='bold'>
-            Settings
-          </Text>
-          <Text size={300}>
-            Manage your account settings and set e-mail preferences.
-          </Text>
-        </div>
-        <Separator className={styles.separator} />
-        <div className={styles.body}>
-          <aside className={styles.aside}>
-            <SidebarNav items={sidebarNavItems} />
-          </aside>
-          <div className={styles.outlet}>
-            <Outlet />
-          </div>
-        </div>
-      </Main>
-    </>
+  return (
+    <div className={styles.root}>
+      <HeaderBlock
+        title='Settings'
+        objectTabs={SETTINGS_TABS}
+        objectTab={pathname}
+        onObjectTabChange={(value) => navigate({ to: value })}
+        // No ribbon: the settings screens have no Refresh/Save/Reset
+        // action — each form keeps its own Update submit button, so no
+        // ribbon row is rendered rather than inventing an action.
+        ribbon={undefined}
+      />
+      <Card
+        className={styles.card}
+        style={{
+          padding: '24px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+        }}
+      >
+        <Outlet />
+      </Card>
+    </div>
   )
 }

@@ -1,68 +1,111 @@
+import { useState } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import { makeStyles } from '@fluentui/react-components'
-import { Text } from '@/components/ui/text'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
+import {
+  Add24Regular,
+  ArrowClockwise24Regular,
+  ArrowDownload24Regular,
+} from '@fluentui/react-icons'
+import { Card } from '@/components/ui/card'
+import HeaderBlock from '@/features/mes-agent/components/HeaderBlock'
+import Ribbon from '@/features/mes-agent/components/Ribbon'
 import { TasksDialogs } from './components/tasks-dialogs'
-import { TasksPrimaryButtons } from './components/tasks-primary-buttons'
-import { TasksProvider } from './components/tasks-provider'
+import { TasksProvider, useTasks } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
 import { tasks } from './data/tasks'
 
+const route = getRouteApi('/_authenticated/tasks/')
+
 const useStyles = makeStyles({
-  search: {
-    marginRight: 'auto',
-  },
-  pageHead: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    gap: '8px',
-  },
-  title: {
-    margin: '0',
-    fontSize: '24px',
-    fontWeight: 700,
-  },
   content: {
-    display: 'flex',
     flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardBody: {
+    display: 'flex',
     flexDirection: 'column',
     gap: '16px',
+    padding: '16px',
+    minHeight: 0,
   },
 })
 
-export function Tasks() {
+function TasksScreen() {
   const styles = useStyles()
+  const { setOpen } = useTasks()
+  const navigate = route.useNavigate()
+  // Bumped on ribbon Refresh so the table remounts (local sorting /
+  // selection / column visibility reset) together with the URL
+  // filter reset below.
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleRefresh = () => {
+    navigate({
+      search: { page: 1, pageSize: 10, status: [], priority: [], filter: '' },
+    })
+    setRefreshKey((key) => key + 1)
+  }
+
+  return (
+    <>
+      <HeaderBlock
+        title='Tasks'
+        ribbon={
+          <Ribbon
+            groups={[
+              {
+                label: 'General',
+                actions: [
+                  {
+                    label: 'Refresh',
+                    icon: <ArrowClockwise24Regular />,
+                    onClick: handleRefresh,
+                  },
+                ],
+              },
+              {
+                label: 'Actions',
+                actions: [
+                  {
+                    label: 'Import',
+                    icon: <ArrowDownload24Regular />,
+                    onClick: () => setOpen('import'),
+                  },
+                  {
+                    label: 'Create',
+                    icon: <Add24Regular />,
+                    onClick: () => setOpen('create'),
+                  },
+                ],
+              },
+            ]}
+          />
+        }
+      />
+      <div className={styles.content}>
+        <Card
+          style={{
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+          }}
+        >
+          <div className={styles.cardBody}>
+            <TasksTable key={refreshKey} data={tasks} />
+          </div>
+        </Card>
+      </div>
+      <TasksDialogs />
+    </>
+  )
+}
+
+export function Tasks() {
   return (
     <TasksProvider>
-      <Header fixed>
-        <div className={styles.search}>
-          <Search />
-        </div>
-        <ThemeSwitch />
-        <ConfigDrawer />
-        <ProfileDropdown />
-      </Header>
-
-      <Main>
-        <div className={styles.content}>
-          <div className={styles.pageHead}>
-            <div>
-              <h2 className={styles.title}>Tasks</h2>
-              <Text>Here&apos;s a list of your tasks for this month!</Text>
-            </div>
-            <TasksPrimaryButtons />
-          </div>
-          <TasksTable data={tasks} />
-        </div>
-      </Main>
-
-      <TasksDialogs />
+      <TasksScreen />
     </TasksProvider>
   )
 }

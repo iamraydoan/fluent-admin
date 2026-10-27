@@ -4,10 +4,13 @@ import { format } from 'date-fns'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   Add20Regular,
+  ArrowClockwise24Regular,
   Attach20Regular,
   Call20Regular,
   ChatMultiple20Regular,
   Compose20Regular,
+  Compose24Regular,
+  Dismiss24Regular,
   ImageAdd20Regular,
   MoreHorizontal20Regular,
   Search20Regular,
@@ -16,21 +19,35 @@ import {
 } from '@fluentui/react-icons'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Divider } from '@/components/ui/divider'
 import { Input } from '@/components/ui/input'
+import {
+  MessageBar,
+  MessageBarActions,
+  MessageBarBody,
+} from '@/components/ui/message-bar'
 import { Text } from '@/components/ui/text'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
+import HeaderBlock from '@/features/mes-agent/components/HeaderBlock'
+import Ribbon from '@/features/mes-agent/components/Ribbon'
 import { NewChat } from './components/new-chat'
 import { type ChatUser, type Convo } from './data/chat-types'
 // Fake Data
 import { conversations } from './data/convo.json'
 
 const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    height: '100%',
+    minHeight: 0,
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  card: {
+    flex: 1,
+    minHeight: 0,
+    overflow: 'hidden',
+  },
   section: {
     display: 'flex',
     height: '100%',
@@ -245,6 +262,9 @@ export function Chats() {
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
   const [createConversationDialogOpened, setCreateConversationDialog] =
     useState(false)
+  // Ribbon Refresh has no live data source behind it (the list is the
+  // static demo JSON), so like the MES mock it only shows a notice.
+  const [notice, setNotice] = useState('')
 
   // Filtered data based on the search query
   const filteredChatList = conversations.filter(({ fullName }) =>
@@ -271,16 +291,62 @@ export function Chats() {
   const users = conversations.map(({ messages, ...user }) => user)
 
   return (
-    <>
-      {/* ===== Top Heading ===== */}
-      <Header>
-        <Search />
-        <ThemeSwitch />
-        <ConfigDrawer />
-        <ProfileDropdown />
-      </Header>
-
-      <Main fixed>
+    <div className={styles.root}>
+      <HeaderBlock
+        title='Chats'
+        // No object tabs for Chats.
+        ribbon={
+          <Ribbon
+            groups={[
+              {
+                label: 'General',
+                actions: [
+                  {
+                    label: 'Refresh',
+                    icon: <ArrowClockwise24Regular />,
+                    onClick: () =>
+                      setNotice('Refreshed (demo data, no API call)'),
+                  },
+                ],
+              },
+              {
+                label: 'Actions',
+                actions: [
+                  {
+                    label: 'New Chat',
+                    icon: <Compose24Regular />,
+                    onClick: () => setCreateConversationDialog(true),
+                  },
+                ],
+              },
+            ]}
+          />
+        }
+      />
+      {notice && (
+        <MessageBar intent='info'>
+          <MessageBarBody>
+            <Text size={300}>{notice}</Text>
+          </MessageBarBody>
+          <MessageBarActions>
+            <Button
+              appearance='transparent'
+              size='small'
+              icon={<Dismiss24Regular />}
+              onClick={() => setNotice('')}
+              aria-label='Dismiss'
+            />
+          </MessageBarActions>
+        </MessageBar>
+      )}
+      <Card
+        className={styles.card}
+        style={{
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+        }}
+      >
         <section className={styles.section}>
           {/* Left Side */}
           <div className={styles.leftPane}>
@@ -473,12 +539,12 @@ export function Chats() {
             </div>
           )}
         </section>
-        <NewChat
-          users={users}
-          onOpenChange={setCreateConversationDialog}
-          open={createConversationDialogOpened}
-        />
-      </Main>
-    </>
+      </Card>
+      <NewChat
+        users={users}
+        onOpenChange={setCreateConversationDialog}
+        open={createConversationDialogOpened}
+      />
+    </div>
   )
 }

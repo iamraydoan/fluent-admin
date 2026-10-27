@@ -39,6 +39,30 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
+  // Entity Types pattern: 35px rows, uppercase headers, vertical dividers.
+  bodyRow: {
+    height: '35px',
+  },
+  headerRow: {
+    height: '35px',
+  },
+  headerCell: {
+    textTransform: 'uppercase',
+  },
+  dividerCell: {
+    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+  },
+  // Body rows are driven by the 32px Fluent Checkbox, so 1px vertical
+  // padding lands the row at ~35px; header sort buttons are shorter,
+  // so header cells get 5px to land at the same height.
+  padBodyCell: {
+    paddingTop: '1px',
+    paddingBottom: '1px',
+  },
+  padHeaderCell: {
+    paddingTop: '5px',
+    paddingBottom: '5px',
+  },
   emptyCell: {
     textAlign: 'center',
     paddingTop: '48px',
@@ -108,11 +132,14 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     ensurePageInRange(table.getPageCount())
   }, [table, ensurePageInRange])
 
+  const filteredCount = table.getFilteredRowModel().rows.length
+
   return (
     <div className={styles.root}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter users...'
+        heading={`Users (${filteredCount})`}
+        searchPlaceholder='Search'
         searchKey='username'
         filters={[
           {
@@ -136,10 +163,14 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+              <TableRow key={headerGroup.id} className={styles.headerRow}>
+                {headerGroup.headers.map((header, headerIndex) => {
                   return (
-                    <TableHeaderCell key={header.id} colSpan={header.colSpan}>
+                    <TableHeaderCell
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={`${styles.headerCell} ${styles.padHeaderCell} ${headerIndex < headerGroup.headers.length - 1 ? styles.dividerCell : ''}`}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -155,9 +186,15 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                <TableRow key={row.id} className={styles.bodyRow}>
+                  {row.getVisibleCells().map((cell, cellIndex, cells) => (
+                    <TableCell
+                      key={cell.id}
+                      className={`${styles.padBodyCell} ${cellIndex < cells.length - 1 ? styles.dividerCell : ''}`}
+                      // Fluent's default cell height floors rows at 44px;
+                      // inline height overrides it to the 35px list pattern.
+                      style={{ height: '35px' }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

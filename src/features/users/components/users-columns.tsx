@@ -1,11 +1,39 @@
-import { type ColumnDef } from '@tanstack/react-table'
+import { type ColumnDef, type Row } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Link } from '@/components/ui/link'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
 import { callTypes, roles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
+import { useUsers } from './users-provider'
+
+// Username is the natural first-column link: clicking it opens the same
+// edit dialog the row-actions Edit menu opens (no new route invented).
+// eslint-disable-next-line react-refresh/only-export-components
+function UserUsernameCell({ row }: { row: Row<User> }) {
+  const { setOpen, setCurrentRow } = useUsers()
+
+  return (
+    <div style={{ maxWidth: 144 }}>
+      <Link
+        onClick={() => {
+          setCurrentRow(row.original)
+          setOpen('edit')
+        }}
+        style={{
+          display: 'block',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {row.getValue('username')}
+      </Link>
+    </div>
+  )
+}
 
 export const usersColumns: ColumnDef<User>[] = [
   {
@@ -37,11 +65,7 @@ export const usersColumns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Username' />
     ),
-    cell: ({ row }) => (
-      <div style={{ maxWidth: 144 }}>
-        <LongText>{row.getValue('username')}</LongText>
-      </div>
-    ),
+    cell: ({ row }) => <UserUsernameCell row={row} />,
     enableHiding: false,
   },
   {

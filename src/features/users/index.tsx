@@ -1,80 +1,117 @@
+import { useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { makeStyles, tokens } from '@fluentui/react-components'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
+import { makeStyles } from '@fluentui/react-components'
+import {
+  ArrowClockwise24Regular,
+  MailAdd24Regular,
+  PersonAdd24Regular,
+} from '@fluentui/react-icons'
+import { Card } from '@/components/ui/card'
+import HeaderBlock from '@/features/mes-agent/components/HeaderBlock'
+import Ribbon from '@/features/mes-agent/components/Ribbon'
 import { UsersDialogs } from './components/users-dialogs'
-import { UsersPrimaryButtons } from './components/users-primary-buttons'
-import { UsersProvider } from './components/users-provider'
+import { UsersProvider, useUsers } from './components/users-provider'
 import { UsersTable } from './components/users-table'
 import { users } from './data/users'
 
+const route = getRouteApi('/_authenticated/users/')
+
 const useStyles = makeStyles({
-  searchPush: {
-    marginInlineEnd: 'auto',
-  },
-  main: {
-    display: 'flex',
+  content: {
     flex: '1',
+    minHeight: 0,
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardBody: {
+    display: 'flex',
     flexDirection: 'column',
     gap: '16px',
-  },
-  headingRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    gap: '8px',
-  },
-  title: {
-    margin: '0',
-    fontSize: '24px',
-    fontWeight: 700,
-    lineHeight: '32px',
-  },
-  subtitle: {
-    margin: '4px 0 0',
-    color: tokens.colorNeutralForeground2,
-    fontSize: '14px',
-    lineHeight: '20px',
+    padding: '16px',
+    minHeight: 0,
   },
 })
 
-const route = getRouteApi('/_authenticated/users/')
-
-export function Users() {
+function UsersScreen() {
   const styles = useStyles()
+  const { setOpen } = useUsers()
   const search = route.useSearch()
   const navigate = route.useNavigate()
+  // Bumped on ribbon Refresh so the table remounts (local sorting /
+  // selection / column visibility reset) together with the URL
+  // filter reset below.
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleRefresh = () => {
+    void navigate({
+      search: { page: 1, pageSize: 10, status: [], role: [], username: '' },
+    })
+    setRefreshKey((key) => key + 1)
+  }
 
   return (
-    <UsersProvider>
-      <Header fixed>
-        <div className={styles.searchPush}>
-          <Search />
-        </div>
-        <ThemeSwitch />
-        <ConfigDrawer />
-        <ProfileDropdown />
-      </Header>
-
-      <Main className={styles.main}>
-        <div className={styles.headingRow}>
-          <div>
-            <h2 className={styles.title}>User List</h2>
-            <p className={styles.subtitle}>
-              Manage your users and their roles here.
-            </p>
+    <>
+      <HeaderBlock
+        title='Users'
+        ribbon={
+          <Ribbon
+            groups={[
+              {
+                label: 'General',
+                actions: [
+                  {
+                    label: 'Refresh',
+                    icon: <ArrowClockwise24Regular />,
+                    onClick: handleRefresh,
+                  },
+                ],
+              },
+              {
+                label: 'Actions',
+                actions: [
+                  {
+                    label: 'Invite User',
+                    icon: <MailAdd24Regular />,
+                    onClick: () => setOpen('invite'),
+                  },
+                  {
+                    label: 'Add User',
+                    icon: <PersonAdd24Regular />,
+                    onClick: () => setOpen('add'),
+                  },
+                ],
+              },
+            ]}
+          />
+        }
+      />
+      <div className={styles.content}>
+        <Card
+          style={{
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+          }}
+        >
+          <div className={styles.cardBody}>
+            <UsersTable
+              key={refreshKey}
+              data={users}
+              search={search}
+              navigate={navigate}
+            />
           </div>
-          <UsersPrimaryButtons />
-        </div>
-        <UsersTable data={users} search={search} navigate={navigate} />
-      </Main>
-
+        </Card>
+      </div>
       <UsersDialogs />
+    </>
+  )
+}
+
+export function Users() {
+  return (
+    <UsersProvider>
+      <UsersScreen />
     </UsersProvider>
   )
 }
