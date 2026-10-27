@@ -29,13 +29,13 @@ function RouteComponent() {
 
   return (
     <>
-      <Header fixed className='border-b'>
-        <Search className='me-auto' />
+      <Header fixed>
+        <Search />
         <ThemeSwitch />
         <ConfigDrawer />
         <ProfileDropdown />
       </Header>
-      <div className='flex-1 [&>div]:h-full'>
+      <div style={{ flex: 1 }}>
         <ErrorComponent />
       </div>
     </>
