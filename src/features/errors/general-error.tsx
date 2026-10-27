@@ -1,6 +1,6 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
+import { Button } from '@fluentui/react-components'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
@@ -24,7 +24,11 @@ export function GeneralError({
         </p>
         {!minimal && (
           <div className='mt-6 flex gap-4'>
-            <Button variant='outline' onClick={() => history.go(-1)}>
+            {/* Button swapped to Fluent only so this root error
+                component still loads after the shadcn UI deletion.
+                This is NOT a full Fluent conversion of the error
+                screen (layout/text unchanged); that is step 5. */}
+            <Button appearance='outline' onClick={() => history.go(-1)}>
               Go Back
             </Button>
             <Button onClick={() => navigate({ to: '/' })}>Back to Home</Button>
