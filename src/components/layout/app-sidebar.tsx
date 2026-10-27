@@ -136,6 +136,9 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground3,
     borderRadius: '10px',
     padding: '0px 6px',
+    // Kept at 11px / 18px: 11px is equidistant between Base100 (10px)
+    // and Base200 (12px), and 18px between Base200 (16px) and Base300
+    // (20px) line-height; tokenising would change the badge height.
     fontSize: '11px',
     lineHeight: '18px',
     color: tokens.colorNeutralForeground2,

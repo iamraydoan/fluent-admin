@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalM}`,
     minWidth: '240px',
     color: tokens.colorNeutralForeground2,
-    fontSize: '14px',
+    fontSize: tokens.fontSizeBase300,
   },
 })
 

@@ -43,7 +43,7 @@ const useStyles = makeStyles({
   },
   error: {
     color: tokens.colorPaletteRedForeground1,
-    fontSize: '12px',
+    fontSize: tokens.fontSizeBase200,
   },
 })
 

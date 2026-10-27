@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { type QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import {
@@ -7,6 +8,7 @@ import {
 } from '@fluentui/react-components'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { fluentTheme } from '@/lib/fluent-theme'
 import { SearchProvider } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
 import { NavigationProgress } from '@/components/navigation-progress'
@@ -21,10 +23,14 @@ function RootComponent() {
   // system-resolved-light to webLightTheme. MES keeps its own nested
   // FluentProvider, which now follows the same resolved theme.
   const { resolvedTheme } = useTheme()
+  // Memoised so the provider keeps a stable theme object (only
+  // fontFamilyBase differs from the stock web theme).
+  const theme = useMemo(
+    () => fluentTheme(resolvedTheme === 'dark' ? webDarkTheme : webLightTheme),
+    [resolvedTheme]
+  )
   return (
-    <FluentProvider
-      theme={resolvedTheme === 'dark' ? webDarkTheme : webLightTheme}
-    >
+    <FluentProvider theme={theme}>
       <NavigationProgress />
       <ToastHost />
       {/* SearchProvider lives at the root (Phase 1 unification) so the
@@ -55,13 +61,13 @@ function RootComponent() {
 // eslint-disable-next-line react-refresh/only-export-components
 function ThemedErrorShell({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme()
-  return (
-    <FluentProvider
-      theme={resolvedTheme === 'dark' ? webDarkTheme : webLightTheme}
-    >
-      {children}
-    </FluentProvider>
+  // Memoised so the provider keeps a stable theme object (only
+  // fontFamilyBase differs from the stock web theme).
+  const theme = useMemo(
+    () => fluentTheme(resolvedTheme === 'dark' ? webDarkTheme : webLightTheme),
+    [resolvedTheme]
   )
+  return <FluentProvider theme={theme}>{children}</FluentProvider>
 }
 
 export const Route = createRootRouteWithContext<{

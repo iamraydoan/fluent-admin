@@ -28,6 +28,9 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
   },
+  pageNumbers: {
+    fontVariantNumeric: 'tabular-nums',
+  },
 })
 
 type DataTablePaginationProps<TData> = {
@@ -69,7 +72,7 @@ export function DataTablePagination<TData>({
         </Select>
       </div>
 
-      <Text>
+      <Text className={styles.pageNumbers}>
         Page {currentPage} of {totalPages} ({totalRecords} Records)
       </Text>
 

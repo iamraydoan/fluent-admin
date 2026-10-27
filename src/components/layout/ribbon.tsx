@@ -35,6 +35,8 @@ const useStyles = makeStyles({
     gap: '0px',
   },
   ribbonLabel: {
+    // Kept at 11px: equidistant between Base100 (10px) and Base200
+    // (12px); tokenising would change the label size.
     fontSize: '11px',
     color: tokens.colorNeutralForeground3,
     marginTop: '0px',

@@ -16,6 +16,8 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusSmall,
     padding: '2px 6px',
+    // Kept at 11px: equidistant between Base100 (10px) and Base200
+    // (12px); tokenising would change the kbd hint size.
     fontSize: '11px',
   },
 })

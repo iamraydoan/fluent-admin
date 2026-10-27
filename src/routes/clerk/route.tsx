@@ -50,7 +50,7 @@ const useStyles = makeStyles({
     maxWidth: '672px',
   },
   messageTitle: {
-    fontWeight: 600,
+    fontWeight: tokens.fontWeightSemibold,
     display: 'block',
     marginBottom: tokens.spacingVerticalXS,
   },
@@ -84,8 +84,8 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground3,
     borderRadius: tokens.borderRadiusSmall,
     padding: '2px 4px',
-    fontSize: '12px',
-    fontWeight: 700,
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: tokens.fontWeightBold,
   },
   sample: {
     display: 'flex',
@@ -94,7 +94,7 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: '#1e293b',
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalM}`,
-    fontSize: '14px',
+    fontSize: tokens.fontSizeBase300,
     color: '#e2e8f0',
   },
   samplePre: {
@@ -102,7 +102,7 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusSmall,
     backgroundColor: '#0f172a',
     padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
-    fontSize: '12px',
+    fontSize: tokens.fontSizeBase200,
     marginTop: '0px',
     marginBottom: '0px',
   },
@@ -113,7 +113,7 @@ const useStyles = makeStyles({
   },
   note: {
     marginTop: tokens.spacingVerticalS,
-    fontSize: '14px',
+    fontSize: tokens.fontSizeBase300,
   },
 })
 

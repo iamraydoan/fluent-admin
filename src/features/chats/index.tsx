@@ -182,7 +182,7 @@ const useStyles = makeStyles({
   bubbleTime: {
     display: 'block',
     marginTop: tokens.spacingVerticalXS,
-    fontSize: '12px',
+    fontSize: tokens.fontSizeBase200,
     fontStyle: 'italic',
     opacity: 0.85,
   },

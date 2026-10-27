@@ -105,7 +105,11 @@ export const usersColumns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='PHONE NUMBER' />
     ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
+    cell: ({ row }) => (
+      <div style={{ fontVariantNumeric: 'tabular-nums' }}>
+        {row.getValue('phoneNumber')}
+      </div>
+    ),
     enableSorting: false,
   },
   {

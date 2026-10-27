@@ -49,6 +49,7 @@ const useStyles = makeStyles({
   statValue: {
     fontSize: tokens.fontSizeHero700,
     fontWeight: tokens.fontWeightBold,
+    fontVariantNumeric: 'tabular-nums',
   },
   statDelta: {
     color: tokens.colorNeutralForeground3,

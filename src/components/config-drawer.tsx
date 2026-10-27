@@ -45,8 +45,8 @@ const useStyles = makeStyles({
   },
   title: {
     margin: '0',
-    fontSize: '20px',
-    fontWeight: 600,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightSemibold,
   },
   description: {
     color: tokens.colorNeutralForeground3,
@@ -71,6 +71,8 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     cursor: 'pointer',
+    // Kept at 13px: no Fluent token at 13px (Base200 12 / Base300 14
+    // are equidistant); tokenising would change the size.
     fontSize: '13px',
   },
   footer: {

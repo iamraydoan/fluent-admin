@@ -25,13 +25,15 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
   },
   code: {
+    // Kept at 112px / 1.1: far above the largest Fluent size token
+    // (Hero1000 68px); no token is within 2px.
     fontSize: '112px',
     lineHeight: '1.1',
-    fontWeight: 700,
+    fontWeight: tokens.fontWeightBold,
     color: tokens.colorNeutralForeground1,
   },
   title: {
-    fontWeight: 600,
+    fontWeight: tokens.fontWeightSemibold,
   },
   description: {
     textAlign: 'center',

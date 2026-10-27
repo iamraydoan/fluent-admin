@@ -37,8 +37,10 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
+    // Kept at 18px: equidistant between Base400 (16px) and Base500
+    // (20px); tokenising would change the size.
     fontSize: '18px',
-    fontWeight: 500,
+    fontWeight: tokens.fontWeightMedium,
     color: '#ffffff',
     textDecoration: 'none',
   },

@@ -25,8 +25,8 @@ const useStyles = makeStyles({
   },
   title: {
     margin: '0',
-    fontSize: '20px',
-    fontWeight: 600,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightSemibold,
   },
   footer: {
     display: 'flex',

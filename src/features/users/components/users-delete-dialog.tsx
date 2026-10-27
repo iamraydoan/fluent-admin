@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     margin: '0',
   },
   bold: {
-    fontWeight: 700,
+    fontWeight: tokens.fontWeightBold,
   },
   title: {
     display: 'flex',

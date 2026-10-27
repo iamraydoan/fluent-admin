@@ -44,7 +44,7 @@ function TaskTitleCell({ row }: { row: Row<Task> }) {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          fontWeight: 600,
+          fontWeight: tokens.fontWeightSemibold,
         }}
       >
         {row.getValue('title')}
@@ -82,7 +82,9 @@ export const tasksColumns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title='TASK' />
     ),
     cell: ({ row }) => (
-      <div style={{ width: '80px' }}>{row.getValue('id')}</div>
+      <div style={{ width: '80px', fontVariantNumeric: 'tabular-nums' }}>
+        {row.getValue('id')}
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
