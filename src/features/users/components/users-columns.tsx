@@ -1,4 +1,5 @@
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import { formatPhone } from '@/lib/format'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
 import { RoleLabel } from '@/components/ui/role-label'
@@ -107,7 +108,7 @@ export const usersColumns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => (
       <div style={{ fontVariantNumeric: 'tabular-nums' }}>
-        {row.getValue('phoneNumber')}
+        {formatPhone(String(row.getValue('phoneNumber')))}
       </div>
     ),
     enableSorting: false,

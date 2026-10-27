@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { ArrowClockwise24Regular } from '@fluentui/react-icons'
+import { formatCurrency, formatNumber } from '@/lib/format'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Tab, TabList } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
@@ -72,12 +73,21 @@ const useStyles = makeStyles({
 const stats = [
   {
     label: 'Total Revenue',
-    value: '$45,231.89',
+    // Absolute value: no '+' sign; the delta line below carries the change.
+    value: formatCurrency(45231.89),
     delta: '+20.1% from last month',
   },
-  { label: 'Subscriptions', value: '+2350', delta: '+180.1% from last month' },
-  { label: 'Sales', value: '+12,234', delta: '+19% from last month' },
-  { label: 'Active Now', value: '+573', delta: '+201 since last hour' },
+  {
+    label: 'Subscriptions',
+    value: formatNumber(2350),
+    delta: '+180.1% from last month',
+  },
+  { label: 'Sales', value: formatNumber(12234), delta: '+19% from last month' },
+  {
+    label: 'Active Now',
+    value: formatNumber(573),
+    delta: '+201 since last hour',
+  },
 ]
 
 export function Dashboard() {
