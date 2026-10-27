@@ -49,38 +49,64 @@ const useStyles = makeStyles({
     // because no light token equals #e6e8eb).
     backgroundColor: HEADER_GREY,
   },
-  // CHROME REDO (2026-10-27): full Chrome shape, NO BORDER AT ALL.
-  // The two rejected rounds are NOT repeated: e913431 changed too
-  // much layout, and 080a47c only painted 8x8 scoops INSIDE a
-  // 1px-bordered white box, leaving a border hairline outside each
-  // scoop and square grey inactive boxes with no hover. This round
-  // therefore (a) deletes every border on active AND inactive tabs
-  // — definition comes ONLY from fill vs strip contrast, never
-  // from a stroke, outline or shadow edge; (b) draws the active
-  // tab as the reference's full buildTabPath SVG (top radius 8,
-  // bottom concave fillets 8 on BOTH sides, no stroke), so the
-  // strip colour shows through at the sides and in the concave
-  // bottom corners at 1x, not only in enlarged crops; (c) makes
-  // inactive tabs pills (rounded all corners, inset 6px top/bottom
-  // inside the unchanged 44px tab bounds) with a real hover pill;
-  // (d) adds 1px x 18px separators centred in the 8px gap.
+  // CHROME REDO v3 (2026-10-27): fixes all four points of the
+  // user's second rejection of c8a8ef6, by following the reference
+  // (google_chrome_tab_ui.html) exactly instead of improvising:
+  // (1) SEPARATOR: 1px, kept, but now pixel-verifiable — the v2
+  // base pill filled each inactive tab edge-to-edge, so the gap
+  // read as pill-grey against strip-grey and the 1px line drowned;
+  // with the base pill deleted (point 2) the gap is pure strip
+  // colour and the separator stands out. Height scaled from the
+  // reference: 18px in a 42px strip x (48/42) = 20.6 -> 20px,
+  // centred in the 44px tab (top 12px). Placement right -4px puts
+  // the crisp 1px line at 4-5px past the tab edge, i.e. on the
+  // centre of the 8px gap (true centre 4px, nearest whole pixel),
+  // NOT -4.5px (subpixel, renders faint on two pixels at 1x).
+  // (2) INACTIVE = NO BACKGROUND: the v2 base pill
+  // (docTabInactivePill, #eef0f2 / dark wash) is DELETED. The
+  // reference has no base layer at all — .tab-hover-pill is
+  // transparent until hover. So default inactive = transparent,
+  // strip shows through, icon/title/close only. Exactly ONE
+  // visible layer ever: hover pill on hover, Chrome shape when
+  // active, nothing otherwise.
+  // (3) FIRST TAB DOUBLE BACKGROUND: same fix — v2 stacked base
+  // pill + hover pill on the first tab. Now the first tab, like
+  // every tab, has 0 layers default, 1 hover pill on hover,
+  // 1 shape when active. No border anywhere, so no double edge.
+  // (4) SPACING: v2 content sat 8px (inactive) / 16px (active)
+  // from the tab outer edge — cramped on the left. Reference
+  // .tab-content: left/right inset = fillet 8px + padding 10px
+  // = 18px from the tab outer edge to the icon (and from the
+  // close button to the tab outer edge). Both states now use
+  // padding 0 18px, so left inset = right inset = 18px. Cost,
+  // accepted: inactive tabs grow 20px wider (8->18 each side),
+  // active tabs 4px wider (16->18 each side). Nothing else moves:
+  // strip 48px, tab 44px, gap 8px, icon 24px, no fixed width,
+  // no overlap, no 42px strip.
+  // (5) HEIGHT MATCHING, per reference (see also the comment on
+  // docTabActiveSvg): reference strip 42px — .tab-item height
+  // 42, .tab-hover-pill top 6 bottom 6 (height 30), .tab-content
+  // top 6 bottom 6 (height 30), .tab-svg-shape top 6 bottom 0
+  // (height 36). So content height = hover pill height, same top
+  // offset 6px, and the active shape extends 6px FURTHER DOWN
+  // than pill/content ONLY to merge into the page below — that
+  // difference is intentional, not a mismatch. Scaled to our
+  // 44px tab: content and hover pill are top 6 / height 32
+  // (44-12), active shape is top 6 / height 38 (44-6), bottom 0.
+  // A tab switching inactive -> hovered -> active therefore
+  // never moves its content vertically (top 6, height 32 in all
+  // three states) and its top edge never jumps (top 6 in all
+  // three states). v2 broke this: active content was full 44px
+  // tall vs the 32px hover pill.
   //
   // ADAPTATION vs the reference (documented, not silent): the
-  // reference's shape sides sit 8px inset from the tab's outer
-  // edges, so content padded 8px from the OUTER edge would sit
-  // exactly ON the fill edge (0px from the fill). To keep the
-  // current 8px content-to-fill-edge gap, the active tab's content
-  // row is padded 16px from the outer edge (8px fillet inset +
-  // 8px visual gap). Consequence, accepted by the brief: the
-  // active tab's OUTER width grows by 16px (border removal gives
-  // back 2px, so net +14px vs the bordered box). Everything else
-  // is unchanged: strip padding 4px 8px 0 16px, strip height
-  // 48px, tab height 44px, gap 8px, 24px icons, Fluent close
-  // Button, semibold active / regular inactive title. Deliberately
-  // NOT copied from Chrome: fixed 200px width, 42px strip / 36px
-  // shape height (shape height here is the current 44px), tab
-  // overlap (the 8px gap is kept — separators sit INSIDE it),
-  // 12px title / 16px icon / 22px close circle.
+  // reference overlaps tabs by -8px and uses a fixed 200px width;
+  // we keep the current 8px gap and content-sized width, so
+  // separators sit INSIDE the gap (see point 1) instead of at the
+  // reference's right:4px inside an overlapped tab. Shape sides
+  // sit 8px inset from the tab's outer edges at content height,
+  // so 18px content padding = 8px fillet + 10px visual gap to
+  // the fill edge, exactly as in the reference.
   //
   // Active tab root: transparent, no border, no shadow. Its size
   // comes from the content row in normal flow; the SVG shape is
@@ -95,66 +121,56 @@ const useStyles = makeStyles({
     backgroundColor: 'transparent',
     color: tokens.colorNeutralForeground1,
   },
+  // Active shape: top 6px, height 38px (44-6), bottom 0 — it
+  // merges into the HeaderBlock below, exactly like the
+  // reference's top 6 / bottom 0 shape. It is TALLER than the
+  // 32px hover pill / content BY DESIGN (see point 5 above):
+  // the extra 6px is below the content, joining the page, never
+  // above it, so the content top edge does not move.
   docTabActiveSvg: {
     position: 'absolute',
-    top: '0px',
+    top: '6px',
     left: '0px',
     display: 'block',
     pointerEvents: 'none',
   },
-  // Content row: 16px outer padding = 8px fillet inset + the
-  // current 8px visual gap to the fill edge (see above).
+  // Content row: height 32px + margin-top 6px = reference
+  // top 6 / bottom 6 inside the 44px tab, matching the hover
+  // pill's height and top offset exactly. Padding 0 18px =
+  // fillet 8px + 10px visual gap (point 4).
   docTabActiveContent: {
     position: 'relative',
     zIndex: 1,
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    height: '44px',
+    height: '32px',
+    marginTop: '6px',
     boxSizing: 'border-box',
-    padding: '0px 16px',
+    padding: '0px 18px',
   },
-  // Inactive tab root: transparent, no border. The pill (below)
-  // is inset 6px top/bottom, so the pill is 32px tall inside the
-  // unchanged 44px tab bounds, and the 8px gap between tabs and
-  // the 44px height are untouched.
+  // Inactive tab root: transparent, no border, NO base pill.
+  // Padding lives on the content row (point 4), not the root,
+  // so the root width is exactly the content width.
   docTabInactive: {
     position: 'relative',
     display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    alignItems: 'flex-start',
     height: '44px',
     boxSizing: 'border-box',
-    padding: '0px 8px',
     cursor: 'pointer',
     backgroundColor: 'transparent',
     color: tokens.colorNeutralForeground1,
   },
-  // Inactive pill: rounded ALL corners, full tab width, inset
-  // 6px top/bottom. Light fill #eef0f2 is slightly lighter than
-  // the #e6e8eb strip (sampled from the reference image: strip
-  // ~224, pill ~240). Dark fill is a low-opacity white wash over
-  // the dark strip (see the inline style override), slightly
-  // lighter than the strip without equalling the active fill's
-  // full-height Chrome shape. No border, no stroke.
-  docTabInactivePill: {
-    position: 'absolute',
-    top: '6px',
-    bottom: '6px',
-    left: '0px',
-    right: '0px',
-    borderRadius: '8px',
-    backgroundColor: '#eef0f2',
-    pointerEvents: 'none',
-  },
-  // Hover pill: a SECOND layer over the base pill, inset 6px
-  // top/bottom and 8px left/right exactly as in the reference, so
-  // the hover step is visible against the base pill (light:
-  // rgba(255,255,255,0.5) over #eef0f2 composites to ~#f7f8f9;
-  // dark: rgba(255,255,255,0.12) lightens the dark pill). Rendered
-  // only while the tab is really hovered (React mouse state, so a
-  // Playwright mouse hover shows it); there is no hover at all
-  // in the rejected 080a47c version, so this is a pass/fail item.
+  // Hover pill: the ONLY background an inactive tab ever gets,
+  // and only while hovered. Rendered always (as in the
+  // reference, where .tab-hover-pill exists with a transparent
+  // fill until :hover) so hovering adds exactly one layer and
+  // never remounts or shifts content. Inset 6px top/bottom and
+  // 8px left/right exactly as in the reference, radius 8px.
+  // Light: rgba(255,255,255,0.5) over the strip; dark: a
+  // low-opacity white wash. Default fill is transparent, so a
+  // non-hovered inactive tab shows pure strip colour.
   docTabHoverPill: {
     position: 'absolute',
     top: '6px',
@@ -162,34 +178,41 @@ const useStyles = makeStyles({
     left: '8px',
     right: '8px',
     borderRadius: '8px',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: 'transparent',
     pointerEvents: 'none',
     zIndex: 1,
   },
-  // Content sits above both pill layers.
+  // Content sits above the hover pill. Height 32px + margin-top
+  // 6px = same top offset and height as the hover pill and as
+  // the active content (point 5), so state switches never move
+  // it vertically. Padding 0 18px = fillet 8px + 10px (point 4).
   docTabInactiveContent: {
     position: 'relative',
     zIndex: 2,
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    height: '44px',
+    height: '32px',
+    marginTop: '6px',
+    boxSizing: 'border-box',
+    padding: '0px 18px',
   },
-  // Separator: 1px x 18px, reference colour #aeb4ba light, centred
-  // in the 8px gap (right -4.5px puts its centre 4px past the tab
-  // edge, i.e. the middle of the gap) and centred vertically in
-  // the 44px tab ((44-18)/2 = 13px). It is a child of the tab, so
-  // it adds no width and changes no spacing. Hidden when this tab
-  // or the next tab is active or hovered, as in the reference.
+  // Separator: 1px x 20px (scaled, see point 1), reference
+  // colour #aeb4ba light, centred in the 8px gap (right -4px)
+  // and centred vertically in the 44px tab (top 12px). It is a
+  // child of the tab, so it adds no width and changes no
+  // spacing. Hidden when this tab or the next tab is active or
+  // hovered, as in the reference. zIndex 3 keeps it above the
+  // hover pill and content of neighbouring tabs.
   docTabSeparator: {
     position: 'absolute',
-    top: '13px',
-    right: '-4.5px',
+    top: '12px',
+    right: '-4px',
     width: '1px',
-    height: '18px',
+    height: '20px',
     backgroundColor: '#aeb4ba',
     pointerEvents: 'none',
-    zIndex: 2,
+    zIndex: 3,
   },
   backButton: {
     alignSelf: 'center',
@@ -226,8 +249,10 @@ const useStyles = makeStyles({
 
 // Full Chrome tab path, adapted from the reference buildTabPath
 // (google_chrome_tab_ui.html): same R=8, same cubic factors
-// 0.552 / 0.448, but H is the current 44px tab height (not the
-// reference's 36px) and W is the live measured tab width. Path
+// 0.552 / 0.448, but H is 38px (44px tab minus the 6px top inset
+// of the reference shape, bottom 0 so it merges below — see the
+// height-matching comment on docTabActiveSvg) and W is the live
+// measured tab width. Path
 // order, as in the reference: concave bottom-left fillet
 // (0,H) -> (R,H-R), left side up to (R,R), top-left round to
 // (2R,0), top edge to (W-2R,0), top-right round to (W-R,R),
@@ -265,7 +290,7 @@ type ChromeActiveTabProps = {
 // Active tab as its own component so it can own a ResizeObserver
 // (hooks cannot live in the tabs.map loop). The root width is set
 // by the content row; the observer reports that width, the SVG
-// viewBox is set to exactly that width x 44, and the path is
+// viewBox is set to exactly that width x 38, and the path is
 // rebuilt — the same measure-then-draw loop as the reference,
 // which observes its tab list. Setting the width never changes
 // the root width (the SVG is absolute), so the loop is stable.
@@ -296,12 +321,12 @@ function ChromeActiveTab({
       <svg
         className={styles.docTabActiveSvg}
         width={tabWidth}
-        height={44}
-        viewBox={`0 0 ${tabWidth} 44`}
+        height={38}
+        viewBox={`0 0 ${tabWidth} 38`}
         aria-hidden='true'
       >
         <path
-          d={buildTabPath(tabWidth, 44)}
+          d={buildTabPath(tabWidth, 38)}
           style={{ fill: tokens.colorNeutralBackground1 }}
           stroke='none'
         />
@@ -358,7 +383,8 @@ export type DocumentTabBarProps = {
 // document: the Home icon only on the first tab, every tab with its
 // own Dismiss X. Active tab is the borderless Chrome SVG shape
 // (Background1 fill, merging into the block below); inactive tabs
-// are borderless pills, still readable. Right-hand icons keep the MES order:
+// are borderless and transparent by default, with a single hover
+// pill on hover. Right-hand icons keep the MES order:
 // More, Scan, Search, Messages, account avatar.
 export default function DocumentTabBar({
   tabs,
@@ -432,26 +458,22 @@ export default function DocumentTabBar({
             role='tab'
             aria-selected={false}
           >
+            {/* Hover pill: the ONLY background layer an inactive
+                tab ever gets. Always rendered with a transparent
+                fill when not hovered (reference behaviour), so
+                hovering adds exactly one layer and the default
+                state shows pure strip colour — no base pill. */}
             <span
-              className={styles.docTabInactivePill}
+              className={styles.docTabHoverPill}
               style={
-                isDark
-                  ? { backgroundColor: 'rgba(255, 255, 255, 0.07)' }
+                isHovered
+                  ? isDark
+                    ? { backgroundColor: 'rgba(255, 255, 255, 0.12)' }
+                    : { backgroundColor: 'rgba(255, 255, 255, 0.5)' }
                   : undefined
               }
               aria-hidden='true'
             />
-            {isHovered && (
-              <span
-                className={styles.docTabHoverPill}
-                style={
-                  isDark
-                    ? { backgroundColor: 'rgba(255, 255, 255, 0.12)' }
-                    : undefined
-                }
-                aria-hidden='true'
-              />
-            )}
             <span className={styles.docTabInactiveContent}>
               {index === 0 && <Home24Regular />}
               <Text weight='regular'>{tab.title}</Text>
