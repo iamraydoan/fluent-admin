@@ -8,21 +8,46 @@ import DocumentTabBar from './document-tab-bar'
 import TitleStrip from './title-strip'
 
 const useStyles = makeStyles({
-  // One DOM block for the whole header. Its top row is the grey
-  // document-tab strip (as in the reference); every row below it is white
-  // and touches the next row, separated only by a 1px divider.
+  // Header-border refactor (2026-10-27, user suggestion: "remove
+  // the border of the header block and only border the white
+  // inside"): the outer block is NO LONGER a card at all — no
+  // background, no boxShadow, no border, no radius. The grey
+  // document-tab strip therefore sits free on the page background
+  // (page CANVAS equals the strip colour since 564a74b, light and
+  // dark), blending seamlessly left/right like Chrome tabs on a
+  // grey strip, not inside a bordered card. Only the white rows
+  // below the strip are grouped into their own bordered card
+  // (whiteCard below). Page padding in authenticated-layout.tsx
+  // is unchanged ('0px 8px 8px 8px'), so the header still sits
+  // 8px inset from the sidebar — separate from the sidebar, just
+  // not one outer bordered card.
   headerBlock: {
     flexShrink: 0,
+  },
+  // The white inside card: object tabs (if present), ribbon (if
+  // present) and title strip, touching the tab strip with 0 gap.
+  // Border is left/right/bottom ONLY, no top border, top corners
+  // square: this is merge solution (a). The active document tab
+  // is a white Chrome shape whose bottom edge merges into the
+  // white below; a top border would cut straight across it with
+  // a visible line, and covering that segment (solution (b))
+  // would need the tab shape to overlap the card by a negative
+  // margin, risking a subpixel seam at 1x. With (a) there is
+  // simply no line to cross: under inactive tabs the grey-strip
+  // to white colour change itself is the Chrome boundary, and
+  // under the active tab white meets white uninterrupted.
+  // Stroke token, not a hardcoded colour, so dark mode gets a
+  // dark-appropriate stroke automatically. Bottom corners keep
+  // the cards' 8px radius; overflow hidden clips the inner
+  // white rows to those corners. Block width:auto means the
+  // 1px side borders are absorbed inside the page-column width,
+  // so the white card's outer edges align exactly with the tab
+  // strip's edges above it.
+  whiteCard: {
     backgroundColor: tokens.colorNeutralBackground1,
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-    // Header reads as a top bar, not a floating card: with the page
-    // top padding removed (see index.tsx), the top corners are
-    // square (radius 0) so the header touches the viewport top edge
-    // with no canvas strip and no rounded corner showing above it.
-    // Bottom corners keep the cards' 8px radius, so the header still
-    // curves against the grey content gap below it, as in the demo.
-    // overflow hidden is required, otherwise the square white/grey
-    // rows inside would paint over the rounded bottom corners.
+    borderLeft: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: '0px 0px 8px 8px',
     overflow: 'hidden',
   },
@@ -128,7 +153,7 @@ export default function HeaderBlock({
         accountSlot={accountAction}
       />
       {!headerCollapsed && (
-        <>
+        <div className={styles.whiteCard}>
           {showObjectTabs && (
             <>
               <div className={styles.objectTabs}>
@@ -160,7 +185,7 @@ export default function HeaderBlock({
             state={titleState}
             onCollapse={onCollapseHeader}
           />
-        </>
+        </div>
       )}
     </div>
   )
