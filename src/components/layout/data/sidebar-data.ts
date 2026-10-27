@@ -1,7 +1,6 @@
 import {
   Alert24Regular,
   Apps24Regular,
-  Bot24Regular,
   Bug24Regular,
   Chat24Regular,
   Desktop24Regular,
@@ -81,11 +80,6 @@ export const sidebarData: SidebarData = {
           title: 'Users',
           url: '/users',
           icon: People24Regular,
-        },
-        {
-          title: 'CM MES Agent',
-          url: '/mes-agent',
-          icon: Bot24Regular,
         },
         {
           title: 'Secured by Clerk',
