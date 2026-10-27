@@ -1,13 +1,36 @@
-'use client'
-
 import { useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { makeStyles } from '@fluentui/react-components'
+import { Warning20Regular } from '@fluentui/react-icons'
 import { showSubmittedData } from '@/lib/show-submitted-data'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type User } from '../data/schema'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  text: {
+    margin: '0',
+  },
+  bold: {
+    fontWeight: 700,
+  },
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  confirmField: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+})
 
 type UserDeleteDialogProps = {
   open: boolean
@@ -20,6 +43,7 @@ export function UsersDeleteDialog({
   onOpenChange,
   currentRow,
 }: UserDeleteDialogProps) {
+  const styles = useStyles()
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
@@ -36,12 +60,8 @@ export function UsersDeleteDialog({
       form='users-delete-form'
       disabled={value.trim() !== currentRow.username}
       title={
-        <span className='text-destructive'>
-          <AlertTriangle
-            className='me-1 inline-block stroke-destructive'
-            size={18}
-          />{' '}
-          Delete User
+        <span className={styles.title}>
+          <Warning20Regular /> Delete User
         </span>
       }
       desc={
@@ -51,35 +71,35 @@ export function UsersDeleteDialog({
             e.preventDefault()
             handleDelete()
           }}
-          className='space-y-4'
+          className={styles.form}
         >
-          <p className='mb-2'>
+          <p className={styles.text}>
             Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.username}</span>?
+            <span className={styles.bold}>{currentRow.username}</span>?
             <br />
             This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>
+            <span className={styles.bold}>
               {currentRow.role.toUpperCase()}
             </span>{' '}
             from the system. This cannot be undone.
           </p>
 
-          <Label className='my-2'>
-            Username:
+          <div className={styles.confirmField}>
+            <Label htmlFor='delete-username'>Username:</Label>
             <Input
+              id='delete-username'
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(_, data) => setValue(data.value)}
               placeholder='Enter username to confirm deletion.'
               autoFocus
             />
-          </Label>
+          </div>
 
-          <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>
-              Please be careful, this operation can not be rolled back.
-            </AlertDescription>
-          </Alert>
+          <MessageBar intent='error'>
+            <MessageBarBody>
+              Warning! Please be careful, this operation can not be rolled back.
+            </MessageBarBody>
+          </MessageBar>
         </form>
       }
       confirmText='Delete'

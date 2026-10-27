@@ -1,30 +1,44 @@
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MailPlus, Send } from 'lucide-react'
+import { makeStyles } from '@fluentui/react-components'
+import {
+  Dismiss20Regular,
+  MailAdd20Regular,
+  Send20Regular,
+} from '@fluentui/react-icons'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogClose,
+  DialogActions,
+  DialogBody,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
+  DialogSurface,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
 import { roles } from '../data/data'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  description: {
+    margin: '0',
+  },
+  titleIcon: {
+    display: 'inline-flex',
+    verticalAlign: 'middle',
+    marginRight: '8px',
+  },
+})
 
 const formSchema = z.object({
   email: z.email({
@@ -46,6 +60,7 @@ export function UsersInviteDialog({
   open,
   onOpenChange,
 }: UserInviteDialogProps) {
+  const styles = useStyles()
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', role: '', desc: '' },
@@ -57,94 +72,134 @@ export function UsersInviteDialog({
     onOpenChange(false)
   }
 
+  const { control, formState } = form
+
   return (
     <Dialog
       open={open}
-      onOpenChange={(state) => {
+      onOpenChange={(_, data) => {
         form.reset()
-        onOpenChange(state)
+        onOpenChange(data.open)
       }}
     >
-      <DialogContent className='sm:max-w-md'>
-        <DialogHeader className='text-start'>
-          <DialogTitle className='flex items-center gap-2'>
-            <MailPlus /> Invite User
-          </DialogTitle>
-          <DialogDescription>
-            Invite new user to join your team by sending them an email
-            invitation. Assign a role to define their access level.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='user-invite-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='space-y-4'
+      <DialogSurface>
+        <DialogBody>
+          <DialogTitle
+            action={
+              <DialogTrigger action='close'>
+                <Button
+                  appearance='subtle'
+                  shape='square'
+                  size='small'
+                  icon={<Dismiss20Regular />}
+                  aria-label='Close'
+                />
+              </DialogTrigger>
+            }
           >
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='email'
-                      placeholder='eg: john.doe@gmail.com'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='role'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Select a role'
-                    items={roles.map(({ label, value }) => ({
-                      label,
-                      value,
-                    }))}
+            <span className={styles.titleIcon}>
+              <MailAdd20Regular />
+            </span>
+            Invite User
+          </DialogTitle>
+          <DialogContent>
+            <p className={styles.description}>
+              Invite new user to join your team by sending them an email
+              invitation. Assign a role to define their access level.
+            </p>
+            <form
+              id='user-invite-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className={styles.form}
+            >
+              <Field
+                label='Email'
+                validationMessage={formState.errors.email?.message}
+              >
+                {(fieldProps) => (
+                  <Controller
+                    name='email'
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...fieldProps}
+                        name={field.name}
+                        value={field.value}
+                        onBlur={field.onBlur}
+                        onChange={(_, data) => field.onChange(data.value)}
+                        type='email'
+                        placeholder='eg: john.doe@gmail.com'
+                      />
+                    )}
                   />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='desc'
-              render={({ field }) => (
-                <FormItem className=''>
-                  <FormLabel>Description (optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className='resize-none'
-                      placeholder='Add a personal note to your invitation (optional)'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-        <DialogFooter className='gap-y-2'>
-          <DialogClose asChild>
-            <Button variant='outline'>Cancel</Button>
-          </DialogClose>
-          <Button type='submit' form='user-invite-form'>
-            Invite <Send />
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+                )}
+              </Field>
+              <Field
+                label='Role'
+                validationMessage={formState.errors.role?.message}
+              >
+                {(fieldProps) => (
+                  <Controller
+                    name='role'
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...fieldProps}
+                        value={field.value}
+                        onBlur={field.onBlur}
+                        onChange={(_, data) => field.onChange(data.value)}
+                      >
+                        <option value='' disabled>
+                          Select a role
+                        </option>
+                        {roles.map(({ label, value }) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                )}
+              </Field>
+              <Field
+                label='Description (optional)'
+                validationMessage={formState.errors.desc?.message}
+              >
+                {(fieldProps) => (
+                  <Controller
+                    name='desc'
+                    control={control}
+                    render={({ field }) => (
+                      <Textarea
+                        {...fieldProps}
+                        name={field.name}
+                        value={field.value ?? ''}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                        placeholder='Add a personal note to your invitation (optional)'
+                      />
+                    )}
+                  />
+                )}
+              </Field>
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <DialogTrigger action='close'>
+              <Button appearance='secondary'>Cancel</Button>
+            </DialogTrigger>
+            <Button
+              type='submit'
+              form='user-invite-form'
+              appearance='primary'
+              icon={<Send20Regular />}
+            >
+              Invite
+            </Button>
+          </DialogActions>
+        </DialogBody>
+      </DialogSurface>
     </Dialog>
   )
 }

@@ -1,20 +1,33 @@
-import { MailPlus, UserPlus } from 'lucide-react'
+import { makeStyles } from '@fluentui/react-components'
+import { MailAdd20Regular, PersonAdd20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { useUsers } from './users-provider'
 
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    gap: '8px',
+  },
+})
+
 export function UsersPrimaryButtons() {
+  const styles = useStyles()
   const { setOpen } = useUsers()
   return (
-    <div className='flex gap-2'>
+    <div className={styles.root}>
       <Button
-        variant='outline'
-        className='space-x-1'
+        appearance='secondary'
+        icon={<MailAdd20Regular />}
         onClick={() => setOpen('invite')}
       >
-        <span>Invite User</span> <MailPlus size={18} />
+        Invite User
       </Button>
-      <Button className='space-x-1' onClick={() => setOpen('add')}>
-        <span>Add User</span> <UserPlus size={18} />
+      <Button
+        appearance='primary'
+        icon={<PersonAdd20Regular />}
+        onClick={() => setOpen('add')}
+      >
+        Add User
       </Button>
     </div>
   )

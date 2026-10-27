@@ -1,35 +1,40 @@
-import { Shield, UserCheck, Users, CreditCard } from 'lucide-react'
+import {
+  Payment20Regular,
+  People20Regular,
+  Person20Regular,
+  Shield20Regular,
+} from '@fluentui/react-icons'
 import { type UserStatus } from './schema'
 
-export const callTypes = new Map<UserStatus, string>([
-  ['active', 'bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200'],
-  ['inactive', 'bg-neutral-300/40 border-neutral-300'],
-  ['invited', 'bg-sky-200/40 text-sky-900 dark:text-sky-100 border-sky-300'],
-  [
-    'suspended',
-    'bg-destructive/10 dark:bg-destructive/50 text-destructive dark:text-primary border-destructive/10',
-  ],
+export const callTypes = new Map<
+  UserStatus,
+  'success' | 'subtle' | 'informative' | 'danger'
+>([
+  ['active', 'success'],
+  ['inactive', 'subtle'],
+  ['invited', 'informative'],
+  ['suspended', 'danger'],
 ])
 
 export const roles = [
   {
     label: 'Superadmin',
     value: 'superadmin',
-    icon: Shield,
+    icon: Shield20Regular,
   },
   {
     label: 'Admin',
     value: 'admin',
-    icon: UserCheck,
+    icon: Person20Regular,
   },
   {
     label: 'Manager',
     value: 'manager',
-    icon: Users,
+    icon: People20Regular,
   },
   {
     label: 'Cashier',
     value: 'cashier',
-    icon: CreditCard,
+    icon: Payment20Regular,
   },
 ] as const

@@ -1,14 +1,34 @@
-'use client'
-
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
-import { AlertTriangle } from 'lucide-react'
-import { toast } from 'sonner'
+import { makeStyles } from '@fluentui/react-components'
+import { Warning20Regular } from '@fluentui/react-icons'
+import { toast } from '@/lib/toast'
 import { sleep } from '@/lib/utils'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { MessageBar, MessageBarBody } from '@/components/ui/message-bar'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  text: {
+    margin: '0',
+  },
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  confirmField: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+})
 
 type UserMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -23,11 +43,12 @@ export function UsersMultiDeleteDialog<TData>({
   onOpenChange,
   table,
 }: UserMultiDeleteDialogProps<TData>) {
+  const styles = useStyles()
   const [value, setValue] = useState('')
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (value.trim() !== CONFIRM_WORD) {
       toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
       return
@@ -35,17 +56,12 @@ export function UsersMultiDeleteDialog<TData>({
 
     onOpenChange(false)
 
-    toast.promise(sleep(2000), {
-      loading: 'Deleting users...',
-      success: () => {
-        setValue('')
-        table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'users' : 'user'
-        }`
-      },
-      error: 'Error',
-    })
+    await sleep(2000)
+    setValue('')
+    table.resetRowSelection()
+    toast.success(
+      `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'}`
+    )
   }
 
   return (
@@ -55,12 +71,8 @@ export function UsersMultiDeleteDialog<TData>({
       form='users-multi-delete-form'
       disabled={value.trim() !== CONFIRM_WORD}
       title={
-        <span className='text-destructive'>
-          <AlertTriangle
-            className='me-1 inline-block stroke-destructive'
-            size={18}
-          />{' '}
-          Delete {selectedRows.length}{' '}
+        <span className={styles.title}>
+          <Warning20Regular /> Delete {selectedRows.length}{' '}
           {selectedRows.length > 1 ? 'users' : 'user'}
         </span>
       }
@@ -71,29 +83,31 @@ export function UsersMultiDeleteDialog<TData>({
             e.preventDefault()
             handleDelete()
           }}
-          className='space-y-4'
+          className={styles.form}
         >
-          <p className='mb-2'>
+          <p className={styles.text}>
             Are you sure you want to delete the selected users? <br />
             This action cannot be undone.
           </p>
 
-          <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span className=''>Confirm by typing "{CONFIRM_WORD}":</span>
+          <div className={styles.confirmField}>
+            <Label htmlFor='multi-delete-confirm'>
+              Confirm by typing &quot;{CONFIRM_WORD}&quot;:
+            </Label>
             <Input
+              id='multi-delete-confirm'
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(_, data) => setValue(data.value)}
               placeholder={`Type "${CONFIRM_WORD}" to confirm.`}
               autoFocus
             />
-          </Label>
+          </div>
 
-          <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>
-              Please be careful, this operation can not be rolled back.
-            </AlertDescription>
-          </Alert>
+          <MessageBar intent='error'>
+            <MessageBarBody>
+              Warning! Please be careful, this operation can not be rolled back.
+            </MessageBarBody>
+          </MessageBar>
         </form>
       }
       confirmText='Delete'
