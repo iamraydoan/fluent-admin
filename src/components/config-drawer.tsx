@@ -67,7 +67,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     cursor: 'pointer',

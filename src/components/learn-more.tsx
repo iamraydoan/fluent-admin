@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     bottom: 'calc(100% + 4px)',
     left: '0',
     backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow8,
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalM}`,

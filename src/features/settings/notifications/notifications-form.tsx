@@ -42,8 +42,9 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: tokens.spacingHorizontalL,
-    border: '1px solid #edebe9',
-    borderRadius: '8px',
+    // Nearest stroke token to #edebe9: Stroke2 #e0e0e0 (see header.tsx).
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: tokens.borderRadiusXLarge,
     padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
     boxSizing: 'border-box',
   },

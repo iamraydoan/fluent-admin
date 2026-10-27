@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     // Theme token, not a hardcoded white: light resolves to #ffffff
     // (unchanged), dark to the dark surface so menu text stays readable.
     backgroundColor: tokens.colorNeutralBackground1,
-    borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
@@ -65,7 +65,7 @@ const useStyles = makeStyles({
     // centred, no fill. Fluent Nav's own ::after is hidden, otherwise
     // the selected item shows two bars.
     '& [aria-current="page"]': {
-      backgroundImage: 'linear-gradient(#0f6cbd, #0f6cbd)',
+      backgroundImage: `linear-gradient(${tokens.colorBrandBackground}, ${tokens.colorBrandBackground})`,
       backgroundSize: '3px 20px',
       backgroundPosition: 'left center',
       backgroundRepeat: 'no-repeat',
@@ -134,7 +134,8 @@ const useStyles = makeStyles({
   },
   badge: {
     backgroundColor: tokens.colorNeutralBackground3,
-    borderRadius: '10px',
+    // Nearest radius token to 10px: XLarge 8px (Large 6px is further).
+    borderRadius: tokens.borderRadiusXLarge,
     padding: '0px 6px',
     // Kept at 11px / 18px: 11px is equidistant between Base100 (10px)
     // and Base200 (12px), and 18px between Base200 (16px) and Base300

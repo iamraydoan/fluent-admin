@@ -17,8 +17,9 @@ const useStyles = makeStyles({
   titleIcon: {
     width: '20px',
     height: '20px',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: '3px',
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    // 3px is equidistant from Small 2px and Medium 4px; Medium chosen.
+    borderRadius: tokens.borderRadiusMedium,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

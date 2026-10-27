@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     gap: '6px',
   },
   fileInput: {
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: tokens.colorNeutralBackground1,
     padding: '6px 8px',

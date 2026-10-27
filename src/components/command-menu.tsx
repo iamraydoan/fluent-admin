@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
   },
   list: {
     overflowY: 'auto',

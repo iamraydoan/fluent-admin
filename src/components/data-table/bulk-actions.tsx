@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
     backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusLarge,
     boxShadow: tokens.shadow16,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,

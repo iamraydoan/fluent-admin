@@ -45,7 +45,7 @@ const useStyles = makeStyles({
     gap: '2px',
     maxHeight: '320px',
     overflowY: 'auto',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalXS}`,
   },

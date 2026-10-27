@@ -118,7 +118,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     minWidth: 0,
     backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     overflow: 'hidden',
   },
@@ -202,7 +202,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
     backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
   },
@@ -225,7 +225,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalXXL,
     minWidth: 0,
     backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
   emptyIcon: {
@@ -333,8 +333,8 @@ export function Chats() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
-          borderRadius: '8px',
-          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+          borderRadius: tokens.borderRadiusXLarge,
+          boxShadow: tokens.shadow2,
         }}
       >
         <section className={styles.section}>

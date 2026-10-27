@@ -183,7 +183,7 @@ const useStyles = makeStyles({
     bottom: '6px',
     left: '8px',
     right: '8px',
-    borderRadius: '8px',
+    borderRadius: tokens.borderRadiusXLarge,
     backgroundColor: 'transparent',
     pointerEvents: 'none',
     zIndex: 1,

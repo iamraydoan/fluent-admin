@@ -45,10 +45,10 @@ const useStyles = makeStyles({
   // strip's edges above it.
   whiteCard: {
     backgroundColor: tokens.colorNeutralBackground1,
-    borderLeft: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: '0px 0px 8px 8px',
+    borderLeft: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: `0px 0px ${tokens.borderRadiusXLarge} ${tokens.borderRadiusXLarge}`,
     overflow: 'hidden',
   },
   objectTabs: {

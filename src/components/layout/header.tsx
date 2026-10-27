@@ -6,8 +6,10 @@ const useStyles = makeStyles({
   header: {
     height: '64px',
     flexShrink: 0,
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid #edebe9',
+    backgroundColor: tokens.colorNeutralBackground1,
+    // Nearest stroke token to #edebe9 (237,235,233): Stroke2 #e0e0e0,
+    // closer than Stroke1 #d1d1d1; thickness kept at strokeWidthThin.
+    borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`,
     boxSizing: 'border-box',
   },
   headerFixed: {
@@ -16,7 +18,8 @@ const useStyles = makeStyles({
     zIndex: 50,
   },
   headerShadow: {
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+    // Nearest shadow token to 0 2px 8px: shadow8 keeps the 8px blur.
+    boxShadow: tokens.shadow8,
   },
   inner: {
     display: 'flex',

@@ -49,7 +49,7 @@ const useStyles = makeStyles({
     flex: '1',
     minHeight: 0,
     overflowY: 'auto',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
   // Entity Types pattern: 35px rows, uppercase headers, vertical dividers.
@@ -72,7 +72,7 @@ const useStyles = makeStyles({
     zIndex: 1,
   },
   dividerCell: {
-    borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`,
   },
   // Body rows are driven by the 32px Fluent Checkbox, so 1px vertical
   // padding lands the row at ~35px; header sort buttons are shorter,
