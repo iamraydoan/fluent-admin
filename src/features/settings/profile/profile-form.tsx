@@ -190,7 +190,9 @@ export function ProfileForm() {
         </div>
       </div>
       <div>
-        <Button type='submit'>Update profile</Button>
+        <Button type='submit' appearance='primary'>
+          Update profile
+        </Button>
       </div>
     </form>
   )

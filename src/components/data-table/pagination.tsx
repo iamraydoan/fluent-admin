@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
   // Entity Types pattern: fully right-aligned, no first/last buttons and
@@ -77,24 +78,28 @@ export function DataTablePagination<TData>({
       </Text>
 
       <div className={styles.group}>
-        <Button
-          appearance='outline'
-          shape='square'
-          size='small'
-          aria-label='Go to previous page'
-          icon={<ChevronLeft20Regular />}
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        />
-        <Button
-          appearance='outline'
-          shape='square'
-          size='small'
-          aria-label='Go to next page'
-          icon={<ChevronRight20Regular />}
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        />
+        <Tooltip content='Go to previous page' relationship='label'>
+          <Button
+            appearance='outline'
+            shape='square'
+            size='small'
+            aria-label='Go to previous page'
+            icon={<ChevronLeft20Regular />}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          />
+        </Tooltip>
+        <Tooltip content='Go to next page' relationship='label'>
+          <Button
+            appearance='outline'
+            shape='square'
+            size='small'
+            aria-label='Go to next page'
+            icon={<ChevronRight20Regular />}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          />
+        </Tooltip>
       </div>
     </div>
   )

@@ -199,7 +199,9 @@ export function NotificationsForm() {
         )}
       />
       <div>
-        <Button type='submit'>Update notifications</Button>
+        <Button type='submit' appearance='primary'>
+          Update notifications
+        </Button>
       </div>
     </form>
   )

@@ -5,6 +5,7 @@ import { Dismiss20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Divider } from '@/components/ui/divider'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
   toolbar: {
@@ -144,15 +145,17 @@ export function DataTableBulkActions<TData>({
         onKeyDown={handleKeyDown}
         className={styles.toolbar}
       >
-        <Button
-          appearance='outline'
-          shape='circular'
-          size='small'
-          onClick={handleClearSelection}
-          aria-label='Clear selection'
-          title='Clear selection (Escape)'
-          icon={<Dismiss20Regular />}
-        />
+        <Tooltip content='Clear selection' relationship='label'>
+          <Button
+            appearance='outline'
+            shape='circular'
+            size='small'
+            onClick={handleClearSelection}
+            aria-label='Clear selection'
+            title='Clear selection (Escape)'
+            icon={<Dismiss20Regular />}
+          />
+        </Tooltip>
 
         <Divider vertical />
 

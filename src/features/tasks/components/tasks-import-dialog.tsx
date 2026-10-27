@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
   titleRow: {
@@ -105,12 +106,14 @@ export function TasksImportDialog({
                 <Text>Import tasks quickly from a CSV file.</Text>
               </div>
               <DialogTrigger action='close'>
-                <Button
-                  appearance='subtle'
-                  size='small'
-                  icon={<Dismiss20Regular />}
-                  aria-label='Close'
-                />
+                <Tooltip content='Close' relationship='label'>
+                  <Button
+                    appearance='subtle'
+                    size='small'
+                    icon={<Dismiss20Regular />}
+                    aria-label='Close'
+                  />
+                </Tooltip>
               </DialogTrigger>
             </div>
             <form

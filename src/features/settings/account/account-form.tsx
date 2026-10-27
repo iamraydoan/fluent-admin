@@ -124,7 +124,9 @@ export function AccountForm() {
         )}
       />
       <div>
-        <Button type='submit'>Update account</Button>
+        <Button type='submit' appearance='primary'>
+          Update account
+        </Button>
       </div>
     </form>
   )

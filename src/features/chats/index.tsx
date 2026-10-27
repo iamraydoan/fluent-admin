@@ -28,6 +28,7 @@ import {
   MessageBarBody,
 } from '@/components/ui/message-bar'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 import HeaderBlock from '@/components/layout/header-block'
 import Ribbon from '@/components/layout/ribbon'
 import { NewChat } from './components/new-chat'
@@ -319,13 +320,15 @@ export function Chats() {
             <Text size={300}>{notice}</Text>
           </MessageBarBody>
           <MessageBarActions>
-            <Button
-              appearance='transparent'
-              size='small'
-              icon={<Dismiss24Regular />}
-              onClick={() => setNotice('')}
-              aria-label='Dismiss'
-            />
+            <Tooltip content='Dismiss' relationship='label'>
+              <Button
+                appearance='transparent'
+                size='small'
+                icon={<Dismiss24Regular />}
+                onClick={() => setNotice('')}
+                aria-label='Dismiss'
+              />
+            </Tooltip>
           </MessageBarActions>
         </MessageBar>
       )}
@@ -348,12 +351,14 @@ export function Chats() {
                 <ChatMultiple20Regular />
               </div>
 
-              <Button
-                appearance='subtle'
-                icon={<Compose20Regular />}
-                aria-label='New message'
-                onClick={() => setCreateConversationDialog(true)}
-              />
+              <Tooltip content='New message' relationship='label'>
+                <Button
+                  appearance='subtle'
+                  icon={<Compose20Regular />}
+                  aria-label='New message'
+                  onClick={() => setCreateConversationDialog(true)}
+                />
+              </Tooltip>
             </div>
 
             <Input
@@ -429,21 +434,27 @@ export function Chats() {
 
                 {/* Right */}
                 <div className={styles.convoHeaderRight}>
-                  <Button
-                    appearance='subtle'
-                    icon={<Video20Regular />}
-                    aria-label='Video call'
-                  />
-                  <Button
-                    appearance='subtle'
-                    icon={<Call20Regular />}
-                    aria-label='Voice call'
-                  />
-                  <Button
-                    appearance='subtle'
-                    icon={<MoreHorizontal20Regular />}
-                    aria-label='More options'
-                  />
+                  <Tooltip content='Video call' relationship='label'>
+                    <Button
+                      appearance='subtle'
+                      icon={<Video20Regular />}
+                      aria-label='Video call'
+                    />
+                  </Tooltip>
+                  <Tooltip content='Voice call' relationship='label'>
+                    <Button
+                      appearance='subtle'
+                      icon={<Call20Regular />}
+                      aria-label='Voice call'
+                    />
+                  </Tooltip>
+                  <Tooltip content='More options' relationship='label'>
+                    <Button
+                      appearance='subtle'
+                      icon={<MoreHorizontal20Regular />}
+                      aria-label='More options'
+                    />
+                  </Tooltip>
                 </div>
               </div>
 
@@ -481,24 +492,30 @@ export function Chats() {
               >
                 <div className={styles.composerBox}>
                   <div className={styles.composerActions}>
-                    <Button
-                      appearance='subtle'
-                      type='button'
-                      icon={<Add20Regular />}
-                      aria-label='Add attachment'
-                    />
-                    <Button
-                      appearance='subtle'
-                      type='button'
-                      icon={<ImageAdd20Regular />}
-                      aria-label='Add image'
-                    />
-                    <Button
-                      appearance='subtle'
-                      type='button'
-                      icon={<Attach20Regular />}
-                      aria-label='Attach file'
-                    />
+                    <Tooltip content='Add attachment' relationship='label'>
+                      <Button
+                        appearance='subtle'
+                        type='button'
+                        icon={<Add20Regular />}
+                        aria-label='Add attachment'
+                      />
+                    </Tooltip>
+                    <Tooltip content='Add image' relationship='label'>
+                      <Button
+                        appearance='subtle'
+                        type='button'
+                        icon={<ImageAdd20Regular />}
+                        aria-label='Add image'
+                      />
+                    </Tooltip>
+                    <Tooltip content='Attach file' relationship='label'>
+                      <Button
+                        appearance='subtle'
+                        type='button'
+                        icon={<Attach20Regular />}
+                        aria-label='Attach file'
+                      />
+                    </Tooltip>
                   </div>
                   <label className={styles.composerLabel}>
                     <span hidden>Chat Text Box</span>
@@ -517,12 +534,14 @@ export function Chats() {
                       }}
                     />
                   </label>
-                  <Button
-                    appearance='subtle'
-                    type='submit'
-                    icon={<Send20Regular />}
-                    aria-label='Send message'
-                  />
+                  <Tooltip content='Send message' relationship='label'>
+                    <Button
+                      appearance='subtle'
+                      type='submit'
+                      icon={<Send20Regular />}
+                      aria-label='Send message'
+                    />
+                  </Tooltip>
                 </div>
               </form>
             </div>

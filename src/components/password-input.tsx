@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Eye20Regular, EyeOff20Regular } from '@fluentui/react-icons'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import { Tooltip } from './ui/tooltip'
 
 // Public API stays the native input shape (callers spread
 // react-hook-form field props, whose value/defaultValue are the loose
@@ -51,16 +52,21 @@ export function PasswordInput({
       onChange={(event) => onChange?.(event)}
       onBlur={(event) => onBlur?.(event)}
       contentAfter={
-        <Button
-          type='button'
-          appearance='subtle'
-          shape='square'
-          size='small'
-          disabled={disabled}
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
-          icon={showPassword ? <Eye20Regular /> : <EyeOff20Regular />}
-          onClick={() => setShowPassword((prev) => !prev)}
-        />
+        <Tooltip
+          content={showPassword ? 'Hide password' : 'Show password'}
+          relationship='label'
+        >
+          <Button
+            type='button'
+            appearance='subtle'
+            shape='square'
+            size='small'
+            disabled={disabled}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            icon={showPassword ? <Eye20Regular /> : <EyeOff20Regular />}
+            onClick={() => setShowPassword((prev) => !prev)}
+          />
+        </Tooltip>
       }
     />
   )

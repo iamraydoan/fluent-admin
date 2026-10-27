@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { QuestionCircle20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
   wrapper: {
@@ -53,14 +54,16 @@ export function LearnMore({
 
   return (
     <span className={styles.wrapper}>
-      <Button
-        appearance='outline'
-        shape='circular'
-        size='small'
-        aria-label='Learn more'
-        icon={<QuestionCircle20Regular />}
-        onClick={toggle}
-      />
+      <Tooltip content='Learn more' relationship='label'>
+        <Button
+          appearance='outline'
+          shape='circular'
+          size='small'
+          aria-label='Learn more'
+          icon={<QuestionCircle20Regular />}
+          onClick={toggle}
+        />
+      </Tooltip>
       {isOpen && <span className={styles.content}>{children}</span>}
     </span>
   )

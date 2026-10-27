@@ -3,6 +3,7 @@ import { ChevronUp24Regular, Settings20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
   titleStrip: {
@@ -62,13 +63,15 @@ export default function TitleStrip({
       }
       action={
         onCollapse ? (
-          <Button
-            appearance='transparent'
-            className={styles.collapseButton}
-            icon={<ChevronUp24Regular />}
-            aria-label='Collapse header'
-            onClick={onCollapse}
-          />
+          <Tooltip content='Collapse header' relationship='label'>
+            <Button
+              appearance='transparent'
+              className={styles.collapseButton}
+              icon={<ChevronUp24Regular />}
+              aria-label='Collapse header'
+              onClick={onCollapse}
+            />
+          </Tooltip>
         ) : undefined
       }
     />

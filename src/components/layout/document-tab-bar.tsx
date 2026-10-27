@@ -27,6 +27,7 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 // Account data is the standard sidebar-data user (single source).
 // The old menu-data ACCOUNT copy was deleted; initials 'SN' is now
 // stored on sidebar-data.user itself, so the avatar fallback is
@@ -340,16 +341,18 @@ function ChromeActiveTab({
       <div className={styles.docTabActiveContent}>
         {showFirstIcon && <HomeIcon filled />}
         <Text weight='semibold'>{tab.title}</Text>
-        <Button
-          appearance='transparent'
-          size='small'
-          icon={<Dismiss24Regular />}
-          aria-label={`Close tab ${tab.title}`}
-          onClick={(e) => {
-            e.stopPropagation()
-            onCloseTab(tab.url)
-          }}
-        />
+        <Tooltip content={`Close tab ${tab.title}`} relationship='label'>
+          <Button
+            appearance='transparent'
+            size='small'
+            icon={<Dismiss24Regular />}
+            aria-label={`Close tab ${tab.title}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onCloseTab(tab.url)
+            }}
+          />
+        </Tooltip>
       </div>
       {separatorVisible && (
         <span
@@ -422,14 +425,16 @@ export default function DocumentTabBar({
         isDark ? { backgroundColor: tokens.colorNeutralBackground2 } : undefined
       }
     >
-      <Button
-        appearance='transparent'
-        size='small'
-        className={styles.backButton}
-        icon={<ChevronLeft24Regular />}
-        aria-label='Back'
-        onClick={onBack}
-      />
+      <Tooltip content='Back' relationship='label'>
+        <Button
+          appearance='transparent'
+          size='small'
+          className={styles.backButton}
+          icon={<ChevronLeft24Regular />}
+          aria-label='Back'
+          onClick={onBack}
+        />
+      </Tooltip>
       {tabs.map((tab, index) => {
         const isActive = tab.url === activeUrl
         const isHovered = hoveredUrl === tab.url
@@ -483,16 +488,18 @@ export default function DocumentTabBar({
             <span className={styles.docTabInactiveContent}>
               {index === 0 && <HomeIcon />}
               <Text weight='regular'>{tab.title}</Text>
-              <Button
-                appearance='transparent'
-                size='small'
-                icon={<Dismiss24Regular />}
-                aria-label={`Close tab ${tab.title}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onCloseTab(tab.url)
-                }}
-              />
+              <Tooltip content={`Close tab ${tab.title}`} relationship='label'>
+                <Button
+                  appearance='transparent'
+                  size='small'
+                  icon={<Dismiss24Regular />}
+                  aria-label={`Close tab ${tab.title}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onCloseTab(tab.url)
+                  }}
+                />
+              </Tooltip>
             </span>
             {separatorVisible && (
               <span
@@ -509,31 +516,39 @@ export default function DocumentTabBar({
         )
       })}
       <div className={styles.docTabRight}>
-        <Button
-          appearance='transparent'
-          className={styles.topIconButton}
-          icon={<ChevronDown20Regular />}
-          aria-label='More options'
-        />
-        <Button
-          appearance='transparent'
-          className={styles.topIconButton}
-          icon={<BarcodeScanner20Regular />}
-          aria-label='Scan'
-        />
-        <Button
-          appearance='transparent'
-          className={styles.topIconButton}
-          icon={<Search20Regular />}
-          aria-label='Search'
-          onClick={() => setOpen(true)}
-        />
-        <Button
-          appearance='transparent'
-          className={styles.topIconButton}
-          icon={<Chat20Regular />}
-          aria-label='Messages'
-        />
+        <Tooltip content='More options' relationship='label'>
+          <Button
+            appearance='transparent'
+            className={styles.topIconButton}
+            icon={<ChevronDown20Regular />}
+            aria-label='More options'
+          />
+        </Tooltip>
+        <Tooltip content='Scan' relationship='label'>
+          <Button
+            appearance='transparent'
+            className={styles.topIconButton}
+            icon={<BarcodeScanner20Regular />}
+            aria-label='Scan'
+          />
+        </Tooltip>
+        <Tooltip content='Search' relationship='label'>
+          <Button
+            appearance='transparent'
+            className={styles.topIconButton}
+            icon={<Search20Regular />}
+            aria-label='Search'
+            onClick={() => setOpen(true)}
+          />
+        </Tooltip>
+        <Tooltip content='Messages' relationship='label'>
+          <Button
+            appearance='transparent'
+            className={styles.topIconButton}
+            icon={<Chat20Regular />}
+            aria-label='Messages'
+          />
+        </Tooltip>
         {/* ThemeSwitch (compact, existing component): the single
             system-wide placement — every screen renders HeaderBlock
             -> DocumentTabBar, so one switch here changes the theme
@@ -607,13 +622,15 @@ export default function DocumentTabBar({
           </>
         )}
         {headerCollapsed && (
-          <Button
-            appearance='transparent'
-            className={styles.topIconButton}
-            icon={<ChevronDown24Regular />}
-            aria-label='Expand header'
-            onClick={onExpandHeader}
-          />
+          <Tooltip content='Expand header' relationship='label'>
+            <Button
+              appearance='transparent'
+              className={styles.topIconButton}
+              icon={<ChevronDown24Regular />}
+              aria-label='Expand header'
+              onClick={onExpandHeader}
+            />
+          </Tooltip>
         )}
       </div>
     </div>

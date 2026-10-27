@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Radio, RadioGroup } from '@/components/ui/radio-group'
 import { Select } from '@/components/ui/select'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 import { type Task } from '../data/schema'
 
 const useStyles = makeStyles({
@@ -115,13 +116,15 @@ export function TasksMutateDrawer({
               Click save when you&apos;re done.
             </Text>
           </div>
-          <Button
-            appearance='subtle'
-            size='small'
-            icon={<Dismiss20Regular />}
-            aria-label='Close'
-            onClick={() => onOpenChange(false)}
-          />
+          <Tooltip content='Close' relationship='label'>
+            <Button
+              appearance='subtle'
+              size='small'
+              icon={<Dismiss20Regular />}
+              aria-label='Close'
+              onClick={() => onOpenChange(false)}
+            />
+          </Tooltip>
         </div>
       </DrawerHeader>
       <DrawerBody>

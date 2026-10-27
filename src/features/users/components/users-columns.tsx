@@ -1,8 +1,8 @@
 import { type ColumnDef, type Row } from '@tanstack/react-table'
-import { tokens } from '@fluentui/react-components'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
+import { RoleLabel } from '@/components/ui/role-label'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
 import { callTypes, roles } from '../data/data'
@@ -120,13 +120,25 @@ export const usersColumns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const { status } = row.original
       return (
-        <Badge
-          appearance='tint'
+        <StatusBadge
           color={callTypes.get(status)}
+          icon={
+            <span
+              aria-hidden='true'
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: 'currentColor',
+                display: 'inline-block',
+                flexShrink: 0,
+              }}
+            />
+          }
           style={{ textTransform: 'capitalize' }}
         >
           {row.getValue('status')}
-        </Badge>
+        </StatusBadge>
       )
     },
     filterFn: (row, id, value) => {
@@ -150,18 +162,9 @@ export const usersColumns: ColumnDef<User>[] = [
 
       const RoleIcon = userType.icon
       return (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: tokens.spacingHorizontalS,
-          }}
-        >
-          <RoleIcon />
-          <span style={{ textTransform: 'capitalize' }}>
-            {row.getValue('role')}
-          </span>
-        </div>
+        <RoleLabel icon={<RoleIcon />} style={{ textTransform: 'capitalize' }}>
+          {row.getValue('role')}
+        </RoleLabel>
       )
     },
     filterFn: (row, id, value) => {

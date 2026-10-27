@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 import { type ChatUser } from '../data/chat-types'
 
 type User = Omit<ChatUser, 'messages'>
@@ -134,13 +135,18 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
               {selectedUsers.map((user) => (
                 <Badge key={user.id}>
                   {user.fullName}
-                  <Button
-                    appearance='subtle'
-                    size='small'
-                    icon={<Dismiss20Regular />}
-                    aria-label={`Remove ${user.fullName}`}
-                    onClick={() => handleRemoveUser(user.id)}
-                  />
+                  <Tooltip
+                    content={`Remove ${user.fullName}`}
+                    relationship='label'
+                  >
+                    <Button
+                      appearance='subtle'
+                      size='small'
+                      icon={<Dismiss20Regular />}
+                      aria-label={`Remove ${user.fullName}`}
+                      onClick={() => handleRemoveUser(user.id)}
+                    />
+                  </Tooltip>
                 </Badge>
               ))}
             </div>

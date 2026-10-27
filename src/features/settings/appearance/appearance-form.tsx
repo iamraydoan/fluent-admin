@@ -108,7 +108,9 @@ export function AppearanceForm() {
         )}
       />
       <div>
-        <Button type='submit'>Update preferences</Button>
+        <Button type='submit' appearance='primary'>
+          Update preferences
+        </Button>
       </div>
     </form>
   )

@@ -5,6 +5,7 @@ import { Filter20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 // Field-specific text filter, in the Integration Handler style:
 // a label ("NAME:", "TITLE:", "EMAIL:") + a text input + a funnel
@@ -63,13 +64,15 @@ export function DataTableFieldFilter<TData, TValue>({
           if (event.key === 'Enter') apply()
         }}
       />
-      <Button
-        appearance='outline'
-        size='small'
-        icon={<Filter20Regular />}
-        aria-label={`Apply ${label} filter`}
-        onClick={apply}
-      />
+      <Tooltip content={`Apply ${label} filter`} relationship='label'>
+        <Button
+          appearance='outline'
+          size='small'
+          icon={<Filter20Regular />}
+          aria-label={`Apply ${label} filter`}
+          onClick={apply}
+        />
+      </Tooltip>
     </span>
   )
 }

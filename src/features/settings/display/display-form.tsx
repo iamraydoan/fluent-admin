@@ -107,7 +107,9 @@ export function DisplayForm() {
         )}
       />
       <div>
-        <Button type='submit'>Update display</Button>
+        <Button type='submit' appearance='primary'>
+          Update display
+        </Button>
       </div>
     </form>
   )

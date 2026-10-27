@@ -3,6 +3,7 @@ import { tokens } from '@fluentui/react-components'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { labels, priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
@@ -117,17 +118,9 @@ export const tasksColumns: ColumnDef<Task>[] = [
 
       const StatusIcon = status.icon
       return (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: tokens.spacingHorizontalS,
-            width: '100px',
-          }}
-        >
-          <StatusIcon aria-hidden='true' />
-          <span>{status.label}</span>
-        </div>
+        <StatusBadge icon={<StatusIcon aria-hidden='true' />}>
+          {status.label}
+        </StatusBadge>
       )
     },
     filterFn: (row, id, value) => {

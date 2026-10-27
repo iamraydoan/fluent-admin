@@ -11,6 +11,7 @@ import { type Collapsible, useLayout } from '@/context/layout-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 
 const SIDEBAR_STATE_COOKIE = 'sidebar_state'
 
@@ -141,15 +142,20 @@ function SectionTitle({
     <div className={styles.sectionTitle}>
       <Text weight='semibold'>{title}</Text>
       {showReset && onReset && (
-        <Button
-          type='button'
-          appearance='subtle'
-          shape='circular'
-          size='small'
-          aria-label={resetAriaLabel}
-          icon={<ArrowReset20Regular />}
-          onClick={onReset}
-        />
+        <Tooltip
+          content={resetAriaLabel ?? 'Reset to default'}
+          relationship='label'
+        >
+          <Button
+            type='button'
+            appearance='subtle'
+            shape='circular'
+            size='small'
+            aria-label={resetAriaLabel}
+            icon={<ArrowReset20Regular />}
+            onClick={onReset}
+          />
+        </Tooltip>
       )}
     </div>
   )
@@ -176,25 +182,29 @@ export function ConfigDrawer() {
 
   if (!open) {
     return (
-      <Button
-        appearance='subtle'
-        shape='circular'
-        aria-label='Open theme settings'
-        icon={<Settings20Regular />}
-        onClick={() => setOpen(true)}
-      />
+      <Tooltip content='Open theme settings' relationship='label'>
+        <Button
+          appearance='subtle'
+          shape='circular'
+          aria-label='Open theme settings'
+          icon={<Settings20Regular />}
+          onClick={() => setOpen(true)}
+        />
+      </Tooltip>
     )
   }
 
   return (
     <>
-      <Button
-        appearance='subtle'
-        shape='circular'
-        aria-label='Open theme settings'
-        icon={<Settings20Regular />}
-        onClick={() => setOpen(true)}
-      />
+      <Tooltip content='Open theme settings' relationship='label'>
+        <Button
+          appearance='subtle'
+          shape='circular'
+          aria-label='Open theme settings'
+          icon={<Settings20Regular />}
+          onClick={() => setOpen(true)}
+        />
+      </Tooltip>
       <div className={styles.overlay} onClick={() => setOpen(false)}>
         <div
           role='dialog'
@@ -209,14 +219,16 @@ export function ConfigDrawer() {
                 Adjust the appearance and layout to suit your preferences.
               </Text>
             </div>
-            <Button
-              appearance='subtle'
-              shape='circular'
-              size='small'
-              aria-label='Close settings'
-              icon={<Dismiss20Regular />}
-              onClick={() => setOpen(false)}
-            />
+            <Tooltip content='Close settings' relationship='label'>
+              <Button
+                appearance='subtle'
+                shape='circular'
+                size='small'
+                aria-label='Close settings'
+                icon={<Dismiss20Regular />}
+                onClick={() => setOpen(false)}
+              />
+            </Tooltip>
           </div>
           <ThemeConfig />
           <SidebarConfig />

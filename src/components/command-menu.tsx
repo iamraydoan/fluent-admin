@@ -7,6 +7,7 @@ import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 import { sidebarData } from './layout/data/sidebar-data'
 
 const useStyles = makeStyles({
@@ -155,13 +156,15 @@ export function CommandMenu() {
               boxShadow: 'none',
             }}
           />
-          <Button
-            appearance='subtle'
-            shape='circular'
-            aria-label='Close search'
-            icon={<Dismiss20Regular />}
-            onClick={() => setOpen(false)}
-          />
+          <Tooltip content='Close search' relationship='label'>
+            <Button
+              appearance='subtle'
+              shape='circular'
+              aria-label='Close search'
+              icon={<Dismiss20Regular />}
+              onClick={() => setOpen(false)}
+            />
+          </Tooltip>
         </div>
         <div className={styles.list}>
           {filtered.length === 0 && <Text>No results found.</Text>}

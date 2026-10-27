@@ -10,6 +10,7 @@ import { useShellStore } from '@/stores/shell-store'
 import { Button } from '@/components/ui/button'
 import { Nav, NavItem, NavSectionHeader } from '@/components/ui/nav'
 import { Text } from '@/components/ui/text'
+import { Tooltip } from '@/components/ui/tooltip'
 // Menu data is the standard sidebar-data (single source, shared
 // with command-menu): the old mes-agent/menu-data.ts parallel copy
 // was deleted. sidebar-data.navGroups is used directly — teams
@@ -272,14 +273,19 @@ export default function AppSidebar({ expanded, onToggle }: AppSidebarProps) {
         className={styles.toggleWrap}
         style={{ justifyContent: expanded ? 'flex-start' : 'center' }}
       >
-        <Button
-          appearance='transparent'
-          className={styles.toggleButton}
-          icon={<Navigation24Regular />}
-          aria-label={expanded ? 'Collapse menu' : 'Expand menu'}
-          title={expanded ? 'Collapse menu' : 'Expand menu'}
-          onClick={onToggle}
-        />
+        <Tooltip
+          content={expanded ? 'Collapse menu' : 'Expand menu'}
+          relationship='label'
+        >
+          <Button
+            appearance='transparent'
+            className={styles.toggleButton}
+            icon={<Navigation24Regular />}
+            aria-label={expanded ? 'Collapse menu' : 'Expand menu'}
+            title={expanded ? 'Collapse menu' : 'Expand menu'}
+            onClick={onToggle}
+          />
+        </Tooltip>
       </div>
       <Nav
         className={styles.navList}
