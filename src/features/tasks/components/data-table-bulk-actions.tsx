@@ -21,6 +21,7 @@ import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-ta
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
 import { TasksMultiDeleteDialog } from './tasks-multi-delete-dialog'
+import { useTasks } from './tasks-provider'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -30,6 +31,7 @@ export function DataTableBulkActions<TData>({
   table,
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const { bulkDeleteOpen, setBulkDeleteOpen } = useTasks()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleBulkStatusChange = async (status: string) => {
@@ -38,7 +40,7 @@ export function DataTableBulkActions<TData>({
     await sleep(2000)
     table.resetRowSelection()
     toast.success(
-      `Status updated to "${status}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
+      `Status updated to "${status}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} (local only).`
     )
   }
 
@@ -48,7 +50,7 @@ export function DataTableBulkActions<TData>({
     await sleep(2000)
     table.resetRowSelection()
     toast.success(
-      `Priority updated to "${priority}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
+      `Priority updated to "${priority}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} (local only).`
     )
   }
 
@@ -58,7 +60,7 @@ export function DataTableBulkActions<TData>({
     await sleep(2000)
     table.resetRowSelection()
     toast.success(
-      `Exported ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} to CSV.`
+      `Export simulated for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} (local only).`
     )
   }
 
@@ -67,15 +69,14 @@ export function DataTableBulkActions<TData>({
       <BulkActionsToolbar table={table} entityName='task'>
         <Menu>
           <MenuTrigger>
-            <Tooltip content='Update status' relationship='label'>
-              <Button
-                appearance='outline'
-                size='small'
-                shape='circular'
-                icon={<ArrowUpload20Regular />}
-                aria-label='Update status'
-              />
-            </Tooltip>
+            <Button
+              appearance='outline'
+              size='small'
+              shape='circular'
+              icon={<ArrowUpload20Regular />}
+              aria-label='Update status'
+              title='Update status'
+            />
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
@@ -97,15 +98,14 @@ export function DataTableBulkActions<TData>({
 
         <Menu>
           <MenuTrigger>
-            <Tooltip content='Update priority' relationship='label'>
-              <Button
-                appearance='outline'
-                size='small'
-                shape='circular'
-                icon={<ArrowSwap20Regular />}
-                aria-label='Update priority'
-              />
-            </Tooltip>
+            <Button
+              appearance='outline'
+              size='small'
+              shape='circular'
+              icon={<ArrowSwap20Regular />}
+              aria-label='Update priority'
+              title='Update priority'
+            />
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
@@ -149,8 +149,14 @@ export function DataTableBulkActions<TData>({
       </BulkActionsToolbar>
 
       <TasksMultiDeleteDialog
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
+        // Either the local bulk toolbar button or the ActionBar
+        // Delete action (via the provider flag) opens the same
+        // dialog; closing it clears both sources.
+        open={showDeleteConfirm || bulkDeleteOpen}
+        onOpenChange={(open) => {
+          setShowDeleteConfirm(open)
+          if (!open) setBulkDeleteOpen(false)
+        }}
         table={table}
       />
     </>

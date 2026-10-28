@@ -96,7 +96,7 @@ type DataTableProps = {
   data: Task[]
 }
 
-export function TasksTable({ data }: DataTableProps) {
+export function TasksTable({ data, onSelectionChange }: DataTableProps) {
   const styles = useStyles()
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
@@ -110,6 +110,11 @@ export function TasksTable({ data }: DataTableProps) {
     columnFilters,
     onColumnFiltersChange,
     pagination,
+  // Called with the filtered selected-row count whenever selection
+  // changes, so a parent (the Tasks screen ActionBar) can enable /
+  // disable selection-driven actions. Optional: the table works
+  // unchanged without it.
+  onSelectionChange?: (selectedCount: number) => void
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
@@ -202,6 +207,14 @@ export function TasksTable({ data }: DataTableProps) {
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
+  // Lift selection count only (not the table instance): the parent
+  // re-renders on count change but rowSelection itself is unchanged,
+  // so this effect does not loop.
+  useEffect(() => {
+    onSelectionChange?.(table.getFilteredSelectedRowModel().rows.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowSelection])
+
                           )}
                     </TableHeaderCell>
                   )

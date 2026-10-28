@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,6 +8,7 @@ import {
   MailAdd20Regular,
   Send20Regular,
 } from '@fluentui/react-icons'
+import { useShellStore } from '@/stores/shell-store'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
@@ -72,6 +74,47 @@ export function UsersInviteDialog({
     onOpenChange(false)
   }
 
+  // Dirty wiring only (tab guard): same pattern as
+  // UsersActionDialog — mirror isDirty onto the tab that owned
+  // this form when it OPENED (captured in ownedTabUrlRef) while
+  // open; save success and dialog close reset the form and clear
+  // the flag. The flag must NOT follow the live activeUrl: during
+  // a confirmed tab close the store already switches activeUrl to
+  // the fallback tab while this form is still mounted (close
+  // transition), so re-marking against the then-current activeUrl
+  // would leak the dirty flag onto the fallback tab. The mirror
+  // effect therefore has no activeUrl dependency, and its cleanup
+  // clears the owned tab on unmount. The flag is per-tab, shared
+  // with the Action dialog on the same tab (never open at once,
+  // modal).
+  const activeTabUrl = useShellStore((state) => state.activeUrl)
+  const markDirty = useShellStore((state) => state.markDirty)
+  const clearDirty = useShellStore((state) => state.clearDirty)
+  const isFormDirty = form.formState.isDirty
+  const ownedTabUrlRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (open) {
+      if (ownedTabUrlRef.current === null && activeTabUrl) {
+        ownedTabUrlRef.current = activeTabUrl
+      }
+    } else {
+      ownedTabUrlRef.current = null
+    }
+  }, [open, activeTabUrl])
+  useEffect(() => {
+    const ownedTabUrl = ownedTabUrlRef.current
+    if (!open) {
+      if (ownedTabUrl) clearDirty(ownedTabUrl)
+      return
+    }
+    if (!ownedTabUrl) return
+    if (isFormDirty) markDirty(ownedTabUrl)
+    else clearDirty(ownedTabUrl)
+    return () => {
+      clearDirty(ownedTabUrl)
+    }
+  }, [open, isFormDirty, markDirty, clearDirty])
+
   const { control, formState } = form
 
   return (
@@ -100,7 +143,7 @@ export function UsersInviteDialog({
             <span className={styles.titleIcon}>
               <MailAdd20Regular />
             </span>
-            Invite User
+            Invite
           </DialogTitle>
           <DialogContent>
             <p className={styles.description}>

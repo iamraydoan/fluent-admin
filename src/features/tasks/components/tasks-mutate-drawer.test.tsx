@@ -26,7 +26,7 @@ describe('TasksMutateDrawer', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Create Task/i,
+      name: /Create/i,
     })
     const desc = getByText(/Add a new task/i)
 
@@ -41,7 +41,7 @@ describe('TasksMutateDrawer', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Update Task/i,
+      name: /Update/i,
     })
     const desc = getByText(/Update the task/i)
 
@@ -129,7 +129,56 @@ describe('TasksMutateDrawer', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it('resets entered values when the sheet is closed and reopened', async () => {
+  it('prompts on dirty close, keeps values on Keep editing', async () => {
+    const onOpenChange = vi.fn()
+    const { getByRole, getByText } = await render(
+      <TasksMutateDrawer open onOpenChange={onOpenChange} />
+    )
+
+    const titleInput = getByRole('textbox', { name: /Title/i })
+    await userEvent.fill(titleInput, 'Draft title')
+
+    const closeButtons = getByRole('dialog')
+      .getByRole('button', {
+        name: /Close/i,
+      })
+      .all()
+    await userEvent.click(closeButtons[1])
+
+    await expect
+      .element(getByText(/Discard unsaved changes\?/i))
+      .toBeInTheDocument()
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    await userEvent.click(getByRole('button', { name: /Keep editing/i }))
+
+    await expect.element(titleInput).toHaveValue('Draft title')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('discards dirty values on Discard changes', async () => {
+    const onOpenChange = vi.fn()
+    const { getByRole } = await render(
+      <TasksMutateDrawer open onOpenChange={onOpenChange} />
+    )
+
+    const titleInput = getByRole('textbox', { name: /Title/i })
+    await userEvent.fill(titleInput, 'Draft title')
+
+    const closeButtons = getByRole('dialog')
+      .getByRole('button', {
+        name: /Close/i,
+      })
+      .all()
+    await userEvent.click(closeButtons[1])
+    await userEvent.click(getByRole('button', { name: /Discard changes/i }))
+
+    expect(onOpenChange).toHaveBeenCalledOnce()
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    await expect.element(titleInput).toHaveValue('')
+  })
+
+  it('resets entered values when the sheet is discarded and reopened', async () => {
     function Harness() {
       const [open, setOpen] = useState(true)
       return (
@@ -168,12 +217,23 @@ describe('TasksMutateDrawer', () => {
       .all()
     await userEvent.click(closeButtons[0])
 
+    // Dirty close prompts first; only Discard actually closes.
+    await userEvent.click(getByRole('button', { name: /Discard changes/i }))
+
     const reopenButton = getByRole('button', { name: /Reopen/i })
     await userEvent.click(reopenButton)
 
-    await expect.element(titleInput).toHaveValue('')
-    await expect.element(statusSelect).not.toHaveTextContent(/Todo/i)
-    await expect.element(labelRadio).not.toBeChecked()
-    await expect.element(priorityRadio).not.toBeChecked()
+    await expect
+      .element(getByRole('textbox', { name: /Title/i }))
+      .toHaveValue('')
+    await expect
+      .element(getByRole('combobox', { name: /Status/i }))
+      .not.toHaveTextContent(/Todo/i)
+    await expect
+      .element(getByRole('radio', { name: /^Documentation$/i }))
+      .not.toBeChecked()
+    await expect
+      .element(getByRole('radio', { name: /^High$/i }))
+      .not.toBeChecked()
   })
 })

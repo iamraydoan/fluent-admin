@@ -5,6 +5,7 @@ import {
   Add24Regular,
   ArrowClockwise24Regular,
   ArrowDownload24Regular,
+  Delete24Regular,
 } from '@fluentui/react-icons'
 import { Card } from '@/components/ui/card'
 import ActionBar from '@/components/layout/action-bar'
@@ -51,12 +52,16 @@ const useStyles = makeStyles({
 
 function TasksScreen() {
   const styles = useStyles()
-  const { setOpen } = useTasks()
+  const { setOpen, requestBulkDelete } = useTasks()
   const navigate = route.useNavigate()
   // Bumped on action bar Refresh so the table remounts (local sorting /
   // selection / column visibility reset) together with the URL
   // filter reset below.
   const [refreshKey, setRefreshKey] = useState(0)
+  // Lifted from TasksTable via onSelectionChange: drives the
+  // ActionBar Delete disabled state (0 = disabled, >0 = enabled).
+  // The count resets on Refresh because the table remounts.
+  const [selectedCount, setSelectedCount] = useState(0)
 
   const handleRefresh = () => {
     navigate({
@@ -87,11 +92,6 @@ function TasksScreen() {
                     icon: <ArrowClockwise24Regular />,
                     onClick: handleRefresh,
                   },
-                ],
-              },
-              {
-                label: 'Actions',
-                actions: [
                   {
                     label: 'Import',
                     icon: <ArrowDownload24Regular />,
@@ -101,6 +101,17 @@ function TasksScreen() {
                     label: 'Create',
                     icon: <Add24Regular />,
                     onClick: () => setOpen('create'),
+                  },
+                  {
+                    label: 'Delete',
+                    icon: <Delete24Regular />,
+                    // Real state-driven disabled: no selection, no
+                    // Delete. With a selection this requests the
+                    // existing multi-delete flow via the provider
+                    // flag (see DataTableBulkActions); it is not a
+                    // new dialog and does not fake a delete.
+                    disabled: selectedCount === 0,
+                    onClick: requestBulkDelete,
                   },
                 ],
               },
@@ -117,7 +128,11 @@ function TasksScreen() {
           }}
         >
           <div className={styles.cardBody}>
-            <TasksTable key={refreshKey} data={tasks} />
+            <TasksTable
+              key={refreshKey}
+              data={tasks}
+              onSelectionChange={setSelectedCount}
+            />
           </div>
         </Card>
       </div>
