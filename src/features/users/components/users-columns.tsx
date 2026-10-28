@@ -6,7 +6,7 @@ import { RoleLabel } from '@/components/ui/role-label'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
-import { callTypes, roles } from '../data/data'
+import { accountTypes, callTypes, roles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 import { useUsers } from './users-provider'
@@ -173,6 +173,65 @@ export const usersColumns: ColumnDef<User>[] = [
     },
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'department',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='DEPARTMENT' />
+    ),
+    cell: ({ row }) => (
+      <div style={{ maxWidth: 160 }}>
+        <LongText>{row.getValue('department')}</LongText>
+      </div>
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'jobTitle',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='JOB TITLE' />
+    ),
+    cell: ({ row }) => (
+      <div style={{ maxWidth: 180 }}>
+        <LongText>{row.getValue('jobTitle')}</LongText>
+      </div>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'manager',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='MANAGER' />
+    ),
+    cell: ({ row }) => (
+      <div style={{ maxWidth: 144 }}>
+        <LongText>{row.getValue('manager')}</LongText>
+      </div>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'accountType',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='ACCOUNT TYPE' />
+    ),
+    cell: ({ row }) => {
+      const accountType = accountTypes.find(
+        ({ value }) => value === row.getValue('accountType')
+      )
+      return (
+        <span style={{ textTransform: 'capitalize' }}>
+          {accountType ? accountType.label : row.getValue('accountType')}
+        </span>
+      )
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+    enableSorting: false,
   },
   {
     id: 'actions',

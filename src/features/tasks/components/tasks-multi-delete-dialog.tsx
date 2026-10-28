@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    gap: '6px',
+    gap: tokens.spacingVerticalSNudge,
   },
 })
 
@@ -55,7 +55,7 @@ export function TasksMultiDeleteDialog<TData>({
       toast.success(
         `Deleted ${selectedRows.length} ${
           selectedRows.length > 1 ? 'tasks' : 'task'
-        }`
+        } (local only).`
       )
     })
   }

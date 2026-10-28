@@ -28,6 +28,10 @@ const MOCK_USER: User = {
   phoneNumber: '+19999999999',
   status: 'active',
   role: 'superadmin',
+  department: 'Engineering',
+  jobTitle: 'Software Engineer',
+  manager: 'Jane Smith',
+  accountType: 'internal',
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-02-02'),
 }
@@ -45,7 +49,7 @@ describe('UsersActionDialog', () => {
 
       const title = getByRole('heading', {
         level: 2,
-        name: /Add New User/i,
+        name: /Add/i,
       })
       const description = getByText(
         /Create new user here. Click save when you're done./i
@@ -176,11 +180,68 @@ describe('UsersActionDialog', () => {
         username: MOCK_USER.username,
         email: MOCK_USER.email,
         role: MOCK_USER.role,
+        department: MOCK_USER.department,
+        jobTitle: MOCK_USER.jobTitle,
+        manager: MOCK_USER.manager,
+        accountType: MOCK_USER.accountType,
         phoneNumber: MOCK_USER.phoneNumber,
         password: 'S3cur3P@ssw0rd',
         confirmPassword: 'S3cur3P@ssw0rd',
         isEdit: false,
       })
+    })
+  })
+
+  describe('dirty guard', () => {
+    it('closes immediately without a prompt when the form is clean', async () => {
+      const onOpenChange = vi.fn()
+      const { getByRole } = await render(
+        <UsersActionDialog open onOpenChange={onOpenChange} />
+      )
+
+      await userEvent.click(getByRole('button', { name: /^Cancel$/i }))
+
+      // A prompt would have swallowed the close, so the single
+      // onOpenChange(false) call proves no prompt appeared.
+      expect(onOpenChange).toHaveBeenCalledOnce()
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    it('prompts on dirty close and keeps values on Keep editing', async () => {
+      const onOpenChange = vi.fn()
+      const { getByRole, getByText } = await render(
+        <UsersActionDialog open onOpenChange={onOpenChange} />
+      )
+
+      const firstName = getByRole('textbox', { name: /First Name/i })
+      await userEvent.fill(firstName, 'Draft')
+      await userEvent.click(getByRole('button', { name: /^Cancel$/i }))
+
+      await expect
+        .element(getByText(/Discard unsaved changes\?/i))
+        .toBeInTheDocument()
+      expect(onOpenChange).not.toHaveBeenCalled()
+
+      await userEvent.click(getByRole('button', { name: /Keep editing/i }))
+
+      await expect.element(firstName).toHaveValue('Draft')
+      expect(onOpenChange).not.toHaveBeenCalled()
+    })
+
+    it('discards dirty values on Discard changes', async () => {
+      const onOpenChange = vi.fn()
+      const { getByRole } = await render(
+        <UsersActionDialog open onOpenChange={onOpenChange} />
+      )
+
+      const firstName = getByRole('textbox', { name: /First Name/i })
+      await userEvent.fill(firstName, 'Draft')
+      await userEvent.click(getByRole('button', { name: /^Cancel$/i }))
+      await userEvent.click(getByRole('button', { name: /Discard changes/i }))
+
+      expect(onOpenChange).toHaveBeenCalledOnce()
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+      await expect.element(firstName).toHaveValue('')
     })
   })
 
@@ -192,7 +253,7 @@ describe('UsersActionDialog', () => {
 
       const title = getByRole('heading', {
         level: 2,
-        name: /Edit User/i,
+        name: /Edit/i,
       })
       const description = getByText(
         /Update the user here\. Click save when you're done\./i
@@ -226,6 +287,10 @@ describe('UsersActionDialog', () => {
         email: MOCK_USER.email,
         phoneNumber: MOCK_USER.phoneNumber,
         role: MOCK_USER.role,
+        department: MOCK_USER.department,
+        jobTitle: MOCK_USER.jobTitle,
+        manager: MOCK_USER.manager,
+        accountType: MOCK_USER.accountType,
         password: '',
         confirmPassword: '',
         isEdit: true,
@@ -291,6 +356,10 @@ describe('UsersActionDialog', () => {
         email: MOCK_USER.email,
         phoneNumber: MOCK_USER.phoneNumber,
         role: MOCK_USER.role,
+        department: MOCK_USER.department,
+        jobTitle: MOCK_USER.jobTitle,
+        manager: MOCK_USER.manager,
+        accountType: MOCK_USER.accountType,
         password: EDIT_SUCCESS_PASSWORD,
         confirmPassword: EDIT_SUCCESS_PASSWORD,
         isEdit: true,
@@ -309,6 +378,10 @@ async function fillRequiredProfileFields(
     email?: string
     roleOption?: string | RegExp
     phoneNumber?: string
+    departmentOption?: string | RegExp
+    jobTitle?: string
+    manager?: string
+    accountTypeOption?: string | RegExp
   }
 ) {
   const entries = [
@@ -317,6 +390,8 @@ async function fillRequiredProfileFields(
     [/username/i, overrides?.username ?? 'john_doe'],
     [/^email$/i, overrides?.email ?? 'a@b.co'],
     [/phone number/i, overrides?.phoneNumber ?? '+19999999999'],
+    [/job title/i, overrides?.jobTitle ?? 'Software Engineer'],
+    [/manager/i, overrides?.manager ?? 'Jane Smith'],
   ] as const
 
   for (const [label, value] of entries) {
@@ -329,6 +404,26 @@ async function fillRequiredProfileFields(
   await user.click(roleSelect)
   await user.click(
     screen.getByRole('option', { name: overrides?.roleOption ?? 'Superadmin' })
+  )
+
+  const departmentSelect = screen.getByRole('combobox', {
+    name: /Department/i,
+  })
+  await user.click(departmentSelect)
+  await user.click(
+    screen.getByRole('option', {
+      name: overrides?.departmentOption ?? 'Engineering',
+    })
+  )
+
+  const accountTypeSelect = screen.getByRole('combobox', {
+    name: /Account Type/i,
+  })
+  await user.click(accountTypeSelect)
+  await user.click(
+    screen.getByRole('option', {
+      name: overrides?.accountTypeOption ?? 'Internal',
+    })
   )
 }
 

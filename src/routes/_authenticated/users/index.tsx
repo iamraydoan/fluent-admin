@@ -1,7 +1,7 @@
 import z from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { Users } from '@/features/users'
-import { roles } from '@/features/users/data/data'
+import { accountTypes, departments, roles } from '@/features/users/data/data'
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -14,12 +14,32 @@ const usersSearchSchema = z.object({
         z.literal('inactive'),
         z.literal('invited'),
         z.literal('suspended'),
+        z.literal('locked'),
+        z.literal('expired'),
       ])
     )
     .optional()
     .catch([]),
   role: z
     .array(z.enum(roles.map((r) => r.value as (typeof roles)[number]['value'])))
+    .optional()
+    .catch([]),
+  department: z
+    .array(
+      z.enum(
+        departments.map((d) => d.value as (typeof departments)[number]['value'])
+      )
+    )
+    .optional()
+    .catch([]),
+  accountType: z
+    .array(
+      z.enum(
+        accountTypes.map(
+          (a) => a.value as (typeof accountTypes)[number]['value']
+        )
+      )
+    )
     .optional()
     .catch([]),
   // Per-column text filter (example for username)

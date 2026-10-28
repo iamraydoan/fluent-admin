@@ -66,6 +66,8 @@ function UsersScreen() {
         pageSize: 25,
         status: [],
         role: [],
+        department: [],
+        accountType: [],
         username: '',
         email: '',
       },

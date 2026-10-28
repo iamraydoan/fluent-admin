@@ -60,7 +60,7 @@ export function UsersMultiDeleteDialog<TData>({
     setValue('')
     table.resetRowSelection()
     toast.success(
-      `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'}`
+      `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'} (local only)`
     )
   }
 
