@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ChevronDown20Regular,
   ChevronRight20Regular,
-  Navigation24Regular,
+  Navigation20Regular,
 } from '@fluentui/react-icons'
 import { useShellStore } from '@/stores/shell-store'
+import { DEMO_ENVIRONMENT } from '@/lib/demo-environment'
+import {
+  NAV_VISIBILITY_CHANGED_EVENT,
+  loadNavVisibility,
+  navVisibilityIdForTitle,
+  type NavVisibility,
+} from '@/lib/nav-visibility'
 import { Button } from '@/components/ui/button'
 import { Nav, NavItem, NavSectionHeader } from '@/components/ui/nav'
 import { Text } from '@/components/ui/text'
@@ -70,6 +77,15 @@ const useStyles = makeStyles({
       backgroundPosition: 'left center',
       backgroundRepeat: 'no-repeat',
       backgroundColor: 'transparent',
+      // Thinning: the active item is marked by the 3px brand bar +
+      // brand colour, not by weight. Fluent NavItem renders the
+      // selected item semibold by default; force regular here (and
+      // on its descendants, where Fluent applies the weight) so the
+      // active label reads the same weight as inactive labels.
+      fontWeight: tokens.fontWeightRegular,
+    },
+    '& [aria-current="page"] *': {
+      fontWeight: tokens.fontWeightRegular,
     },
     '& [aria-current="page"]::after': {
       display: 'none',
@@ -157,6 +173,38 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
   },
+  // Environment row pinned to the bottom of the nav (below the
+  // flex-1 nav list): environment name bottom-left, status
+  // bottom-right, matching the reference pattern. Values are demo
+  // data (see lib/demo-environment.ts); no backend is consulted.
+  environmentRow: {
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: tokens.spacingHorizontalS,
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalL}`,
+    borderTop: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    color: tokens.colorNeutralForeground2,
+  },
+  environmentName: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  environmentStatus: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    flexShrink: 0,
+  },
+  statusDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorPaletteGreenBackground3,
+    flexShrink: 0,
+  },
 })
 
 type NavigationPaneProps = {
@@ -173,6 +221,39 @@ export default function NavigationPane({
   const { pathname } = useLocation()
   const openTab = useShellStore((state) => state.openTab)
   const [openParents, setOpenParents] = useState<Record<string, boolean>>({})
+  // Nav visibility from the Display settings screen, persisted in
+  // localStorage (see lib/nav-visibility.ts). Re-read on the change
+  // event (submit on /settings/display) and on storage events
+  // (another tab), so the nav updates without a reload. The layout
+  // itself is not remounted on route change, so localStorage alone
+  // would not re-render this component.
+  const [visibility, setVisibility] = useState<NavVisibility>(() =>
+    loadNavVisibility()
+  )
+  useEffect(() => {
+    const refresh = () => setVisibility(loadNavVisibility())
+    window.addEventListener(NAV_VISIBILITY_CHANGED_EVENT, refresh)
+    window.addEventListener('storage', refresh)
+    return () => {
+      window.removeEventListener(NAV_VISIBILITY_CHANGED_EVENT, refresh)
+      window.removeEventListener('storage', refresh)
+    }
+  }, [])
+
+  // Filter nav groups by Display visibility: a top-level entry is
+  // shown only when its toggle is on (Settings hides the whole
+  // parent + sub-items). Groups left empty are hidden entirely,
+  // including their section header. Titles with no visibility id
+  // (none exist today) stay visible rather than vanishing.
+  const visibleGroups = navigationData.navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        const id = navVisibilityIdForTitle(item.title)
+        return id === null || visibility[id]
+      }),
+    }))
+    .filter((group) => group.items.length > 0)
 
   const toggleParent = (title: string) =>
     setOpenParents((prev) => ({ ...prev, [title]: !(prev[title] ?? false) }))
@@ -212,9 +293,10 @@ export default function NavigationPane({
     // Clicking a leaf navigates AND opens (or activates) its
     // document tab in the shell store; selection follows the current
     // route, never a hardcoded url.
-    // Group 1 icons: bundled navigation icons render Filled only for the
-    // current route; every other leaf stays Regular. Same size and
-    // position either way (bundleIcon hides the inactive variant).
+    // Group 1 icons: navigation icons are 20px Regular, active and
+    // inactive alike. The active item is marked by the 3px brand
+    // bar + brand colour (see the menu styles), not by a Filled
+    // glyph, so no filled prop is passed here.
     return (
       <NavItem
         key={item.url ?? item.title}
@@ -225,7 +307,7 @@ export default function NavigationPane({
             navigate({ to: item.url })
           }
         }}
-        icon={Icon ? <Icon filled={pathname === item.url} /> : undefined}
+        icon={Icon ? <Icon /> : undefined}
         aria-label={
           item.badge ? `${item.title}, ${item.badge} unread` : item.title
         }
@@ -283,7 +365,7 @@ export default function NavigationPane({
           <Button
             appearance='transparent'
             className={styles.toggleButton}
-            icon={<Navigation24Regular />}
+            icon={<Navigation20Regular />}
             aria-label={expanded ? 'Collapse menu' : 'Expand menu'}
             title={expanded ? 'Collapse menu' : 'Expand menu'}
             onClick={onToggle}
@@ -295,7 +377,7 @@ export default function NavigationPane({
         aria-label='Main navigation'
         selectedValue={pathname}
       >
-        {navigationData.navGroups.map((group) => (
+        {visibleGroups.map((group) => (
           <div key={group.title}>
             {expanded && (
               <NavSectionHeader className={styles.sectionHeader}>
@@ -310,6 +392,25 @@ export default function NavigationPane({
           </div>
         ))}
       </Nav>
+      <div
+        className={styles.environmentRow}
+        style={{ justifyContent: expanded ? 'space-between' : 'center' }}
+        title={`${DEMO_ENVIRONMENT.name} — ${DEMO_ENVIRONMENT.status}`}
+      >
+        {expanded ? (
+          <>
+            <Text size={200} className={styles.environmentName}>
+              {DEMO_ENVIRONMENT.name}
+            </Text>
+            <span className={styles.environmentStatus}>
+              <span className={styles.statusDot} aria-hidden='true' />
+              <Text size={200}>{DEMO_ENVIRONMENT.status}</Text>
+            </span>
+          </>
+        ) : (
+          <span className={styles.statusDot} aria-hidden='true' />
+        )}
+      </div>
     </div>
   )
 }

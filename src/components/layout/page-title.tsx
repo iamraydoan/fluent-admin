@@ -1,5 +1,5 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
-import { ChevronUp24Regular, Settings20Regular } from '@fluentui/react-icons'
+import { ChevronDown20Regular, ChevronUp20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -15,18 +15,6 @@ const useStyles = makeStyles({
     height: '40px',
     boxSizing: 'border-box',
   },
-  titleIcon: {
-    width: '20px',
-    height: '20px',
-    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    // 3px is equidistant from Small 2px and Medium 4px; Medium chosen.
-    borderRadius: tokens.borderRadiusMedium,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: tokens.colorNeutralForeground2,
-    flexShrink: 0,
-  },
   collapseButton: {
     minWidth: '32px',
     width: '32px',
@@ -40,36 +28,57 @@ export type PageTitleProps = {
   title: string
   // Optional state, rendered as "title (state)", e.g. "Title (State)".
   state?: string
-  // When omitted, no collapse button is rendered.
-  onCollapse?: () => void
+  // ActionBar toggle, NOT a whole-header collapse: when true the
+  // ActionBar row above this title is hidden, but PageTabs, this
+  // title row and the page content below all stay visible (user
+  // correction 2026-10-28: closing here closes only the ActionBar).
+  // When omitted (screens with no ActionBar), no toggle button is
+  // rendered — there is nothing to toggle.
+  actionBarCollapsed?: boolean
+  onToggleActionBar?: () => void
 }
 
 export default function PageTitle({
   title,
   state,
-  onCollapse,
+  actionBarCollapsed = false,
+  onToggleActionBar,
 }: PageTitleProps) {
   const styles = useStyles()
   return (
+    // Thinning (2026-10-28): the title row carries NO icon. The old
+    // bordered gear box was removed rather than replaced with a
+    // per-screen icon: PageTop has no per-screen icon data, so a
+    // gear on every screen would mislead (it implied a settings
+    // action that does not exist), and inventing one icon per
+    // screen here would be decoration, not information.
     <CardHeader
       className={styles.pageTitle}
-      image={
-        <span className={styles.titleIcon} aria-hidden='true'>
-          <Settings20Regular />
-        </span>
-      }
       header={
         <Text weight='medium'>{state ? `${title} (${state})` : title}</Text>
       }
       action={
-        onCollapse ? (
-          <Tooltip content='Collapse header' relationship='label'>
+        onToggleActionBar ? (
+          <Tooltip
+            content={
+              actionBarCollapsed ? 'Expand action bar' : 'Collapse action bar'
+            }
+            relationship='label'
+          >
             <Button
               appearance='transparent'
               className={styles.collapseButton}
-              icon={<ChevronUp24Regular />}
-              aria-label='Collapse header'
-              onClick={onCollapse}
+              icon={
+                actionBarCollapsed ? (
+                  <ChevronDown20Regular />
+                ) : (
+                  <ChevronUp20Regular />
+                )
+              }
+              aria-label={
+                actionBarCollapsed ? 'Expand action bar' : 'Collapse action bar'
+              }
+              onClick={onToggleActionBar}
             />
           </Tooltip>
         ) : undefined

@@ -39,9 +39,10 @@ const useStyles = makeStyles({
   // to white colour change itself is the Chrome boundary, and
   // under the active tab white meets white uninterrupted.
   // Stroke token, not a hardcoded colour, so dark mode gets a
-  // dark-appropriate stroke automatically. Bottom corners keep
-  // the cards' Medium (4px) radius (ws6); overflow hidden clips the inner
-  // white rows to those corners. Block width:auto means the
+  // dark-appropriate stroke automatically. Bottom corners use the
+  // cards' XLarge (8px) radius; top corners stay square so the white
+  // card merges flush into the tab strip above (see below).
+  // Overflow hidden clips the inner white rows to those corners. Block width:auto means the
   // 1px side borders are absorbed inside the page-column width,
   // so the white card's outer edges align exactly with the tab
   // strip's edges above it.
@@ -50,7 +51,7 @@ const useStyles = makeStyles({
     borderLeft: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: `0px 0px ${tokens.borderRadiusMedium} ${tokens.borderRadiusMedium}`,
+    borderRadius: `0px 0px ${tokens.borderRadiusXLarge} ${tokens.borderRadiusXLarge}`,
     overflow: 'hidden',
   },
 })
@@ -69,12 +70,17 @@ export type PageTopProps = {
   objectTabs?: PageTab[]
   objectTab?: string
   onObjectTabChange?: (value: string) => void
-  // Collapse: when all three are omitted (the case for every screen
-  // today), PageTop keeps the state itself and the Page Title row
-  // always shows the ^ collapse button.
-  headerCollapsed?: boolean
-  onCollapseHeader?: () => void
-  onExpandHeader?: () => void
+  // ActionBar collapse ONLY (user correction 2026-10-28): when all
+  // three are omitted (the case for every screen today), PageTop
+  // keeps the state itself. The Page Title row shows the toggle
+  // button only when an ActionBar is present: ^ collapses the
+  // ActionBar row, v expands it again. PageTabs, PageTitle and the
+  // page content below NEVER hide on this toggle — the previous
+  // whole-header collapse (whiteCard gone, content jumping up to
+  // the tab strip) was the defect being fixed here.
+  actionBarCollapsed?: boolean
+  onCollapseActionBar?: () => void
+  onExpandActionBar?: () => void
   // Optional account slot, passed straight through to Header
   // (Phase 2F): e.g. the Clerk user-management page passes its
   // Clerk UserButton here so it sits in the tab strip instead of the
@@ -98,24 +104,30 @@ export default function PageTop({
   objectTabs,
   objectTab,
   onObjectTabChange,
-  headerCollapsed: headerCollapsedProp,
-  onCollapseHeader,
-  onExpandHeader,
+  actionBarCollapsed: actionBarCollapsedProp,
+  onCollapseActionBar,
+  onExpandActionBar,
   accountAction,
 }: PageTopProps) {
   const styles = useStyles()
-  // Collapse is wired by default: every screen gets the ^ button in
-  // the Page Title row (as in the reference bar), even though no
-  // caller passes collapse props today. Callers that pass both
-  // headerCollapsed and the handlers keep full control; callers
-  // that pass only one handler should pass both, or the internal
-  // state below and the caller's handler will disagree.
-  const [internalCollapsed, setInternalCollapsed] = useState(false)
-  const headerCollapsed = headerCollapsedProp ?? internalCollapsed
-  const handleCollapseHeader =
-    onCollapseHeader ?? (() => setInternalCollapsed(true))
-  const handleExpandHeader =
-    onExpandHeader ?? (() => setInternalCollapsed(false))
+  // ActionBar toggle is wired by default: every screen WITH an
+  // ActionBar gets the toggle button in the Page Title row, even
+  // though no caller passes collapse props today. Callers that
+  // pass both actionBarCollapsed and the handlers keep full
+  // control; callers that pass only one handler should pass both,
+  // or the internal state below and the caller's handler will
+  // disagree. Screens with no ActionBar get no toggle button.
+  const [internalActionBarCollapsed, setInternalActionBarCollapsed] =
+    useState(false)
+  const actionBarCollapsed =
+    actionBarCollapsedProp ?? internalActionBarCollapsed
+  const handleCollapseActionBar =
+    onCollapseActionBar ?? (() => setInternalActionBarCollapsed(true))
+  const handleExpandActionBar =
+    onExpandActionBar ?? (() => setInternalActionBarCollapsed(false))
+  const handleToggleActionBar = () =>
+    actionBarCollapsed ? handleExpandActionBar() : handleCollapseActionBar()
+  const showActionBar = actionBar !== undefined && !actionBarCollapsed
   const navigate = useNavigate()
   const tabs = useShellStore((state) => state.tabs)
   const activeUrl = useShellStore((state) => state.activeUrl)
@@ -152,32 +164,31 @@ export default function PageTop({
         onSelectTab={handleSelectTab}
         onCloseTab={handleCloseTab}
         onBack={handleBack}
-        headerCollapsed={headerCollapsed}
-        onExpandHeader={handleExpandHeader}
         accountSlot={accountAction}
       />
-      {!headerCollapsed && (
-        <div className={styles.whiteCard}>
-          {showObjectTabs && (
-            <PageTabs
-              tabs={objectTabs}
-              selected={objectTab}
-              onChange={onObjectTabChange}
-            />
-          )}
-          {actionBar !== undefined && (
-            <>
-              {actionBar}
-              <Divider />
-            </>
-          )}
-          <PageTitle
-            title={title}
-            state={titleState}
-            onCollapse={handleCollapseHeader}
+      <div className={styles.whiteCard}>
+        {showObjectTabs && (
+          <PageTabs
+            tabs={objectTabs}
+            selected={objectTab}
+            onChange={onObjectTabChange}
           />
-        </div>
-      )}
+        )}
+        {showActionBar && (
+          <>
+            {actionBar}
+            <Divider />
+          </>
+        )}
+        <PageTitle
+          title={title}
+          state={titleState}
+          actionBarCollapsed={actionBarCollapsed}
+          onToggleActionBar={
+            actionBar !== undefined ? handleToggleActionBar : undefined
+          }
+        />
+      </div>
     </div>
   )
 }

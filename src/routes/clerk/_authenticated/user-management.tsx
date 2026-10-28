@@ -202,7 +202,7 @@ function ClerkUsersScreen() {
         <Card
           className={styles.card}
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
           }}
         >

@@ -1,5 +1,9 @@
 import { type Row } from '@tanstack/react-table'
-import { Delete20Regular, MoreHorizontal20Regular } from '@fluentui/react-icons'
+import {
+  Delete20Regular,
+  Edit20Regular,
+  MoreHorizontal20Regular,
+} from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
   Menu,
@@ -28,6 +32,7 @@ export function DataTableRowActions<TData>({
         <Button
           appearance='subtle'
           size='small'
+          shape='rounded'
           icon={<MoreHorizontal20Regular />}
           aria-label='Open menu'
         />
@@ -35,6 +40,7 @@ export function DataTableRowActions<TData>({
       <MenuPopover>
         <MenuList>
           <MenuItem
+            icon={<Edit20Regular />}
             onClick={() => {
               setCurrentRow(task)
               setOpen('update')
@@ -42,8 +48,6 @@ export function DataTableRowActions<TData>({
           >
             Edit
           </MenuItem>
-          <MenuItem disabled>Make a copy</MenuItem>
-          <MenuItem disabled>Favorite</MenuItem>
           <MenuItem
             icon={<Delete20Regular />}
             onClick={() => {

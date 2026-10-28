@@ -50,7 +50,7 @@ export function Settings() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-          borderRadius: tokens.borderRadiusMedium,
+          borderRadius: tokens.borderRadiusXLarge,
           boxShadow: tokens.shadow2,
         }}
       >

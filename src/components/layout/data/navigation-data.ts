@@ -1,60 +1,40 @@
 import {
-  Alert24Filled,
-  Alert24Regular,
-  Apps24Filled,
-  Apps24Regular,
-  bundleIcon,
-  ClipboardTask24Filled,
-  ClipboardTask24Regular,
-  Desktop24Filled,
-  Desktop24Regular,
-  History24Filled,
-  History24Regular,
-  Home24Filled,
-  Home24Regular,
-  Image24Regular,
-  MusicNote124Regular,
-  Navigation24Regular,
-  PaintBrush24Filled,
-  PaintBrush24Regular,
-  People24Filled,
-  People24Regular,
-  PersonEdit24Filled,
-  PersonEdit24Regular,
-  QuestionCircle24Filled,
-  QuestionCircle24Regular,
-  Settings24Filled,
-  Settings24Regular,
-  Shield24Filled,
-  Shield24Regular,
-  Wrench24Filled,
-  Wrench24Regular,
+  Alert20Regular,
+  Apps20Regular,
+  ClipboardTask20Regular,
+  Desktop20Regular,
+  History20Regular,
+  Home20Regular,
+  Image20Regular,
+  MusicNote120Regular,
+  Navigation20Regular,
+  PaintBrush20Regular,
+  People20Regular,
+  PersonEdit20Regular,
+  QuestionCircle20Regular,
+  Settings20Regular,
+  Shield20Regular,
+  Wrench20Regular,
 } from '@fluentui/react-icons'
 import { type NavigationData } from '../types'
 
-// Group 1 icons: navigation icons are Fluent bundles — Regular at rest,
-// Filled when the item is the current route (navigation-pane passes
-// filled={pathname === item.url} for leaves). Same 24px size and
-// position; only the glyph weight changes on selection.
-const HomeIcon = bundleIcon(Home24Filled, Home24Regular)
-const ClipboardTaskIcon = bundleIcon(
-  ClipboardTask24Filled,
-  ClipboardTask24Regular
-)
-const AppsIcon = bundleIcon(Apps24Filled, Apps24Regular)
-const PeopleIcon = bundleIcon(People24Filled, People24Regular)
-const ShieldIcon = bundleIcon(Shield24Filled, Shield24Regular)
-const HistoryIcon = bundleIcon(History24Filled, History24Regular)
-const WrenchIcon = bundleIcon(Wrench24Filled, Wrench24Regular)
-const SettingsIcon = bundleIcon(Settings24Filled, Settings24Regular)
-const PersonEditIcon = bundleIcon(PersonEdit24Filled, PersonEdit24Regular)
-const PaintBrushIcon = bundleIcon(PaintBrush24Filled, PaintBrush24Regular)
-const AlertIcon = bundleIcon(Alert24Filled, Alert24Regular)
-const DesktopIcon = bundleIcon(Desktop24Filled, Desktop24Regular)
-const QuestionCircleIcon = bundleIcon(
-  QuestionCircle24Filled,
-  QuestionCircle24Regular
-)
+// Thinning (2026-10-28): navigation icons are 20px Regular only.
+// The active item is marked by the 3px brand bar + brand colour in
+// navigation-pane, not by a Filled glyph, so no bundleIcon is used
+// and the active/inactive glyphs are identical.
+const HomeIcon = Home20Regular
+const ClipboardTaskIcon = ClipboardTask20Regular
+const AppsIcon = Apps20Regular
+const PeopleIcon = People20Regular
+const ShieldIcon = Shield20Regular
+const HistoryIcon = History20Regular
+const WrenchIcon = Wrench20Regular
+const SettingsIcon = Settings20Regular
+const PersonEditIcon = PersonEdit20Regular
+const PaintBrushIcon = PaintBrush20Regular
+const AlertIcon = Alert20Regular
+const DesktopIcon = Desktop20Regular
+const QuestionCircleIcon = QuestionCircle20Regular
 
 export const navigationData: NavigationData = {
   user: {
@@ -68,17 +48,17 @@ export const navigationData: NavigationData = {
   teams: [
     {
       name: 'Fluent Admin',
-      logo: Navigation24Regular,
+      logo: Navigation20Regular,
       plan: 'Enterprise',
     },
     {
       name: 'Acme Inc',
-      logo: Image24Regular,
+      logo: Image20Regular,
       plan: 'Enterprise',
     },
     {
       name: 'Acme Corp.',
-      logo: MusicNote124Regular,
+      logo: MusicNote120Regular,
       plan: 'Startup',
     },
   ],

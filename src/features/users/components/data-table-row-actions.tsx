@@ -27,7 +27,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <Button
           appearance='subtle'
           size='small'
-          shape='square'
+          shape='rounded'
           icon={<MoreHorizontal20Regular />}
           aria-label='Open menu'
         />

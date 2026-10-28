@@ -1,9 +1,9 @@
 import { Fragment, type ReactElement } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
-  ArrowClockwise24Regular,
-  Edit24Regular,
-  MoreHorizontal24Regular,
+  ArrowClockwise20Regular,
+  Edit20Regular,
+  MoreHorizontal20Regular,
 } from '@fluentui/react-icons'
 import {
   Menu,
@@ -47,13 +47,13 @@ const useStyles = makeStyles({
   },
   // Uniform button width so icons line up in a neat row even when
   // labels differ in length (Refresh vs Add). 64px is button
-  // geometry, not a spacing token. Labels are semibold so they read
-  // sharp like the reference bar, and hover is an explicit light
-  // pale-gray rounded box (the reference Edit hover), not the
-  // default subtle wash alone.
+  // geometry, not a spacing token. Labels are regular weight
+  // (thinning 2026-10-28: semibold stacked with 20px icons read
+  // too heavy); hover is an explicit light pale-gray rounded box
+  // (the reference Edit hover), not the default subtle wash alone.
   actionButton: {
     minWidth: '64px',
-    fontWeight: tokens.fontWeightSemibold,
+    fontWeight: tokens.fontWeightRegular,
     borderRadius: tokens.borderRadiusMedium,
     ':hover': {
       backgroundColor: tokens.colorSubtleBackgroundHover,
@@ -70,7 +70,7 @@ const useStyles = makeStyles({
 
 export type ActionBarAction = {
   label: string
-  // Icon element (e.g. <ArrowClockwise24Regular />), rendered inside
+  // Icon element (e.g. <ArrowClockwise20Regular />), rendered inside
   // the button.
   icon?: ReactElement
   onClick?: () => void
@@ -107,12 +107,12 @@ const DEFAULT_GROUPS = (
     actions: [
       {
         label: 'Refresh',
-        icon: <ArrowClockwise24Regular />,
+        icon: <ArrowClockwise20Regular />,
         onClick: () => notify?.('Refresh'),
       },
       {
         label: 'Edit',
-        icon: <Edit24Regular />,
+        icon: <Edit20Regular />,
         onClick: () => notify?.('Edit'),
       },
     ],
@@ -122,7 +122,7 @@ const DEFAULT_GROUPS = (
     actions: [
       {
         label: 'More',
-        icon: <MoreHorizontal24Regular />,
+        icon: <MoreHorizontal20Regular />,
         menuItems: [
           { label: 'Save', onClick: () => notify?.('Save') },
           { label: 'Reset', onClick: () => notify?.('Reset') },
