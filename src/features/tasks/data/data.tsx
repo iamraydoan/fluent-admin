@@ -25,6 +25,20 @@ export const labels = [
   },
 ]
 
+// Status -> StatusBadge colour map, mirroring the Users callTypes map:
+// done = success, canceled = danger, todo = informative,
+// backlog = subtle (unstarted, quieter than todo), in progress = warning.
+export const taskStatusColors = new Map<
+  string,
+  'success' | 'subtle' | 'informative' | 'danger' | 'severe' | 'warning'
+>([
+  ['backlog', 'subtle'],
+  ['todo', 'informative'],
+  ['in progress', 'warning'],
+  ['done', 'success'],
+  ['canceled', 'danger'],
+])
+
 export const statuses = [
   {
     label: 'Backlog',

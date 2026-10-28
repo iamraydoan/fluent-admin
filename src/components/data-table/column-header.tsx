@@ -4,6 +4,7 @@ import {
   ArrowDown20Regular,
   ArrowSort20Regular,
   ArrowUp20Regular,
+  Dismiss20Regular,
   EyeOff20Regular,
 } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
@@ -76,6 +77,14 @@ export function DataTableColumnHeader<TData, TValue>({
             >
               Desc
             </MenuItem>
+            {sorted && (
+              <MenuItem
+                icon={<Dismiss20Regular />}
+                onClick={() => column.clearSorting()}
+              >
+                Clear sort
+              </MenuItem>
+            )}
             {column.getCanHide() && (
               <MenuItem
                 icon={<EyeOff20Regular />}

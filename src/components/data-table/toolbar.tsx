@@ -126,8 +126,29 @@ export function DataTableToolbar<TData>({
   onDensityChange,
 }: DataTableToolbarProps<TData>) {
   const styles = useStyles()
-  const isFiltered =
-    table.getState().columnFilters.length > 0 || table.getState().globalFilter
+  /**
+   * Reset = filters + sort + selection + page 1. Column
+   * visibility and density are view preferences and are
+   * deliberately kept: Reset restores the data view, not the
+   * user's chosen layout. Selection count (where lifted, e.g.
+   * Tasks) is the TOTAL selected across all pages and filters,
+   * not the filtered-page count, and selection is not cleared
+   * by filtering — only by this Reset (or by unchecking).
+   */
+  const isResettable =
+    table.getState().columnFilters.length > 0 ||
+    Boolean(table.getState().globalFilter) ||
+    table.getState().sorting.length > 0 ||
+    Object.keys(table.getState().rowSelection).length > 0 ||
+    table.getState().pagination.pageIndex > 0
+
+  const handleReset = () => {
+    table.resetColumnFilters()
+    if (table.getState().globalFilter) table.setGlobalFilter('')
+    table.resetSorting()
+    table.resetRowSelection()
+    table.setPageIndex(0)
+  }
 
   const searchInput = searchKey ? (
     <Input
@@ -160,15 +181,12 @@ export function DataTableToolbar<TData>({
     )
   })
 
-  const resetButton = isFiltered ? (
+  const resetButton = isResettable ? (
     <Button
       appearance='subtle'
       size='small'
       icon={<Dismiss20Regular />}
-      onClick={() => {
-        table.resetColumnFilters()
-        table.setGlobalFilter('')
-      }}
+      onClick={handleReset}
     >
       Reset
     </Button>

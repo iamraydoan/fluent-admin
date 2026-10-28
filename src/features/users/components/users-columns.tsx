@@ -49,7 +49,7 @@ export const usersColumns: ColumnDef<User>[] = [
         onChange={(_, data) =>
           table.toggleAllPageRowsSelected(data.checked === true)
         }
-        aria-label='Select all'
+        aria-label='Select all rows on this page'
       />
     ),
     cell: ({ row }) => (
@@ -72,6 +72,11 @@ export const usersColumns: ColumnDef<User>[] = [
   },
   {
     id: 'fullName',
+    // accessorFn (not accessorKey: no such field exists) makes NAME
+    // sortable and gives it a View entry. There was no hide trap
+    // here: without an accessor the column could not be hidden at
+    // all, so there was nothing to restore.
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='NAME' />
     ),
@@ -111,6 +116,15 @@ export const usersColumns: ColumnDef<User>[] = [
         {formatPhone(String(row.getValue('phoneNumber')))}
       </div>
     ),
+    // Digit-insensitive match so a typed digit string matches the
+    // stored international number regardless of formatting.
+    filterFn: (row, id, value) => {
+      const query = String(value)
+      const raw = String(row.getValue(id))
+      const digits = (text: string) => text.replace(/\D/g, '')
+      if (digits(query)) return digits(raw).includes(digits(query))
+      return raw.toLowerCase().includes(query.toLowerCase())
+    },
     enableSorting: false,
   },
   {
@@ -236,5 +250,6 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     id: 'actions',
     cell: DataTableRowActions,
+    enableHiding: false,
   },
 ]

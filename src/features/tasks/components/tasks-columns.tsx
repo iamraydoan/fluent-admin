@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Link } from '@/components/ui/link'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { labels, priorities, statuses } from '../data/data'
+import { labels, priorities, statuses, taskStatusColors } from '../data/data'
 import { type Task } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 import { useTasks } from './tasks-provider'
@@ -64,7 +64,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
           (table.getIsSomePageRowsSelected() && 'mixed')
         }
         onChange={(_, data) => table.toggleAllPageRowsSelected(!!data.checked)}
-        aria-label='Select all'
+        aria-label='Select all rows on this page'
       />
     ),
     cell: ({ row }) => (
@@ -118,7 +118,10 @@ export const tasksColumns: ColumnDef<Task>[] = [
 
       const StatusIcon = status.icon
       return (
-        <StatusBadge icon={<StatusIcon aria-hidden='true' />}>
+        <StatusBadge
+          color={taskStatusColors.get(status.value)}
+          icon={<StatusIcon aria-hidden='true' />}
+        >
           {status.label}
         </StatusBadge>
       )
@@ -162,5 +165,6 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     id: 'actions',
     cell: ({ row }) => <DataTableRowActions row={row} />,
+    enableHiding: false,
   },
 ]

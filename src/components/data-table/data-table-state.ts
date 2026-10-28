@@ -3,6 +3,7 @@ import type {
   Column,
   ColumnSizingState,
   OnChangeFn,
+  Table,
   VisibilityState,
 } from '@tanstack/react-table'
 import { tokens } from '@fluentui/react-components'
@@ -101,6 +102,43 @@ export function usePersistedColumnVisibility(
     [storageKey]
   )
   return [visibility, onVisibilityChange]
+}
+
+/**
+ * Original column order, from the column definitions as passed to
+ * the table — NOT from getAllColumns(), which returns the current
+ * (possibly reordered) order. This is what Show all must restore:
+ * a reordered column stays reordered if only visibility is reset.
+ * Column ids come from the definition id, else the accessor key,
+ * else the live column whose definition matches (covers an
+ * accessorFn column with no explicit id).
+ */
+export function getOriginalColumnOrder<TData>(table: Table<TData>): string[] {
+  const liveByDef = new Map(
+    table.getAllColumns().map((column) => [column.columnDef, column.id])
+  )
+  const order: string[] = []
+  for (const def of table.options.columns) {
+    const candidate = def as { id?: unknown; accessorKey?: unknown }
+    const id =
+      typeof candidate.id === 'string' && candidate.id
+        ? candidate.id
+        : typeof candidate.accessorKey === 'string' && candidate.accessorKey
+          ? candidate.accessorKey
+          : liveByDef.get(def)
+    if (id) order.push(id)
+  }
+  return order
+}
+
+/**
+ * Show all: restores BOTH visibility and original column order.
+ * toggleAllColumnsVisible alone only restores visibility, leaving
+ * a reordered column reordered.
+ */
+export function showAllColumns<TData>(table: Table<TData>): void {
+  table.toggleAllColumnsVisible(true)
+  table.setColumnOrder(getOriginalColumnOrder(table))
 }
 
 /**
