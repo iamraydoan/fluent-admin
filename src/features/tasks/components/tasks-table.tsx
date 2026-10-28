@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
+  type ColumnSizingState,
   type SortingState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -22,7 +22,18 @@ import {
   TableHeaderCell,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import {
+  DENSITY_ROW_HEIGHTS,
+  DataTableHeaderFilter,
+  DataTablePagination,
+  DataTableToolbar,
+  getNumericCellStyle,
+  getPinnedCellStyle,
+  getSizedColumnWidth,
+  useDataTableSharedStyles,
+  usePersistedColumnVisibility,
+  useTableDensity,
+} from '@/components/data-table'
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
@@ -49,41 +60,46 @@ const useStyles = makeStyles({
     flex: '1',
     minHeight: 0,
     overflowY: 'auto',
+    overflowX: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
-  // Entity Types pattern: 35px rows, uppercase headers, vertical dividers.
-  bodyRow: {
-    height: '35px',
+  // Row/header heights come from the density (Compact 32px /
+  // Standard 40px, see DENSITY_ROW_HEIGHTS), applied as inline
+  // height styles below; these classes only carry the padding.
+  // Body padding is token spacing: Compact 0 (the 32px Checkbox
+  // fills the row exactly), Standard 4px top/bottom (32 + 8 = 40).
+  // Header padding: Compact 4px, Standard 8px around the small
+  // header buttons, with the row height style forcing the total.
+  padBodyCompact: {
+    paddingTop: 0,
+    paddingBottom: 0,
   },
-  headerRow: {
-    height: '35px',
+  padBodyStandard: {
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+  },
+  padHeaderCompact: {
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+  },
+  padHeaderStandard: {
+    paddingTop: tokens.spacingVerticalS,
+    paddingBottom: tokens.spacingVerticalS,
   },
   // Sticky header: stays at the top of the scroll container while
   // the body scrolls underneath. The background must be a solid
   // theme token (not transparent, not hardcoded white) or scrolling
   // rows would show through; Background3 matches the MES ToolTable
-  // header band in both light and dark themes.
+  // header band in both light and dark themes. zIndex 3 keeps the
+  // whole header row above pinned body cells (z 1, see
+  // getPinnedCellStyle) during vertical scroll.
   headerCell: {
     textTransform: 'uppercase',
     position: 'sticky',
     top: 0,
     backgroundColor: tokens.colorNeutralBackground3,
-    zIndex: 1,
-  },
-  dividerCell: {
-    borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`,
-  },
-  // Body rows are driven by the 32px Fluent Checkbox, so 1px vertical
-  // padding lands the row at ~35px; header sort buttons are shorter,
-  // so header cells get 5px to land at the same height.
-  padBodyCell: {
-    paddingTop: '1px',
-    paddingBottom: '1px',
-  },
-  padHeaderCell: {
-    paddingTop: '5px',
-    paddingBottom: '5px',
+    zIndex: 3,
   },
   emptyCell: {
     textAlign: 'center',
@@ -94,14 +110,33 @@ const useStyles = makeStyles({
 
 type DataTableProps = {
   data: Task[]
+  // Called with the filtered selected-row count whenever selection
+  // changes, so a parent (the Tasks screen ActionBar) can enable /
+  // disable selection-driven actions. Optional: the table works
+  // unchanged without it.
+  onSelectionChange?: (selectedCount: number) => void
 }
 
 export function TasksTable({ data, onSelectionChange }: DataTableProps) {
   const styles = useStyles()
+  const sharedStyles = useDataTableSharedStyles()
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  // Column visibility persists per table in localStorage.
+  const [columnVisibility, onColumnVisibilityChange] =
+    usePersistedColumnVisibility('tasks-column-visibility')
+  // Row density persists per table in localStorage.
+  const [density, setDensity] = useTableDensity('tasks-table-density')
+  const rowHeight = DENSITY_ROW_HEIGHTS[density]
+  // Column sizing is in-memory only (not persisted): pinned columns
+  // get exact widths here so their sticky left offsets are exact
+  // (select: 32px Checkbox + 16px cell padding; id: 80px id text +
+  // 16px cell padding). Resized columns gain a width style below.
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({
+    select: 48,
+    id: 96,
+  })
 
   // Synced with URL states (updated to match route search schema defaults)
   const {
@@ -110,11 +145,6 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
     columnFilters,
     onColumnFiltersChange,
     pagination,
-  // Called with the filtered selected-row count whenever selection
-  // changes, so a parent (the Tasks screen ActionBar) can enable /
-  // disable selection-driven actions. Optional: the table works
-  // unchanged without it.
-  onSelectionChange?: (selectedCount: number) => void
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
@@ -140,11 +170,20 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
       columnFilters,
       globalFilter,
       pagination,
+      columnSizing,
     },
+    // Pinned left columns: the row checkbox + the first data column
+    // (TASK). initialState (not controlled state) because no UI
+    // changes pinning; resizing below is controlled instead.
+    initialState: {
+      columnPinning: { left: ['select', 'id'] },
+    },
+    columnResizeMode: 'onChange',
+    onColumnSizingChange: setColumnSizing,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()
       const title = String(row.getValue('title')).toLowerCase()
@@ -168,6 +207,14 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
     ensurePageInRange(pageCount)
   }, [pageCount, ensurePageInRange])
 
+  // Lift selection count only (not the table instance): the parent
+  // re-renders on count change but rowSelection itself is unchanged,
+  // so this effect does not loop.
+  useEffect(() => {
+    onSelectionChange?.(table.getFilteredSelectedRowModel().rows.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowSelection])
+
   const filteredCount = table.getFilteredRowModel().rows.length
 
   return (
@@ -189,50 +236,118 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
           },
         ]}
         fieldFilters={[{ columnId: 'title', label: 'TITLE' }]}
+        density={density}
+        onDensityChange={setDensity}
       />
       <div className={styles.tableWrap}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className={styles.headerRow}>
-                {headerGroup.headers.map((header, headerIndex) => {
+              <TableRow key={headerGroup.id} style={{ height: rowHeight }}>
+                {headerGroup.headers.map((header) => {
                   return (
                     <TableHeaderCell
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={`${styles.headerCell} ${styles.padHeaderCell} ${headerIndex < headerGroup.headers.length - 1 ? styles.dividerCell : ''}`}
+                      className={`${styles.headerCell} ${density === 'compact' ? styles.padHeaderCompact : styles.padHeaderStandard}`}
+                      style={{
+                        height: rowHeight,
+                        ...getSizedColumnWidth(header.column, columnSizing),
+                        ...getPinnedCellStyle(header.column, true),
+                      }}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
-  // Lift selection count only (not the table instance): the parent
-  // re-renders on count change but rowSelection itself is unchanged,
-  // so this effect does not loop.
-  useEffect(() => {
-    onSelectionChange?.(table.getFilteredSelectedRowModel().rows.length)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowSelection])
-
                           )}
+                      {!header.isPlaceholder && (
+                        <div
+                          data-resize-handle={header.column.id}
+                          className={`${sharedStyles.resizeHandle} ${header.column.getIsResizing() ? sharedStyles.resizeHandleActive : ''}`}
+                          // Seed an explicit size from the rendered
+                          // width on hover: TanStack's drag math
+                          // starts from column.getSize(), which is
+                          // its 150px default for auto-width columns,
+                          // so an unseeded first drag can shrink a
+                          // wide column. Seeding on hover (before
+                          // mousedown captures the start size) makes
+                          // drags grow/shrink from the visible width.
+                          // Pinned columns already have exact sizes
+                          // and are skipped. Touch drags have no
+                          // hover, so they still start from 150px.
+                          onMouseEnter={(event) => {
+                            const cell = event.currentTarget.closest('th')
+                            const width = cell
+                              ? Math.round(cell.getBoundingClientRect().width)
+                              : undefined
+                            if (
+                              width &&
+                              columnSizing[header.column.id] === undefined
+                            ) {
+                              setColumnSizing((prev) => ({
+                                ...prev,
+                                [header.column.id]: width,
+                              }))
+                            }
+                          }}
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                        />
+                      )}
                     </TableHeaderCell>
                   )
                 })}
+              </TableRow>
+            ))}
+            {/* Filter row: one text filter per chosen column (TASK
+                id, which has no toolbar filter); other cells stay
+                blank. Stuck under the main header row (top =
+                density row height) so both bands stay visible while
+                the body scrolls. */}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={`${headerGroup.id}-filters`}>
+                {headerGroup.headers.map((header) => (
+                  <TableHeaderCell
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={`${styles.headerCell} ${styles.padHeaderCompact}`}
+                    style={{
+                      top: rowHeight,
+                      ...getSizedColumnWidth(header.column, columnSizing),
+                      ...getPinnedCellStyle(header.column, true),
+                    }}
+                  >
+                    {header.column.id === 'id' && !header.isPlaceholder && (
+                      <DataTableHeaderFilter
+                        column={header.column}
+                        label='TASK'
+                      />
+                    )}
+                  </TableHeaderCell>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className={styles.bodyRow}>
-                  {row.getVisibleCells().map((cell, cellIndex, cells) => (
+                <TableRow key={row.id} style={{ height: rowHeight }}>
+                  {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`${styles.padBodyCell} ${cellIndex < cells.length - 1 ? styles.dividerCell : ''}`}
-                      // Fluent's default cell height floors rows at 44px;
-                      // inline height overrides it to the 35px list pattern.
-                      style={{ height: '35px' }}
+                      className={
+                        density === 'compact'
+                          ? styles.padBodyCompact
+                          : styles.padBodyStandard
+                      }
+                      style={{
+                        height: rowHeight,
+                        ...getSizedColumnWidth(cell.column, columnSizing),
+                        ...getPinnedCellStyle(cell.column, false),
+                        ...getNumericCellStyle(cell.column.id),
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

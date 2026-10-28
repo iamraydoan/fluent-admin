@@ -3,18 +3,24 @@ import { Checkmark20Regular, Options20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
   Menu,
+  MenuDivider,
   MenuItem,
   MenuList,
   MenuPopover,
   MenuTrigger,
 } from '@/components/ui/menu'
+import type { TableDensity } from './data-table-state'
 
 type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
+  density?: TableDensity
+  onDensityChange?: (density: TableDensity) => void
 }
 
 export function DataTableViewOptions<TData>({
   table,
+  density,
+  onDensityChange,
 }: DataTableViewOptionsProps<TData>) {
   return (
     <Menu>
@@ -47,6 +53,28 @@ export function DataTableViewOptions<TData>({
                 </MenuItem>
               )
             })}
+          {density && onDensityChange && (
+            <>
+              <MenuDivider />
+              <MenuItem disabled>Density</MenuItem>
+              <MenuItem
+                icon={
+                  density === 'compact' ? <Checkmark20Regular /> : undefined
+                }
+                onClick={() => onDensityChange('compact')}
+              >
+                Compact
+              </MenuItem>
+              <MenuItem
+                icon={
+                  density === 'standard' ? <Checkmark20Regular /> : undefined
+                }
+                onClick={() => onDensityChange('standard')}
+              >
+                Standard
+              </MenuItem>
+            </>
+          )}
         </MenuList>
       </MenuPopover>
     </Menu>

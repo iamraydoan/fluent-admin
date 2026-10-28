@@ -4,6 +4,7 @@ import { Dismiss20Regular } from '@fluentui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import type { TableDensity } from './data-table-state'
 import { DataTableFacetedFilter } from './faceted-filter'
 import { DataTableFieldFilter } from './field-filter'
 import { DataTableSingleSelectFilter } from './single-select-filter'
@@ -108,6 +109,9 @@ type DataTableToolbarProps<TData> = {
    * legacy single-row layout.
    */
   heading?: string
+  /** Row density, shown as a Compact/Standard toggle in View menu. */
+  density?: TableDensity
+  onDensityChange?: (density: TableDensity) => void
 }
 
 export function DataTableToolbar<TData>({
@@ -118,6 +122,8 @@ export function DataTableToolbar<TData>({
   singleSelectFilters = [],
   fieldFilters = [],
   heading,
+  density,
+  onDensityChange,
 }: DataTableToolbarProps<TData>) {
   const styles = useStyles()
   const isFiltered =
@@ -201,7 +207,11 @@ export function DataTableToolbar<TData>({
         </div>
         <div className={styles.listRow}>
           <span />
-          <DataTableViewOptions table={table} />
+          <DataTableViewOptions
+            table={table}
+            density={density}
+            onDensityChange={onDensityChange}
+          />
         </div>
       </div>
     )
@@ -214,7 +224,11 @@ export function DataTableToolbar<TData>({
         {filterMenus}
         {resetButton}
       </div>
-      <DataTableViewOptions table={table} />
+      <DataTableViewOptions
+        table={table}
+        density={density}
+        onDensityChange={onDensityChange}
+      />
     </div>
   )
 }
