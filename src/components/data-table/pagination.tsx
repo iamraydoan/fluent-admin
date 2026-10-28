@@ -10,10 +10,11 @@ import { Text } from '@/components/ui/text'
 import { Tooltip } from '@/components/ui/tooltip'
 
 const useStyles = makeStyles({
-  // Entity Types pattern: fully right-aligned, no first/last buttons and
-  // no direct page-number jumps. This footer sits OUTSIDE the table
-  // scroll container and must never shrink or scroll away, so it
-  // stays visible at the card bottom even with 25 rows.
+  // Entity Types pattern: fully right-aligned, with First/Prev/Next/
+  // Last buttons and no direct page-number jumps. This footer sits
+  // OUTSIDE the table scroll container and must never shrink or
+  // scroll away, so it stays visible at the card bottom even with
+  // 25 rows.
   root: {
     flexShrink: 0,
     display: 'flex',
@@ -32,7 +33,40 @@ const useStyles = makeStyles({
   pageNumbers: {
     fontVariantNumeric: 'tabular-nums',
   },
+  // Double chevron for First/Last: the icon set has no double-chevron
+  // glyph, so two single chevrons overlap by 8px.
+  doubleChevron: {
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  doubleChevronOverlap: {
+    marginLeft: '-12px',
+  },
 })
+
+function DoubleChevronLeft() {
+  const styles = useStyles()
+  return (
+    <span className={styles.doubleChevron} aria-hidden='true'>
+      <ChevronLeft20Regular />
+      <span className={styles.doubleChevronOverlap}>
+        <ChevronLeft20Regular />
+      </span>
+    </span>
+  )
+}
+
+function DoubleChevronRight() {
+  const styles = useStyles()
+  return (
+    <span className={styles.doubleChevron} aria-hidden='true'>
+      <ChevronRight20Regular />
+      <span className={styles.doubleChevronOverlap}>
+        <ChevronRight20Regular />
+      </span>
+    </span>
+  )
+}
 
 type DataTablePaginationProps<TData> = {
   table: Table<TData>
@@ -78,6 +112,17 @@ export function DataTablePagination<TData>({
       </Text>
 
       <div className={styles.group}>
+        <Tooltip content='Go to first page' relationship='label'>
+          <Button
+            appearance='outline'
+            shape='square'
+            size='small'
+            aria-label='Go to first page'
+            icon={<DoubleChevronLeft />}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          />
+        </Tooltip>
         <Tooltip content='Go to previous page' relationship='label'>
           <Button
             appearance='outline'
@@ -97,6 +142,17 @@ export function DataTablePagination<TData>({
             aria-label='Go to next page'
             icon={<ChevronRight20Regular />}
             onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          />
+        </Tooltip>
+        <Tooltip content='Go to last page' relationship='label'>
+          <Button
+            appearance='outline'
+            shape='square'
+            size='small'
+            aria-label='Go to last page'
+            icon={<DoubleChevronRight />}
+            onClick={() => table.setPageIndex(totalPages - 1)}
             disabled={!table.getCanNextPage()}
           />
         </Tooltip>

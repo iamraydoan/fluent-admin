@@ -5,11 +5,14 @@ import {
   Add24Regular,
   ArrowClockwise24Regular,
   ArrowDownload24Regular,
+  ArrowSwap24Regular,
   Delete24Regular,
+  MoreHorizontal24Regular,
 } from '@fluentui/react-icons'
 import { Card } from '@/components/ui/card'
 import ActionBar from '@/components/layout/action-bar'
 import PageTop from '@/components/layout/page-top'
+import { type TasksBulkController } from './components/data-table-bulk-actions'
 import { TasksDialogs } from './components/tasks-dialogs'
 import { TasksProvider, useTasks } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
@@ -54,14 +57,20 @@ function TasksScreen() {
   const styles = useStyles()
   const { setOpen, requestBulkDelete } = useTasks()
   const navigate = route.useNavigate()
-  // Bumped on action bar Refresh so the table remounts (local sorting /
+  // CONTRACT: Tasks Refresh = reset-view, not reload-data. The data is
+  // a static local array (no server reload to preserve state through),
+  // so Refresh intentionally remounts the table (local sorting /
   // selection / column visibility reset) together with the URL
-  // filter reset below.
+  // filter reset below. This is a deliberate contract, not a mixed
+  // one: Dashboard Refresh preserves its tab, Tasks Refresh resets.
   const [refreshKey, setRefreshKey] = useState(0)
   // Lifted from TasksTable via onSelectionChange: drives the
   // ActionBar Delete disabled state (0 = disabled, >0 = enabled).
   // The count resets on Refresh because the table remounts.
   const [selectedCount, setSelectedCount] = useState(0)
+  // Bulk controller reported by the table: drives Mass Update and
+  // Export in the ActionBar (the floating bulk toolbar is removed).
+  const [bulk, setBulk] = useState<TasksBulkController | null>(null)
 
   const handleRefresh = () => {
     navigate({
@@ -115,6 +124,32 @@ function TasksScreen() {
                   },
                 ],
               },
+              {
+                label: 'Bulk',
+                actions: [
+                  {
+                    label: 'Mass Update',
+                    icon: <ArrowSwap24Regular />,
+                    disabled: selectedCount === 0,
+                    onClick: () => bulk?.requestMassUpdate(),
+                  },
+                ],
+              },
+              {
+                label: 'Actions',
+                actions: [
+                  {
+                    label: 'More',
+                    icon: <MoreHorizontal24Regular />,
+                    menuItems: [
+                      {
+                        label: 'Export',
+                        onClick: () => bulk?.exportCsv(),
+                      },
+                    ],
+                  },
+                ],
+              },
             ]}
           />
         }
@@ -123,7 +158,7 @@ function TasksScreen() {
         <Card
           className={styles.card}
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
           }}
         >
@@ -132,6 +167,7 @@ function TasksScreen() {
               key={refreshKey}
               data={tasks}
               onSelectionChange={setSelectedCount}
+              onBulkChange={setBulk}
             />
           </div>
         </Card>

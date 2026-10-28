@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { makeStyles, tokens } from '@fluentui/react-components'
+import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/table'
 import {
   DENSITY_ROW_HEIGHTS,
-  DataTableHeaderFilter,
   DataTablePagination,
   DataTableToolbar,
   getNumericCellStyle,
@@ -35,7 +34,10 @@ import {
 } from '@/components/data-table'
 import { accountTypes, departments, roles } from '../data/data'
 import { type User } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
+import {
+  DataTableBulkActions,
+  type UsersBulkController,
+} from './data-table-bulk-actions'
 import { usersColumns as columns } from './users-columns'
 
 const useStyles = makeStyles({
@@ -59,7 +61,7 @@ const useStyles = makeStyles({
     overflowY: 'auto',
     overflowX: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium,
+    borderRadius: tokens.borderRadiusXLarge,
   },
   // Row/header heights come from the density (Compact 32px /
   // Standard 40px, see DENSITY_ROW_HEIGHTS), applied as inline
@@ -109,9 +111,17 @@ type DataTableProps = {
   data: User[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  // Receives the bulk controller so the screen ActionBar can render
+  // the bulk actions (the floating bulk toolbar is removed).
+  onBulkChange?: (controller: UsersBulkController) => void
 }
 
-export function UsersTable({ data, search, navigate }: DataTableProps) {
+export function UsersTable({
+  data,
+  search,
+  navigate,
+  onBulkChange,
+}: DataTableProps) {
   const styles = useStyles()
   const sharedStyles = useDataTableSharedStyles()
   // Local UI-only states
@@ -201,7 +211,10 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
       <DataTableToolbar
         table={table}
         heading={`Users (${filteredCount})`}
-        searchPlaceholder='Search'
+        // Honest scope label: this Search is the username column
+        // filter only (searchKey below); scope was not widened
+        // because the URL filter keys stay username/email/etc.
+        searchPlaceholder='Search username...'
         searchKey='username'
         singleSelectFilters={[
           {
@@ -232,7 +245,14 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
             options: accountTypes.map(({ label, value }) => ({ label, value })),
           },
         ]}
-        fieldFilters={[{ columnId: 'email', label: 'EMAIL' }]}
+        // PHONE is a toolbar field filter (funnel/Enter apply),
+        // table-local like the old header filter row was: it is
+        // not in the URL column-filter config, so the route
+        // search schema is unchanged.
+        fieldFilters={[
+          { columnId: 'email', label: 'EMAIL' },
+          { columnId: 'phoneNumber', label: 'PHONE' },
+        ]}
         density={density}
         onDensityChange={setDensity}
       />
@@ -246,7 +266,12 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                     <TableHeaderCell
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={`${styles.headerCell} ${density === 'compact' ? styles.padHeaderCompact : styles.padHeaderStandard}`}
+                      className={mergeClasses(
+                        styles.headerCell,
+                        density === 'compact'
+                          ? styles.padHeaderCompact
+                          : styles.padHeaderStandard
+                      )}
                       style={{
                         height: rowHeight,
                         ...getSizedColumnWidth(header.column, columnSizing),
@@ -298,35 +323,6 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                 })}
               </TableRow>
             ))}
-            {/* Filter row: one text filter per chosen column (PHONE
-                NUMBER, which has no toolbar filter); other cells stay
-                blank. Stuck under the main header row (top =
-                density row height) so both bands stay visible while
-                the body scrolls. */}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={`${headerGroup.id}-filters`}>
-                {headerGroup.headers.map((header) => (
-                  <TableHeaderCell
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className={`${styles.headerCell} ${styles.padHeaderCompact}`}
-                    style={{
-                      top: rowHeight,
-                      ...getSizedColumnWidth(header.column, columnSizing),
-                      ...getPinnedCellStyle(header.column, true),
-                    }}
-                  >
-                    {header.column.id === 'phoneNumber' &&
-                      !header.isPlaceholder && (
-                        <DataTableHeaderFilter
-                          column={header.column}
-                          label='PHONE'
-                        />
-                      )}
-                  </TableHeaderCell>
-                ))}
-              </TableRow>
-            ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
@@ -369,7 +365,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
+      <DataTableBulkActions table={table} onBulkChange={onBulkChange} />
     </div>
   )
 }

@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { makeStyles, tokens } from '@fluentui/react-components'
+import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/table'
 import {
   DENSITY_ROW_HEIGHTS,
-  DataTableHeaderFilter,
   DataTablePagination,
   DataTableToolbar,
   getNumericCellStyle,
@@ -36,7 +35,10 @@ import {
 } from '@/components/data-table'
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
+import {
+  DataTableBulkActions,
+  type TasksBulkController,
+} from './data-table-bulk-actions'
 import { tasksColumns as columns } from './tasks-columns'
 
 const route = getRouteApi('/_authenticated/tasks/')
@@ -62,7 +64,7 @@ const useStyles = makeStyles({
     overflowY: 'auto',
     overflowX: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium,
+    borderRadius: tokens.borderRadiusXLarge,
   },
   // Row/header heights come from the density (Compact 32px /
   // Standard 40px, see DENSITY_ROW_HEIGHTS), applied as inline
@@ -115,9 +117,16 @@ type DataTableProps = {
   // disable selection-driven actions. Optional: the table works
   // unchanged without it.
   onSelectionChange?: (selectedCount: number) => void
+  // Receives the bulk controller so the screen ActionBar can render
+  // Mass Update and Export (the floating bulk toolbar is removed).
+  onBulkChange?: (controller: TasksBulkController) => void
 }
 
-export function TasksTable({ data, onSelectionChange }: DataTableProps) {
+export function TasksTable({
+  data,
+  onSelectionChange,
+  onBulkChange,
+}: DataTableProps) {
   const styles = useStyles()
   const sharedStyles = useDataTableSharedStyles()
   // Local UI-only states
@@ -209,9 +218,11 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
 
   // Lift selection count only (not the table instance): the parent
   // re-renders on count change but rowSelection itself is unchanged,
-  // so this effect does not loop.
+  // so this effect does not loop. The count is the TOTAL selected
+  // across all pages and filters (getSelectedRowModel), not the
+  // filtered-page count, and filtering does not clear selection.
   useEffect(() => {
-    onSelectionChange?.(table.getFilteredSelectedRowModel().rows.length)
+    onSelectionChange?.(table.getSelectedRowModel().rows.length)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowSelection])
 
@@ -222,7 +233,9 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
       <DataTableToolbar
         table={table}
         heading={`Tasks (${filteredCount})`}
-        searchPlaceholder='Search'
+        // Honest scope label: the table's globalFilterFn already
+        // matches id OR title, so no scope widening was needed.
+        searchPlaceholder='Search id or title...'
         singleSelectFilters={[
           {
             columnId: 'status',
@@ -249,7 +262,12 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
                     <TableHeaderCell
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={`${styles.headerCell} ${density === 'compact' ? styles.padHeaderCompact : styles.padHeaderStandard}`}
+                      className={mergeClasses(
+                        styles.headerCell,
+                        density === 'compact'
+                          ? styles.padHeaderCompact
+                          : styles.padHeaderStandard
+                      )}
                       style={{
                         height: rowHeight,
                         ...getSizedColumnWidth(header.column, columnSizing),
@@ -301,34 +319,6 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
                 })}
               </TableRow>
             ))}
-            {/* Filter row: one text filter per chosen column (TASK
-                id, which has no toolbar filter); other cells stay
-                blank. Stuck under the main header row (top =
-                density row height) so both bands stay visible while
-                the body scrolls. */}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={`${headerGroup.id}-filters`}>
-                {headerGroup.headers.map((header) => (
-                  <TableHeaderCell
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className={`${styles.headerCell} ${styles.padHeaderCompact}`}
-                    style={{
-                      top: rowHeight,
-                      ...getSizedColumnWidth(header.column, columnSizing),
-                      ...getPinnedCellStyle(header.column, true),
-                    }}
-                  >
-                    {header.column.id === 'id' && !header.isPlaceholder && (
-                      <DataTableHeaderFilter
-                        column={header.column}
-                        label='TASK'
-                      />
-                    )}
-                  </TableHeaderCell>
-                ))}
-              </TableRow>
-            ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
@@ -371,7 +361,7 @@ export function TasksTable({ data, onSelectionChange }: DataTableProps) {
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
+      <DataTableBulkActions table={table} onBulkChange={onBulkChange} />
     </div>
   )
 }

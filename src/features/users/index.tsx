@@ -3,12 +3,20 @@ import { getRouteApi } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
   ArrowClockwise24Regular,
+  Delete24Regular,
+  Key24Regular,
+  Mail24Regular,
   MailAdd24Regular,
+  MoreHorizontal24Regular,
+  Person24Regular,
   PersonAdd24Regular,
+  PersonProhibited24Regular,
+  Shield24Regular,
 } from '@fluentui/react-icons'
 import { Card } from '@/components/ui/card'
 import ActionBar from '@/components/layout/action-bar'
 import PageTop from '@/components/layout/page-top'
+import { type UsersBulkController } from './components/data-table-bulk-actions'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersProvider, useUsers } from './components/users-provider'
 import { UsersTable } from './components/users-table'
@@ -54,10 +62,18 @@ function UsersScreen() {
   const { setOpen } = useUsers()
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  // Bumped on action bar Refresh so the table remounts (local sorting /
+  // CONTRACT: Users Refresh = reset-view, not reload-data. The data is
+  // a static local array (no server reload to preserve state through),
+  // so Refresh intentionally remounts the table (local sorting /
   // selection / column visibility reset) together with the URL
-  // filter reset below.
+  // filter reset below. This is a deliberate contract, not a mixed
+  // one: Dashboard Refresh preserves its tab, Users Refresh resets.
   const [refreshKey, setRefreshKey] = useState(0)
+  // Bulk controller reported by the table: drives the ActionBar Bulk
+  // group (disabled at 0 selected) and the More > Export action.
+  const [bulk, setBulk] = useState<UsersBulkController | null>(null)
+  const selectedCount = bulk?.selectedCount ?? 0
+  const busy = bulk?.busyAction ?? null
 
   const handleRefresh = () => {
     void navigate({
@@ -102,6 +118,62 @@ function UsersScreen() {
                   },
                 ],
               },
+              {
+                label: 'Bulk',
+                actions: [
+                  {
+                    label: 'Invite',
+                    icon: <Mail24Regular />,
+                    disabled: selectedCount === 0 || busy === 'invite',
+                    onClick: () => bulk?.invite(),
+                  },
+                  {
+                    label: 'Activate',
+                    icon: <Person24Regular />,
+                    disabled: selectedCount === 0 || busy === 'active',
+                    onClick: () => bulk?.activate(),
+                  },
+                  {
+                    label: 'Deactivate',
+                    icon: <PersonProhibited24Regular />,
+                    disabled: selectedCount === 0 || busy === 'inactive',
+                    onClick: () => bulk?.deactivate(),
+                  },
+                  {
+                    label: 'Reset password',
+                    icon: <Key24Regular />,
+                    disabled: selectedCount === 0 || busy === 'reset-password',
+                    onClick: () => bulk?.requestResetPassword(),
+                  },
+                  {
+                    label: 'Assign role',
+                    icon: <Shield24Regular />,
+                    disabled: selectedCount === 0,
+                    onClick: () => bulk?.requestAssignRole(),
+                  },
+                  {
+                    label: 'Delete',
+                    icon: <Delete24Regular />,
+                    disabled: selectedCount === 0,
+                    onClick: () => bulk?.requestDelete(),
+                  },
+                ],
+              },
+              {
+                label: 'Actions',
+                actions: [
+                  {
+                    label: 'More',
+                    icon: <MoreHorizontal24Regular />,
+                    menuItems: [
+                      {
+                        label: 'Export',
+                        onClick: () => bulk?.exportCsv(),
+                      },
+                    ],
+                  },
+                ],
+              },
             ]}
           />
         }
@@ -110,7 +182,7 @@ function UsersScreen() {
         <Card
           className={styles.card}
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
           }}
         >
@@ -120,6 +192,7 @@ function UsersScreen() {
               data={users}
               search={search}
               navigate={navigate}
+              onBulkChange={setBulk}
             />
           </div>
         </Card>
