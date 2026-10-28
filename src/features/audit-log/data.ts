@@ -29,7 +29,13 @@ export const auditActors = [
   'Sarah Chen',
 ] as const
 
-const entities = ['Users', 'Tasks', 'RBAC', 'Settings', 'Apps'] as const
+export const auditEntities = [
+  'Users',
+  'Tasks',
+  'RBAC',
+  'Settings',
+  'Apps',
+] as const
 
 const entityNames: Record<string, string[]> = {
   Users: ['alex_smith', 'john_doe', 'maria_garcia', 'david_lee'],
@@ -64,7 +70,7 @@ export const auditEvents: AuditEvent[] = Array.from(
   { length: 80 },
   (_, index) => {
     const action = auditActions[index % auditActions.length].value
-    const entity = entities[index % entities.length]
+    const entity = auditEntities[index % auditEntities.length]
     const names = entityNames[entity]
     return {
       id: `audit-${index + 1}`,

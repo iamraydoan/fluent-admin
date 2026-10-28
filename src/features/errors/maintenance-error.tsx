@@ -1,9 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { ErrorLayout } from './error-layout'
 
-export function MaintenanceError() {
+export function MaintenanceError({
+  variant,
+}: {
+  variant?: 'standalone' | 'in-shell'
+}) {
   return (
     <ErrorLayout
+      variant={variant}
       code='503'
       title='Website is under maintenance!'
       description={

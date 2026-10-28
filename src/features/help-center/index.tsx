@@ -27,12 +27,13 @@ const useStyles = makeStyles({
   },
   title: {
     margin: '0',
-    // Ws6 exception, kept at 36px / 1.2: equidistant between Hero800
-    // (32px) and Hero900 (40px), 4px from either; tokenising would
-    // visibly shrink or grow the landing title.
-    fontSize: '36px',
+    // Tokenised choice: Hero900 (40px) over Hero800 (32px). The old
+    // 36px sat equidistant (4px from either); growing to the hero
+    // size keeps this a landing title rather than shrinking it to a
+    // section heading. No PageTabs and no ActionBar on this screen.
+    fontSize: tokens.fontSizeHero900,
     fontWeight: tokens.fontWeightBold,
-    lineHeight: '1.2',
+    lineHeight: tokens.lineHeightHero900,
   },
   muted: {
     color: tokens.colorNeutralForeground3,
@@ -56,7 +57,7 @@ export function HelpCenter() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-          borderRadius: tokens.borderRadiusMedium,
+          borderRadius: tokens.borderRadiusXLarge,
           boxShadow: tokens.shadow2,
         }}
       >

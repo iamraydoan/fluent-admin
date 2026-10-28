@@ -34,15 +34,28 @@ const accountFormSchema = z.object({
     .min(1, 'Please enter your name.')
     .min(2, 'Name must be at least 2 characters.')
     .max(30, 'Name must not be longer than 30 characters.'),
-  dob: z.string().min(1, 'Please select your date of birth.'),
-  language: z.string('Please select a language.'),
+  // The custom invalid-type message keeps an unset (undefined)
+  // field on the friendly message instead of zod's raw
+  // "Invalid input: expected string, received undefined"; the
+  // min(1) message covers the empty-string case. Defaults below
+  // are '' so the form normally hits the min(1) path.
+  dob: z
+    .string({ error: 'Please select your date of birth.' })
+    .min(1, 'Please select your date of birth.'),
+  language: z
+    .string({ error: 'Please select a language.' })
+    .min(1, 'Please select a language.'),
 })
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<AccountFormValues> = {
+// This can come from your database or API. Every field is defined
+// (empty string for unset) so isDirty starts false and the submit
+// button is disabled on fresh load.
+const defaultValues: AccountFormValues = {
   name: '',
+  dob: '',
+  language: '',
 }
 
 export function AccountForm() {
@@ -52,8 +65,11 @@ export function AccountForm() {
     defaultValues,
   })
 
+  const { isDirty, isSubmitting } = form.formState
+
   function onSubmit(data: AccountFormValues) {
-    showSubmittedData(data)
+    showSubmittedData(data, 'Local demo only — not saved. Submitted values:')
+    form.reset(data)
   }
 
   return (
@@ -124,7 +140,11 @@ export function AccountForm() {
         )}
       />
       <div>
-        <Button type='submit' appearance='primary'>
+        <Button
+          type='submit'
+          appearance='primary'
+          disabled={!isDirty || isSubmitting}
+        >
           Update account
         </Button>
       </div>

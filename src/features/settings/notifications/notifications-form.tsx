@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
@@ -82,8 +81,12 @@ const notificationsFormSchema = z.object({
 
 type NotificationsFormValues = z.infer<typeof notificationsFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<NotificationsFormValues> = {
+// This can come from your database or API. Every field is defined
+// so isDirty starts false and the submit button is disabled on
+// fresh load.
+const defaultValues: NotificationsFormValues = {
+  type: 'all',
+  mobile: false,
   communication_emails: false,
   marketing_emails: false,
   social_emails: true,
@@ -120,9 +123,17 @@ export function NotificationsForm() {
     defaultValues,
   })
 
+  const { isDirty, isSubmitting } = form.formState
+
   return (
     <form
-      onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
+      onSubmit={form.handleSubmit((data) => {
+        showSubmittedData(
+          data,
+          'Local demo only — not saved. Submitted values:'
+        )
+        form.reset(data)
+      })}
       className={styles.form}
     >
       <Controller
@@ -191,15 +202,19 @@ export function NotificationsForm() {
                 Use different settings for my mobile devices
               </Text>
               <Text size={300}>
-                You can manage your mobile notifications in the{' '}
-                <Link to='/settings'>mobile settings</Link> page.
+                There is no separate mobile settings page: this setting applies
+                to the current device only.
               </Text>
             </div>
           </div>
         )}
       />
       <div>
-        <Button type='submit' appearance='primary'>
+        <Button
+          type='submit'
+          appearance='primary'
+          disabled={!isDirty || isSubmitting}
+        >
           Update notifications
         </Button>
       </div>

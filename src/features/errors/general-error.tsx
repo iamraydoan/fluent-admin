@@ -4,13 +4,15 @@ import { ErrorLayout } from './error-layout'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
+  variant?: 'standalone' | 'in-shell'
 }
 
-export function GeneralError({ minimal = false }: GeneralErrorProps) {
+export function GeneralError({ minimal = false, variant }: GeneralErrorProps) {
   const navigate = useNavigate()
   const { history } = useRouter()
   return (
     <ErrorLayout
+      variant={variant}
       code={minimal ? undefined : '500'}
       title="Oops! Something went wrong :')"
       description={

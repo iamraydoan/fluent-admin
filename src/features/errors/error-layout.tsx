@@ -14,6 +14,18 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     color: tokens.colorNeutralForeground1,
   },
+  // In-shell variant: the error page sits inside a Card in the
+  // authenticated shell, so it must NOT use 100svh (that made the
+  // Card content taller than the viewport and double-scrolled).
+  // Instead it fills the Card's flex column: minHeight 0, flex 1.
+  inShellRoot: {
+    display: 'flex',
+    flex: '1',
+    minHeight: 0,
+    width: '100%',
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+  },
   inner: {
     margin: 'auto',
     display: 'flex',
@@ -53,6 +65,10 @@ type ErrorLayoutProps = {
   description: React.ReactNode
   children?: React.ReactNode
   footer?: React.ReactNode
+  // 'standalone' (default) keeps 100svh for the full-page error
+  // routes; 'in-shell' fills the parent Card instead. The error
+  // components pass this through, so the $error route sets it once.
+  variant?: 'standalone' | 'in-shell'
 }
 
 export function ErrorLayout({
@@ -61,10 +77,11 @@ export function ErrorLayout({
   description,
   children,
   footer,
+  variant = 'standalone',
 }: ErrorLayoutProps) {
   const styles = useStyles()
   return (
-    <div className={styles.root}>
+    <div className={variant === 'in-shell' ? styles.inShellRoot : styles.root}>
       <div className={styles.inner}>
         {code ? <Text className={styles.code}>{code}</Text> : null}
         <Text size={500} weight='semibold' className={styles.title}>

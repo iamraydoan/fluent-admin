@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 // src/lib/fluent-theme.ts, so there is no font field here: a
 // single-option picker would be dead UI.
 const appearanceFormSchema = z.object({
-  theme: z.enum(['light', 'dark']),
+  theme: z.enum(['light', 'dark', 'system']),
 })
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
@@ -34,9 +34,11 @@ export function AppearanceForm() {
   const styles = useStyles()
   const { theme, setTheme } = useTheme()
 
-  // This can come from your database or API.
+  // This can come from your database or API. The form value is the
+  // stored theme itself, so System is a real option matching the
+  // header ThemeSwitch (Light / Dark / System), not mapped to Light.
   const defaultValues: Partial<AppearanceFormValues> = {
-    theme: theme === 'dark' ? 'dark' : 'light',
+    theme,
   }
 
   const form = useForm<AppearanceFormValues>({
@@ -44,10 +46,13 @@ export function AppearanceForm() {
     defaultValues,
   })
 
+  const { isDirty, isSubmitting } = form.formState
+
   function onSubmit(data: AppearanceFormValues) {
     if (data.theme != theme) setTheme(data.theme)
 
-    showSubmittedData(data)
+    showSubmittedData(data, 'Local demo only — not saved. Submitted values:')
+    form.reset(data)
   }
 
   return (
@@ -69,12 +74,17 @@ export function AppearanceForm() {
             >
               <Radio value='light' label='Light' />
               <Radio value='dark' label='Dark' />
+              <Radio value='system' label='System' />
             </RadioGroup>
           </Field>
         )}
       />
       <div>
-        <Button type='submit' appearance='primary'>
+        <Button
+          type='submit'
+          appearance='primary'
+          disabled={!isDirty || isSubmitting}
+        >
           Update preferences
         </Button>
       </div>

@@ -45,7 +45,10 @@ function RouteComponent() {
   const styles = useStyles()
   const { error } = Route.useParams()
 
-  const errorMap: Record<string, React.ComponentType> = {
+  const errorMap: Record<
+    string,
+    React.ComponentType<{ variant?: 'standalone' | 'in-shell' }>
+  > = {
     unauthorized: UnauthorisedError,
     forbidden: ForbiddenError,
     'not-found': NotFoundError,
@@ -64,11 +67,11 @@ function RouteComponent() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-          borderRadius: tokens.borderRadiusMedium,
+          borderRadius: tokens.borderRadiusXLarge,
           boxShadow: tokens.shadow2,
         }}
       >
-        <ErrorComponent />
+        <ErrorComponent variant='in-shell' />
       </Card>
     </div>
   )

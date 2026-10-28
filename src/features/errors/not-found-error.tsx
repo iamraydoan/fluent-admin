@@ -2,11 +2,16 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { ErrorLayout } from './error-layout'
 
-export function NotFoundError() {
+export function NotFoundError({
+  variant,
+}: {
+  variant?: 'standalone' | 'in-shell'
+}) {
   const navigate = useNavigate()
   const { history } = useRouter()
   return (
     <ErrorLayout
+      variant={variant}
       code='404'
       title='Oops! Page Not Found!'
       description={

@@ -55,8 +55,12 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
+// This can come from your database or API. Every field is defined
+// (empty string for unset) so isDirty starts false and the submit
+// button is disabled on fresh load.
+const defaultValues: ProfileFormValues = {
+  username: '',
+  email: '',
   bio: 'I own a computer.',
   urls: [
     { value: 'https://example.com' },
@@ -72,14 +76,22 @@ export function ProfileForm() {
     mode: 'onChange',
   })
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'urls',
     control: form.control,
   })
 
+  const { isDirty, isSubmitting } = form.formState
+
   return (
     <form
-      onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
+      onSubmit={form.handleSubmit((data) => {
+        showSubmittedData(
+          data,
+          'Local demo only — not saved. Submitted values:'
+        )
+        form.reset(data)
+      })}
       className={styles.form}
     >
       <Controller
@@ -110,7 +122,7 @@ export function ProfileForm() {
             hint={
               <>
                 You can manage verified email addresses in your{' '}
-                <Link to='/'>email settings</Link>.
+                <Link to='/settings/account'>account settings</Link>.
               </>
             }
             validationMessage={fieldState.error?.message}
@@ -174,6 +186,17 @@ export function ProfileForm() {
                     onBlur={field.onBlur}
                   />
                 </Field>
+                <div>
+                  <Button
+                    type='button'
+                    appearance='secondary'
+                    size='small'
+                    aria-label={`Remove URL ${index + 1}`}
+                    onClick={() => remove(index)}
+                  >
+                    Remove
+                  </Button>
+                </div>
               </div>
             )}
           />
@@ -190,7 +213,11 @@ export function ProfileForm() {
         </div>
       </div>
       <div>
-        <Button type='submit' appearance='primary'>
+        <Button
+          type='submit'
+          appearance='primary'
+          disabled={!isDirty || isSubmitting}
+        >
           Update profile
         </Button>
       </div>

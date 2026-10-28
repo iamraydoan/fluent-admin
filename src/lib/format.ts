@@ -11,6 +11,24 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 })
 
+const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+})
+
+/**
+ * Local date-time with seconds, e.g. 'Oct 26, 2026, 12:00:00 PM'.
+ * Intl without a timeZone option formats in the viewer's local time,
+ * so callers must label the result as local time where shown.
+ */
+export function formatDateTimeLocal(value: Date): string {
+  return dateTimeFormatter.format(value)
+}
+
 /** Groups thousands, e.g. 2350 -> '2,350', 12234 -> '12,234'. */
 export function formatNumber(value: number): string {
   return numberFormatter.format(value)

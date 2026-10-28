@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   type ColumnDef,
   flexRender,
@@ -11,7 +11,9 @@ import {
 } from '@tanstack/react-table'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { ArrowClockwise24Regular } from '@fluentui/react-icons'
+import { formatDateTimeLocal } from '@/lib/format'
 import { Card } from '@/components/ui/card'
+import { Select } from '@/components/ui/select'
 import { StatusBadge } from '@/components/ui/status-badge'
 import {
   Table,
@@ -30,7 +32,13 @@ import {
 import ActionBar from '@/components/layout/action-bar'
 import PageTop from '@/components/layout/page-top'
 import { LongText } from '@/components/long-text'
-import { auditActions, auditActors, auditEvents, type AuditEvent } from './data'
+import {
+  auditActions,
+  auditActors,
+  auditEntities,
+  auditEvents,
+  type AuditEvent,
+} from './data'
 
 const useStyles = makeStyles({
   content: {
@@ -61,14 +69,19 @@ const useStyles = makeStyles({
     minHeight: 0,
     overflowY: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium,
+    borderRadius: tokens.borderRadiusXLarge,
   },
   headerCell: {
     textTransform: 'uppercase',
     position: 'sticky',
     top: 0,
-    backgroundColor: tokens.colorNeutralBackground3,
+    backgroundColor: tokens.colorNeutralBackground1,
     zIndex: 1,
+  },
+  periodRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
   },
   emptyCell: {
     textAlign: 'center',
@@ -95,16 +108,13 @@ const columns: ColumnDef<AuditEvent>[] = [
     ),
     cell: ({ row }) => (
       <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-        {new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        }).format(row.original.timestamp)}
+        {formatDateTimeLocal(row.original.timestamp)}
       </span>
     ),
     enableSorting: false,
+    // WHEN must stay visible: hiding the timestamp column would leave
+    // rows undated, so it is excluded from the View column menu.
+    enableHiding: false,
   },
   {
     accessorKey: 'actor',
@@ -127,6 +137,9 @@ const columns: ColumnDef<AuditEvent>[] = [
     ),
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: false,
+    // ACTION must stay visible alongside WHEN: it is excluded from
+    // the View column menu for the same reason.
+    enableHiding: false,
   },
   {
     accessorKey: 'entity',
@@ -134,6 +147,7 @@ const columns: ColumnDef<AuditEvent>[] = [
       <DataTableColumnHeader column={column} title='ENTITY' />
     ),
     cell: ({ row }) => <LongText>{row.getValue('entity')}</LongText>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: false,
   },
   {
@@ -146,8 +160,11 @@ const columns: ColumnDef<AuditEvent>[] = [
   },
   {
     accessorKey: 'summary',
+    // Renamed from BEFORE / AFTER: the mock rows carry a one-line
+    // summary, not a real before/after diff, so the old title promised
+    // data that does not exist yet.
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='BEFORE / AFTER' />
+      <DataTableColumnHeader column={column} title='SUMMARY' />
     ),
     cell: ({ row }) => <LongText>{row.getValue('summary')}</LongText>,
     enableSorting: false,
@@ -161,10 +178,33 @@ export function AuditLog() {
   >([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 })
+  const [period, setPeriod] = useState<'all' | '24h' | '7d' | '30d'>('all')
+
+  // Switching period shrinks the row set, so return to page 1:
+  // otherwise a later page (e.g. page 4 of 80) would show an empty
+  // "No results." table under Last 24h (4 rows).
+  const handlePeriodChange = (value: 'all' | '24h' | '7d' | '30d') => {
+    setPeriod(value)
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+  }
+
+  // Date-range choice (documented): the last 24h / 7d / 30d select,
+  // reusing the single-select pattern, instead of a date-range picker.
+  // Ranges are relative to the newest mock event, not wall-clock now:
+  // the mock data is fixed at Oct 2026, so wall-clock ranges would
+  // show an empty table for 24h/7d.
+  const filteredEvents = useMemo(() => {
+    if (period === 'all') return auditEvents
+    const latest = Math.max(...auditEvents.map((e) => e.timestamp.getTime()))
+    const hours = period === '24h' ? 24 : period === '7d' ? 24 * 7 : 24 * 30
+    return auditEvents.filter(
+      (event) => latest - event.timestamp.getTime() < hours * 60 * 60 * 1000
+    )
+  }, [period])
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: auditEvents,
+    data: filteredEvents,
     columns,
     state: { columnFilters, globalFilter, pagination },
     onColumnFiltersChange: setColumnFilters,
@@ -189,6 +229,7 @@ export function AuditLog() {
     setColumnFilters([])
     setGlobalFilter('')
     setPagination({ pageIndex: 0, pageSize: 25 })
+    setPeriod('all')
   }
 
   return (
@@ -216,15 +257,31 @@ export function AuditLog() {
         <Card
           className={styles.card}
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
           }}
         >
           <div className={styles.cardBody}>
             <Text>
               Mock data only: these events are generated locally and are not
-              captured from a real audit system.
+              captured from a real audit system. Times are shown in local time
+              with seconds.
             </Text>
+            <div className={styles.periodRow}>
+              <Text size={300}>PERIOD:</Text>
+              <Select
+                aria-label='Period filter'
+                value={period}
+                onChange={(_, data) =>
+                  handlePeriodChange(data.value as 'all' | '24h' | '7d' | '30d')
+                }
+              >
+                <option value='all'>ALL</option>
+                <option value='24h'>Last 24h</option>
+                <option value='7d'>Last 7d</option>
+                <option value='30d'>Last 30d</option>
+              </Select>
+            </div>
             <div style={{ display: 'contents' }}>
               <DataTableToolbar
                 table={table}
@@ -245,6 +302,14 @@ export function AuditLog() {
                     options: auditActions.map(({ label, value }) => ({
                       label,
                       value,
+                    })),
+                  },
+                  {
+                    columnId: 'entity',
+                    title: 'ENTITY',
+                    options: auditEntities.map((entity) => ({
+                      label: entity,
+                      value: entity,
                     })),
                   },
                 ]}
