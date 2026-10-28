@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { Checkmark20Regular, Dismiss20Regular } from '@fluentui/react-icons'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,6 +22,10 @@ type NewChatProps = {
   users: User[]
   open: boolean
   onOpenChange: (open: boolean) => void
+  // Opens the first selected user as the active conversation. The
+  // parent looks the full conversation up by id (this dialog only
+  // receives users without messages) and closes the dialog.
+  onOpenConversation: (user: User) => void
 }
 
 const useStyles = makeStyles({
@@ -87,7 +90,12 @@ const useStyles = makeStyles({
   },
 })
 
-export function NewChat({ users, onOpenChange, open }: NewChatProps) {
+export function NewChat({
+  users,
+  onOpenChange,
+  open,
+  onOpenConversation,
+}: NewChatProps) {
   const styles = useStyles()
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const [query, setQuery] = useState('')
@@ -199,7 +207,10 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
         <DialogActions>
           <Button
             appearance='primary'
-            onClick={() => showSubmittedData(selectedUsers)}
+            onClick={() => {
+              const first = selectedUsers[0]
+              if (first) onOpenConversation(first)
+            }}
             disabled={selectedUsers.length === 0}
           >
             Chat

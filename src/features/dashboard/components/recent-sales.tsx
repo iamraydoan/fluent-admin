@@ -82,7 +82,7 @@ export function RecentSales() {
           />
           <div className={styles.info}>
             <div className={styles.meta}>
-              <Text weight='semibold'>{sale.name}</Text>
+              <Text weight='regular'>{sale.name}</Text>
               <Text size={200} className={styles.email}>
                 {sale.email}
               </Text>

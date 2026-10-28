@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
-import { ArrowClockwise24Regular } from '@fluentui/react-icons'
+import { ArrowClockwise20Regular } from '@fluentui/react-icons'
+import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -43,6 +44,14 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalL,
     flexWrap: 'wrap',
   },
+  filterField: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalXS,
+  },
+  filterLabel: {
+    color: tokens.colorNeutralForeground3,
+  },
   filterInput: {
     width: '200px',
   },
@@ -64,6 +73,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalXXXL,
+    borderRadius: tokens.borderRadiusXLarge,
   },
   appTop: {
     display: 'flex',
@@ -97,8 +107,33 @@ export function Apps() {
   const [sort, setSort] = useState(initSort)
   const [appType, setAppType] = useState(type)
   const [searchTerm, setSearchTerm] = useState(filter)
+  // Local-only connection state, seeded from the static demo data:
+  // Connect/Connected is a real toggle in this screen's state (with a
+  // "(local only)" toast), not a dead button — but nothing is sent to
+  // any app or API, and Refresh (filters only) leaves it untouched.
+  const [connectedNames, setConnectedNames] = useState<ReadonlySet<string>>(
+    () => new Set(apps.filter((app) => app.connected).map((app) => app.name))
+  )
+  const isConnected = (name: string) => connectedNames.has(name)
 
-  const filteredApps = apps
+  const handleToggleConnection = (name: string) => {
+    if (isConnected(name)) {
+      setConnectedNames((prev) => {
+        const next = new Set(prev)
+        next.delete(name)
+        return next
+      })
+      toast.info(`${name} disconnected (local only)`)
+    } else {
+      setConnectedNames((prev) => new Set(prev).add(name))
+      toast.success(`${name} connected (local only)`)
+    }
+  }
+
+  // Copy before sorting: Array.sort mutates in place, and sorting the
+  // shared `apps` module array would reorder it for every later render
+  // and every other consumer of that module.
+  const filteredApps = [...apps]
     .sort((a, b) =>
       sort === 'asc'
         ? a.name.localeCompare(b.name)
@@ -106,9 +141,9 @@ export function Apps() {
     )
     .filter((app) =>
       appType === 'connected'
-        ? app.connected
+        ? isConnected(app.name)
         : appType === 'notConnected'
-          ? !app.connected
+          ? !isConnected(app.name)
           : true
     )
     .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -164,7 +199,7 @@ export function Apps() {
                 actions: [
                   {
                     label: 'Refresh',
-                    icon: <ArrowClockwise24Regular />,
+                    icon: <ArrowClockwise20Regular />,
                     onClick: handleRefresh,
                   },
                 ],
@@ -176,7 +211,7 @@ export function Apps() {
       <div className={styles.content}>
         <Card
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
           }}
         >
@@ -189,27 +224,39 @@ export function Apps() {
                   value={searchTerm}
                   onChange={(_, data) => handleSearch(data.value)}
                 />
-                <Select
-                  value={appType}
-                  onChange={(_, data) =>
-                    handleTypeChange(data.value as AppType)
-                  }
-                >
-                  <option value='all'>All Apps</option>
-                  <option value='connected'>Connected</option>
-                  <option value='notConnected'>Not Connected</option>
-                </Select>
+                <div className={styles.filterField}>
+                  <Text size={200} className={styles.filterLabel}>
+                    TYPE:
+                  </Text>
+                  <Select
+                    aria-label='Filter apps by connection type'
+                    value={appType}
+                    onChange={(_, data) =>
+                      handleTypeChange(data.value as AppType)
+                    }
+                  >
+                    <option value='all'>All Apps</option>
+                    <option value='connected'>Connected</option>
+                    <option value='notConnected'>Not Connected</option>
+                  </Select>
+                </div>
               </div>
 
-              <Select
-                value={sort}
-                onChange={(_, data) =>
-                  handleSortChange(data.value as 'asc' | 'desc')
-                }
-              >
-                <option value='asc'>Ascending</option>
-                <option value='desc'>Descending</option>
-              </Select>
+              <div className={styles.filterField}>
+                <Text size={200} className={styles.filterLabel}>
+                  SORT:
+                </Text>
+                <Select
+                  aria-label='Sort apps by name'
+                  value={sort}
+                  onChange={(_, data) =>
+                    handleSortChange(data.value as 'asc' | 'desc')
+                  }
+                >
+                  <option value='asc'>Ascending</option>
+                  <option value='desc'>Descending</option>
+                </Select>
+              </div>
             </div>
             <Separator />
             <ul className={styles.grid}>
@@ -219,10 +266,13 @@ export function Apps() {
                     <div className={styles.appTop}>
                       <div className={styles.logo}>{app.logo}</div>
                       <Button
-                        appearance={app.connected ? 'primary' : 'outline'}
+                        appearance={
+                          isConnected(app.name) ? 'secondary' : 'primary'
+                        }
                         size='small'
+                        onClick={() => handleToggleConnection(app.name)}
                       >
-                        {app.connected ? 'Connected' : 'Connect'}
+                        {isConnected(app.name) ? 'Connected' : 'Connect'}
                       </Button>
                     </div>
                     <div>

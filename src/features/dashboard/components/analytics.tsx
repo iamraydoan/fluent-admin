@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
   statValue: {
     fontSize: tokens.fontSizeHero700,
-    fontWeight: tokens.fontWeightBold,
+    fontWeight: tokens.fontWeightSemibold,
     fontVariantNumeric: 'tabular-nums',
   },
   statDelta: {
@@ -90,7 +90,7 @@ export function Analytics() {
 
   return (
     <div className={styles.stack}>
-      <Card>
+      <Card style={{ borderRadius: tokens.borderRadiusXLarge }}>
         <CardHeader
           header={<Text weight='semibold'>Traffic Overview</Text>}
           description={
@@ -101,7 +101,11 @@ export function Analytics() {
       </Card>
       <div className={styles.statGrid}>
         {stats.map((stat) => (
-          <Card key={stat.label} className={styles.statCard}>
+          <Card
+            key={stat.label}
+            className={styles.statCard}
+            style={{ borderRadius: tokens.borderRadiusXLarge }}
+          >
             <CardHeader header={<Text weight='semibold'>{stat.label}</Text>} />
             <Text className={styles.statValue}>{stat.value}</Text>
             <Text size={200} className={styles.statDelta}>
@@ -111,7 +115,7 @@ export function Analytics() {
         ))}
       </div>
       <div className={styles.splitGrid}>
-        <Card>
+        <Card style={{ borderRadius: tokens.borderRadiusXLarge }}>
           <CardHeader
             header={<Text weight='semibold'>Referrers</Text>}
             description={<Text size={200}>Top sources driving traffic</Text>}
@@ -127,7 +131,7 @@ export function Analytics() {
             valueFormatter={(n) => `${n}`}
           />
         </Card>
-        <Card>
+        <Card style={{ borderRadius: tokens.borderRadiusXLarge }}>
           <CardHeader
             header={<Text weight='semibold'>Devices</Text>}
             description={<Text size={200}>How users access your app</Text>}

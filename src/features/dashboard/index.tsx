@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { makeStyles, tokens } from '@fluentui/react-components'
-import { ArrowClockwise24Regular } from '@fluentui/react-icons'
+import { ArrowClockwise20Regular } from '@fluentui/react-icons'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -48,7 +48,7 @@ const useStyles = makeStyles({
   },
   statValue: {
     fontSize: tokens.fontSizeHero700,
-    fontWeight: tokens.fontWeightBold,
+    fontWeight: tokens.fontWeightSemibold,
     fontVariantNumeric: 'tabular-nums',
   },
   statDelta: {
@@ -100,10 +100,11 @@ const DASHBOARD_TABS = [
 export function Dashboard() {
   const styles = useStyles()
   const [tab, setTab] = useState('overview')
-  // Bumped on action bar Refresh so the tab content remounts and the tab
-  // resets to Overview. The old heading-row Download button had no
-  // onClick handler, so it is dropped rather than carried into the
-  // action bar as a dead action (see report).
+  // CONTRACT: Dashboard Refresh = reload-data, not reset-view: the tab
+  // content remounts (refreshKey bump) but the current tab is preserved.
+  // The old heading-row Download button had no onClick handler, so it
+  // is dropped rather than carried into the action bar as a dead
+  // action (see report).
   const [refreshKey, setRefreshKey] = useState(0)
 
   return (
@@ -121,9 +122,8 @@ export function Dashboard() {
                 actions: [
                   {
                     label: 'Refresh',
-                    icon: <ArrowClockwise24Regular />,
+                    icon: <ArrowClockwise20Regular />,
                     onClick: () => {
-                      setTab('overview')
                       setRefreshKey((key) => key + 1)
                     },
                   },
@@ -136,7 +136,7 @@ export function Dashboard() {
       <div className={styles.content}>
         <Card
           style={{
-            borderRadius: tokens.borderRadiusMedium,
+            borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
             // Fill the remaining page height like the Users/Tasks main
             // cards do: grow to fill when the content is short (so no
@@ -151,7 +151,11 @@ export function Dashboard() {
               <div className={styles.tabContent}>
                 <div className={styles.statGrid}>
                   {stats.map((stat) => (
-                    <Card key={stat.label} className={styles.statCard}>
+                    <Card
+                      key={stat.label}
+                      className={styles.statCard}
+                      style={{ borderRadius: tokens.borderRadiusXLarge }}
+                    >
                       <CardHeader
                         header={<Text weight='semibold'>{stat.label}</Text>}
                       />
@@ -163,13 +167,19 @@ export function Dashboard() {
                   ))}
                 </div>
                 <div className={styles.mainGrid}>
-                  <Card className={styles.chartCard}>
+                  <Card
+                    className={styles.chartCard}
+                    style={{ borderRadius: tokens.borderRadiusXLarge }}
+                  >
                     <CardHeader
                       header={<Text weight='semibold'>Overview</Text>}
                     />
                     <Overview />
                   </Card>
-                  <Card className={styles.chartCard}>
+                  <Card
+                    className={styles.chartCard}
+                    style={{ borderRadius: tokens.borderRadiusXLarge }}
+                  >
                     <CardHeader
                       header={<Text weight='semibold'>Recent Sales</Text>}
                       description={

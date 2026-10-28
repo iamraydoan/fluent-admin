@@ -4,19 +4,19 @@ import { format } from 'date-fns'
 import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components'
 import {
   Add20Regular,
-  ArrowClockwise24Regular,
+  ArrowClockwise20Regular,
   Attach20Regular,
   Call20Regular,
   ChatMultiple20Regular,
   Compose20Regular,
-  Compose24Regular,
-  Dismiss24Regular,
+  Dismiss20Regular,
   ImageAdd20Regular,
   MoreHorizontal20Regular,
   Search20Regular,
   Send20Regular,
   Video20Regular,
 } from '@fluentui/react-icons'
+import { toast } from '@/lib/toast'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -259,8 +259,50 @@ export function Chats() {
   // ActionBar Refresh has no live data source behind it (the list is the
   // static demo JSON), so like the MES mock it only shows a notice.
   const [notice, setNotice] = useState('')
+  // Composer draft (controlled input) and messages sent in this
+  // session, keyed by conversation id. Sent messages are local-only:
+  // they append to the open conversation's pane and are not sent
+  // anywhere; switching conversations keeps each thread's local
+  // messages, and a page reload drops them with the demo data.
+  const [draft, setDraft] = useState('')
+  const [localMessages, setLocalMessages] = useState<Record<string, Convo[]>>(
+    {}
+  )
 
-  // Filtered data based on the search query
+  const sendDraft = () => {
+    if (!selectedUser) return
+    const text = draft.trim()
+    if (!text) return
+    const message: Convo = {
+      sender: 'You',
+      message: text,
+      timestamp: new Date().toISOString(),
+    }
+    setLocalMessages((prev) => ({
+      ...prev,
+      [selectedUser.id]: [...(prev[selectedUser.id] ?? []), message],
+    }))
+    setDraft('')
+  }
+
+  const openConversation = (user: { id: string }) => {
+    // Look the full conversation up by id: the New Chat dialog only
+    // passes users without messages, while inbox rows pass the full
+    // conversation — both resolve to the same thread here.
+    const conversation = conversations.find((c) => c.id === user.id)
+    if (!conversation) return
+    setSelectedUser(conversation)
+    setDraft('')
+    setCreateConversationDialog(false)
+  }
+
+  // Search is name-only, by design (documented choice, 2026-10-28):
+  // the inbox list shows names + last-message previews, but filtering
+  // matches fullName only, so a search term found only inside a
+  // message body does not surface that conversation. Extending it to
+  // message previews was considered and deliberately not done: with
+  // the static demo data it would mostly surface stale 2024 threads
+  // for body words, while name search stays predictable.
   const filteredChatList = conversations.filter(({ fullName }) =>
     fullName.toLowerCase().includes(search.trim().toLowerCase())
   )
@@ -297,13 +339,13 @@ export function Chats() {
                 actions: [
                   {
                     label: 'Refresh',
-                    icon: <ArrowClockwise24Regular />,
+                    icon: <ArrowClockwise20Regular />,
                     onClick: () =>
                       setNotice('Refreshed (demo data, no API call)'),
                   },
                   {
                     label: 'New',
-                    icon: <Compose24Regular />,
+                    icon: <Compose20Regular />,
                     onClick: () => setCreateConversationDialog(true),
                   },
                 ],
@@ -322,7 +364,7 @@ export function Chats() {
               <Button
                 appearance='transparent'
                 size='small'
-                icon={<Dismiss24Regular />}
+                icon={<Dismiss20Regular />}
                 onClick={() => setNotice('')}
                 aria-label='Dismiss'
               />
@@ -343,7 +385,7 @@ export function Chats() {
           <div className={styles.leftPane}>
             <div className={styles.leftHeader}>
               <div className={styles.inboxTitle}>
-                <Text size={600} weight='bold'>
+                <Text size={600} weight='semibold'>
                   Inbox
                 </Text>
                 <ChatMultiple20Regular />
@@ -361,7 +403,10 @@ export function Chats() {
 
             <Input
               contentBefore={<Search20Regular />}
-              placeholder='Search chat...'
+              // Name-only search, by design (see the filter comment
+              // below): the placeholder says so, so users do not
+              // expect a message-body match.
+              placeholder='Search by name'
               value={search}
               onChange={(_e, data) => setSearch(data.value)}
             />
@@ -387,7 +432,7 @@ export function Chats() {
                         styles.chatRow,
                         selectedUser?.id === id && styles.chatRowSelected
                       )}
-                      onClick={() => setSelectedUser(chatUsr)}
+                      onClick={() => openConversation(chatUsr)}
                     >
                       <Avatar
                         name={fullName}
@@ -437,6 +482,7 @@ export function Chats() {
                       appearance='subtle'
                       icon={<Video20Regular />}
                       aria-label='Video call'
+                      onClick={() => toast.info('Video call (local only)')}
                     />
                   </Tooltip>
                   <Tooltip content='Voice call' relationship='label'>
@@ -444,6 +490,7 @@ export function Chats() {
                       appearance='subtle'
                       icon={<Call20Regular />}
                       aria-label='Voice call'
+                      onClick={() => toast.info('Voice call (local only)')}
                     />
                   </Tooltip>
                   <Tooltip content='More options' relationship='label'>
@@ -451,6 +498,7 @@ export function Chats() {
                       appearance='subtle'
                       icon={<MoreHorizontal20Regular />}
                       aria-label='More options'
+                      onClick={() => toast.info('More options (local only)')}
                     />
                   </Tooltip>
                 </div>
@@ -483,10 +531,40 @@ export function Chats() {
                       ))}
                     </Fragment>
                   ))}
+                {/* Messages sent this session, after the demo groups:
+                    the demo timestamps are 2024, so today's section
+                    sorts last, and local messages render in send
+                    order (chronological), not reversed like the demo
+                    groups above. */}
+                {(localMessages[selectedUser.id] ?? []).length > 0 && (
+                  <Fragment>
+                    <div className={styles.dateLabel}>
+                      <Text size={200}>
+                        {format(new Date(), 'd MMM, yyyy')}
+                      </Text>
+                    </div>
+                    {localMessages[selectedUser.id].map((msg, index) => (
+                      <div
+                        key={`${msg.sender}-${msg.timestamp}-${index}`}
+                        className={styles.bubbleOwn}
+                      >
+                        {msg.message}{' '}
+                        <span
+                          className={`${styles.bubbleTime} ${styles.bubbleTimeOwn}`}
+                        >
+                          {format(msg.timestamp, 'h:mm a')}
+                        </span>
+                      </div>
+                    ))}
+                  </Fragment>
+                )}
               </div>
               <form
                 className={styles.composer}
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  sendDraft()
+                }}
               >
                 <div className={styles.composerBox}>
                   <div className={styles.composerActions}>
@@ -496,6 +574,9 @@ export function Chats() {
                         type='button'
                         icon={<Add20Regular />}
                         aria-label='Add attachment'
+                        onClick={() =>
+                          toast.info('Add attachment (local only)')
+                        }
                       />
                     </Tooltip>
                     <Tooltip content='Add image' relationship='label'>
@@ -504,6 +585,7 @@ export function Chats() {
                         type='button'
                         icon={<ImageAdd20Regular />}
                         aria-label='Add image'
+                        onClick={() => toast.info('Add image (local only)')}
                       />
                     </Tooltip>
                     <Tooltip content='Attach file' relationship='label'>
@@ -512,6 +594,7 @@ export function Chats() {
                         type='button'
                         icon={<Attach20Regular />}
                         aria-label='Attach file'
+                        onClick={() => toast.info('Attach file (local only)')}
                       />
                     </Tooltip>
                   </div>
@@ -520,6 +603,8 @@ export function Chats() {
                     <Input
                       type='text'
                       placeholder='Type your messages...'
+                      value={draft}
+                      onChange={(_e, data) => setDraft(data.value)}
                       // Borderless inside the composer box (the box
                       // already carries the border); the style lands
                       // on the Fluent Input root.
@@ -568,6 +653,7 @@ export function Chats() {
         users={users}
         onOpenChange={setCreateConversationDialog}
         open={createConversationDialogOpened}
+        onOpenConversation={openConversation}
       />
     </div>
   )

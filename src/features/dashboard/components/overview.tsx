@@ -1,19 +1,31 @@
 import { tokens } from '@fluentui/react-components'
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 
+// Frozen demo data (2026-10-28): the old Math.random() values changed
+// on every load, so Refresh and re-renders redrew the chart. These
+// fixed constants keep the demo stable; they are demo data, not a
+// live data source.
 const data = [
-  { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Feb', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Apr', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'May', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jun', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jul', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Aug', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Dec', total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: 'Jan', total: 4200 },
+  { name: 'Feb', total: 3100 },
+  { name: 'Mar', total: 4800 },
+  { name: 'Apr', total: 3900 },
+  { name: 'May', total: 5200 },
+  { name: 'Jun', total: 4600 },
+  { name: 'Jul', total: 5800 },
+  { name: 'Aug', total: 5100 },
+  { name: 'Sep', total: 4300 },
+  { name: 'Oct', total: 5600 },
+  { name: 'Nov', total: 6100 },
+  { name: 'Dec', total: 5900 },
 ]
 
 // Chart axis grey: no Fluent token equals #888888, so it maps to the
@@ -36,10 +48,21 @@ export function Overview() {
           axisLine={false}
           tickFormatter={(value) => `$${value}`}
         />
+        <Tooltip
+          cursor={{ fill: tokens.colorNeutralBackground3 }}
+          contentStyle={{
+            backgroundColor: tokens.colorNeutralBackground1,
+            border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+            borderRadius: tokens.borderRadiusMedium,
+            fontSize: tokens.fontSizeBase200,
+          }}
+        />
+        <Legend wrapperStyle={{ fontSize: tokens.fontSizeBase200 }} />
         {/* Bar top radius 4 equals borderRadiusMedium, but recharts takes
             numbers, not token strings, so the numeric radius is kept. */}
         <Bar
           dataKey='total'
+          name='Total'
           fill={tokens.colorBrandBackground}
           radius={[4, 4, 0, 0]}
         />
