@@ -20,7 +20,7 @@ function ClerkSignIn() {
   return (
     <SignIn
       initialValues={{
-        emailAddress: 'your_mail+shadcn_admin@gmail.com',
+        emailAddress: 'your_mail+admin@example.com',
       }}
       fallback={
         <div className={styles.fallback}>

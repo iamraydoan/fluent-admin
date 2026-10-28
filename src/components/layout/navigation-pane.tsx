@@ -20,10 +20,9 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { navigationData } from '@/components/layout/data/navigation-data'
 import type { NavigationItem } from '@/components/layout/types'
 
-// Fluent Nav menu, in demo style. This replaces the
-// shadcn sidebar on this page only: no shadcn, Radix, lucide or
-// Tailwind classes are used here, and there is no team/user footer
-// (account lives in the header avatar only, see Header).
+// Fluent Nav menu, in demo style. No third-party utility classes are
+// used here, and there is no team/user footer (account lives in the
+// header avatar only, see Header).
 // Menu items come from navigation-data.navGroups (the standard source);
 // the old menu-data MENU_GROUPS copy was deleted, so titles, urls,
 // badges, order and groups must stay identical to navigation-data —

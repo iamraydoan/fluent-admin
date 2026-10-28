@@ -22,8 +22,7 @@ const useStyles = makeStyles({
     // Fluent Divider ships flex-grow: 1 by design (to fill a flex row).
     // This parent is a flex column, so without flexGrow: 0 the divider
     // stretches vertically to fill the card (measured 375px on Account)
-    // instead of rendering as a 1px line. Original shadcn Separator was
-    // a plain 1px div with no flex-grow, so it never stretched.
+    // instead of rendering as a 1px line.
     flexGrow: 0,
     flexShrink: 0,
     marginTop: tokens.spacingVerticalL,

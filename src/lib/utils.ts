@@ -1,9 +1,9 @@
 /**
  * Minimal class-name joiner (clsx-compatible input shape, no dependency).
  *
- * Tailwind was removed from this app, so there is nothing to merge: this
- * only concatenates truthy class names. Unlike the old clsx + tailwind-merge
- * version it does NOT resolve conflicting utilities (e.g. two widths) —
+ * This app uses plain CSS only, so there is nothing to merge: this
+ * only concatenates truthy class names. Unlike a class-merging utility
+ * it does NOT resolve conflicting utilities (e.g. two widths) —
  * later classes no longer override earlier ones. For Fluent UI / Griffel
  * classes use `mergeClasses` from '@fluentui/react-components' instead,
  * which is the tool that actually deduplicates atomic classes.

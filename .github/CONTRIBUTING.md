@@ -1,6 +1,6 @@
-# Contributing to Shadcn-Admin
+# Contributing to Fluent Admin
 
-Thank you for considering contributing to **shadcn-admin**! Every contribution is valuable, whether it's reporting bugs, suggesting improvements, adding features, or refining README.
+Thank you for considering contributing to **Fluent Admin**! Every contribution is valuable, whether it's reporting bugs, suggesting improvements, adding features, or refining README.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ Thank you for considering contributing to **shadcn-admin**! Every contribution i
 2. **Clone** your fork:
 
    ```bash
-   git clone https://github.com/your-username/shadcn-admin.git
+   git clone https://github.com/your-username/fluent-admin.git
    ```
 
 3. **Install dependencies:**
@@ -57,6 +57,8 @@ Thank you for considering contributing to **shadcn-admin**! Every contribution i
 - Follow the existing **ESLint** and **Prettier** configurations.
 - Ensure your code is **type-safe** with **TypeScript**.
 - Maintain consistency with the existing code structure.
+- Use **Fluent UI** components (from `@fluentui/react-components`) through the wrappers in `src/components/ui/`; do not add Tailwind, Radix, or lucide components.
+- Keep code free of Vietnamese text, and use short English labels.
 
 > **Tips!** Before submitting your changes, run the following commands:
 
@@ -96,6 +98,6 @@ pnpm lint && pnpm format && pnpm knip && pnpm build
 
 ---
 
-Thank you for helping make **shadcn-admin** better! 🚀
+Thank you for helping make **Fluent Admin** better! 🚀
 
-If you have any questions, feel free to reach out via [Discussions](https://github.com/satnaing/shadcn-admin/discussions).
+If you have any questions, feel free to reach out via [Discussions](https://github.com/iamraydoan/fluent-admin/discussions).

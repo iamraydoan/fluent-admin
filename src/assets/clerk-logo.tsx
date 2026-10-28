@@ -8,7 +8,7 @@ export function ClerkLogo({ className, ...props }: SVGProps<SVGSVGElement>) {
       xmlns='http://www.w3.org/2000/svg'
       id='clerk'
       height='24'
-      fill='var(--foreground)'
+      fill='currentColor'
       width='24'
       className={className}
       {...props}

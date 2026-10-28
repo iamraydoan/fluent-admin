@@ -39,7 +39,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className={styles.brand}>
           <Logo />
           <Text size={500} weight='medium'>
-            Shadcn Admin
+            Fluent Admin
           </Text>
         </div>
         {children}

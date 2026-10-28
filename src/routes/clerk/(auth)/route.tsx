@@ -86,7 +86,7 @@ function ClerkAuthLayout() {
       <div className={styles.panel}>
         <Link to='/' className={styles.brand}>
           <Logo />
-          Shadcn Admin
+          Fluent Admin
         </Link>
 
         <div className={styles.logoWrap}>

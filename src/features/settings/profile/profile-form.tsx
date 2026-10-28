@@ -59,8 +59,8 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>
 const defaultValues: Partial<ProfileFormValues> = {
   bio: 'I own a computer.',
   urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' },
+    { value: 'https://example.com' },
+    { value: 'http://twitter.com/admin' },
   ],
 }
 
@@ -93,7 +93,7 @@ export function ProfileForm() {
             validationState={fieldState.error ? 'error' : 'none'}
           >
             <Input
-              placeholder='shadcn'
+              placeholder='admin'
               value={field.value ?? ''}
               onChange={(e) => field.onChange(e.target.value)}
               onBlur={field.onBlur}

@@ -1,58 +1,54 @@
-/* Plain CSS only — Tailwind was removed from this app (no @import of
- * 'tailwindcss'/'tw-animate-css', no @apply, no @utility, no @custom-variant).
- * The theme tokens (--background, --foreground, --primary, --border, --ring,
- * --sidebar, ...) still come from './theme.css' (:root/.dark rules, which are
- * plain CSS). The former Tailwind `@theme inline` block in theme.css was
- * removed with the Tailwind removal; :root/.dark variables keep working
- * as plain CSS. */
-@import './theme.css';
+/* Plain CSS only. Base colours below are the Fluent web-theme token
+ * values inlined (Fluent tokens are JS objects, not reachable from plain
+ * CSS): colorNeutralBackground1 #ffffff / #292929 (dark),
+ * colorNeutralForeground1 #242424 / #ffffff (dark),
+ * colorNeutralStroke1 #d1d1d1 / #666666 (dark). The focus outline uses
+ * the legacy neutral grey #8a8886 at 50% opacity, which has no exact
+ * v9 token; it is kept rather than shifted to a darker foreground token.
+ * Component colours come
+ * from Fluent tokens via makeStyles; this file only sets the page base. */
 
-/* Minimal reset replacing what Tailwind's preflight used to provide. Only
- * what the app observably relied on: border-box sizing and a zero body
- * margin. Full preflight (heading/paragraph margins, list padding, form
- * element resets, ...) is gone by design with Tailwind's removal. */
+/* Minimal reset. Only what the app observably relied on: border-box
+ * sizing and a zero body margin. A full preflight (heading/paragraph
+ * margins, list padding, form element resets, ...) is out of scope. */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  border-color: var(--border);
-  outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
+  border-color: #d1d1d1;
+  outline-color: color-mix(in srgb, #8a8886 50%, transparent);
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: #d1d1d1 transparent;
+}
+
+.dark *,
+.dark *::before,
+.dark *::after {
+  border-color: #666666;
+  scrollbar-color: #666666 transparent;
 }
 
 html {
   overflow-x: hidden;
 }
 
-/* Font classes applied to <html> by FontProvider (src/context/font-provider).
- * Previously Tailwind generated these from theme.css's --font-* variables;
- * 'system' intentionally has no rule (browser default), as before. */
-html.font-inter {
-  font-family: 'Inter', sans-serif;
-}
-
-html.font-manrope {
-  font-family: 'Manrope', sans-serif;
-}
+/* Former font classes applied to <html> by the deleted FontProvider
+ * (src/context/font-provider.tsx). The picker and its font options
+ * (including the former html.font-inter / html.font-manrope rules)
+ * have been removed; the FluentProvider's Segoe UI Variable stack
+ * governs all text, and no html font-* class is set anymore. */
 
 body {
   margin: 0;
   min-height: 100svh;
   width: 100%;
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: #ffffff;
+  color: #242424;
 }
 
-/* Former `has-[div[data-variant='inset']]:bg-sidebar` variant, kept for
- * fidelity. Currently a no-op: --sidebar equals --background in theme.css. */
-body:has(div[data-variant='inset']) {
-  background-color: var(--sidebar);
-}
-
-/* Override Radix scroll locking for sticky headers */
-body[data-scroll-locked] {
-  overflow: unset !important;
+.dark body {
+  background-color: #292929;
+  color: #ffffff;
 }
 
 /* Cursor pointer for buttons */
@@ -70,31 +66,34 @@ button:not(:disabled),
   }
 }
 
-/* styles.css */
+/* Collapsible content: no component in src renders this class today
+ * (verified by grep); the height animation previously depended on a
+ * removed third-party variable, so open/close now fade instead of
+ * animating height. Content still renders fully in both states. */
 .CollapsibleContent {
   overflow: hidden;
 }
 .CollapsibleContent[data-state='open'] {
-  animation: slideDown 300ms ease-out;
+  animation: collapsibleFadeIn 300ms ease-out;
 }
 .CollapsibleContent[data-state='closed'] {
-  animation: slideUp 300ms ease-out;
+  animation: collapsibleFadeOut 300ms ease-out;
 }
 
-@keyframes slideDown {
+@keyframes collapsibleFadeIn {
   from {
-    height: 0;
+    opacity: 0;
   }
   to {
-    height: var(--radix-collapsible-content-height);
+    opacity: 1;
   }
 }
 
-@keyframes slideUp {
+@keyframes collapsibleFadeOut {
   from {
-    height: var(--radix-collapsible-content-height);
+    opacity: 1;
   }
   to {
-    height: 0;
+    opacity: 0;
   }
 }

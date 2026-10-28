@@ -135,12 +135,12 @@ function UserManagement() {
 //
 // Clerk sign-out placement (Phase 2F, supersedes the Phase 1C card
 // row): the Clerk UserButton is passed as PageTop's accountAction
-// slot, so it REPLACES the unified SN avatar at the right of the
+// slot, so it REPLACES the unified AU avatar at the right of the
 // tab strip on this screen only. The slot is a plain node, so
 // the shared shell never imports Clerk; this page is rendered inside
 // the /clerk route's ClerkProvider (key present), so the button has
 // its provider here. Every other screen passes no slot and keeps the
-// SN avatar unchanged. UserButton opens Clerk's own profile menu, so
+// AU avatar unchanged. UserButton opens Clerk's own profile menu, so
 // sign-out and account management keep working exactly as before.
 function ClerkUsersScreen() {
   const styles = useStyles()

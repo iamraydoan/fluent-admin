@@ -1,60 +1,24 @@
-# Fluent Admin Dashboard
+# Fluent Admin
 
-Admin Dashboard UI crafted with Fluent UI and Vite. Built with responsiveness and accessibility in mind.
+Admin dashboard UI built with Fluent UI React v9 and Vite, with responsiveness and accessibility in mind.
 
-![alt text](public/images/fluent-admin.png)
+![Fluent Admin dashboard](public/images/fluent-admin.png)
 
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from the original template's examples.
-
-> This is not a starter project (template) though. I'll probably make one in the future.
+This project was forked from the upstream shadcn-admin template.
 
 ## Features
 
 - Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
+- Responsive layout
+- Accessible components
+- Navigation pane with collapse/expand
 - Global search command
 - 10+ pages
-- Extra custom components
 - RTL support
 
-<details>
-<summary>Customized Components (click to expand)</summary>
+## UI components
 
-This project uses Fluent UI components under the original component names, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
-
-The components in `src/components/ui/` are Fluent-backed and cannot be updated via the Shadcn CLI. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
-
-> If you don't require RTL support, the 'RTL Updated Components' changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
-
-### Modified Components
-
-- scroll-area
-- sonner
-- separator
-
-### RTL Updated Components
-
-- alert-dialog
-- calendar
-- command
-- dialog
-- dropdown-menu
-- select
-- table
-- sheet
-- sidebar
-- switch
-
-**Notes:**
-
-- **Modified Components**: These have general updates, potentially including RTL adjustments.
-- **RTL Updated Components**: These have specific changes for RTL language support (e.g., layout, positioning).
-- For implementation details, check the source files in `src/components/ui/`.
-- All other components in the project are standard Fluent-backed adapters.
-
-</details>
+All Fluent UI components used by the app are wrapped in `src/components/ui/` under their original names (Button, Card, Table, and so on), so a change in one wrapper applies everywhere the component is used. Fluent components are imported only from `@fluentui/react-components`, and icons only from `@fluentui/react-icons`. The wrappers are hand-maintained for this project; they are not generated or updated by any external component CLI.
 
 ## Tech Stack
 
@@ -70,7 +34,7 @@ The components in `src/components/ui/` are Fluent-backed and cannot be updated v
 
 **Icons:** [Fluent UI Icons](https://react.fluentui.dev/), custom brand icons
 
-**Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
+**Auth (partial):** [Clerk](https://clerk.com/)
 
 ## Run Locally
 
@@ -98,10 +62,15 @@ Start the server
   pnpm run dev
 ```
 
+Build for production
+
+```bash
+  pnpm run build
+```
 
 ## Author
 
-Based on [shadcn-admin](https://github.com/satnaing/shadcn-admin) by [@satnaing](https://github.com/satnaing). Maintained by [Ray Doan](https://github.com/iamraydoan).
+Maintained by [Ray Doan](https://github.com/iamraydoan).
 
 ## License
 

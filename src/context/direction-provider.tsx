@@ -45,10 +45,8 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
         resetDir,
       }}
     >
-      {/* Radix DirectionProvider removed with the shadcn UI deletion.
-          It was redundant here: dir is already applied to
-          document.documentElement above, and the DirectionContext
-          below still provides dir to consumers. */}
+      {/* dir is applied to document.documentElement above, and the
+          DirectionContext below still provides dir to consumers. */}
       {children}
     </DirectionContext>
   )

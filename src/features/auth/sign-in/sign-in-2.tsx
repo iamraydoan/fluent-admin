@@ -87,7 +87,7 @@ export function SignIn2() {
         <div className={styles.brand}>
           <Logo />
           <Text size={500} weight='medium'>
-            Shadcn Admin
+            Fluent Admin
           </Text>
         </div>
         <div className={styles.formColumn}>
@@ -124,7 +124,7 @@ export function SignIn2() {
           className={styles.panelImage}
           width={1024}
           height={1151}
-          alt='Shadcn-Admin'
+          alt='Fluent Admin'
         />
       </div>
     </div>
