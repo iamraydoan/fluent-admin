@@ -1,37 +1,36 @@
+// Shared confirm dialog, re-implemented on Fluent Dialog (via the
+// ui/dialog wrappers) so it gets the real modal behaviours the old
+// plain-div overlay lacked: Escape closes, backdrop click closes,
+// and focus is trapped inside the dialog (Fluent modal + tabster).
+// API is preserved exactly: type-to-confirm callers pass `disabled`
+// (confirm stays disabled until the exact text is typed) and either
+// `form` (confirm submits the desc form) or `handleConfirm`.
+// Destructive treatment: Fluent Button v9 has NO danger appearance,
+// so in this one place a destructive confirm renders as a
+// red-tinted secondary button (light red background, dark red text,
+// stronger red tint on hover) instead of the default primary blue.
+// The tint applies only while the button is enabled; a disabled
+// destructive confirm falls back to the plain secondary disabled
+// look so it never reads as actionable.
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 const useStyles = makeStyles({
-  overlay: {
-    position: 'fixed',
-    inset: '0',
-    zIndex: 1000,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: tokens.colorBackgroundOverlay,
-    padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
-  },
-  surface: {
-    backgroundColor: tokens.colorNeutralBackground1,
-    borderRadius: tokens.borderRadiusMedium,
-    boxShadow: tokens.shadow16,
-    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-    maxWidth: '480px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-  },
-  title: {
-    margin: '0',
-    fontSize: tokens.fontSizeBase500,
-    fontWeight: tokens.fontWeightSemibold,
-  },
-  footer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: tokens.spacingHorizontalS,
+  dangerButton: {
+    backgroundColor: tokens.colorPaletteRedBackground1,
+    color: tokens.colorPaletteRedForeground2,
+    ':hover': {
+      backgroundColor: tokens.colorPaletteRedBackground2,
+      color: tokens.colorPaletteRedForeground2,
+    },
   },
 })
 
@@ -45,7 +44,6 @@ type ConfirmDialogProps = {
   confirmText?: React.ReactNode
   destructive?: boolean
   isLoading?: boolean
-  /** Accepted for API compatibility with existing callers; no longer applied. */
   className?: string
   children?: React.ReactNode
 } & (
@@ -67,37 +65,55 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     form,
     handleConfirm,
     isLoading,
+    destructive,
+    className,
   } = props
 
   if (!open) {
     return null
   }
 
+  const confirmDisabled = disabled || isLoading
+
   return (
-    <div className={styles.overlay}>
-      <div role='dialog' aria-modal='true' className={styles.surface}>
-        <h2 className={styles.title}>{title}</h2>
-        <div>{desc}</div>
-        {children}
-        <div className={styles.footer}>
-          <Button
-            appearance='secondary'
-            disabled={isLoading}
-            onClick={() => onOpenChange(false)}
-          >
-            {cancelBtnText ?? 'Cancel'}
-          </Button>
-          <Button
-            type={form ? 'submit' : 'button'}
-            form={form}
-            onClick={handleConfirm}
-            appearance='primary'
-            disabled={disabled || isLoading}
-          >
-            {confirmText ?? 'Continue'}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <Dialog
+      open
+      onOpenChange={(_, data) => {
+        if (!data.open) onOpenChange(false)
+      }}
+    >
+      <DialogSurface className={className}>
+        <DialogBody>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogContent>
+            {desc}
+            {children}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              appearance='secondary'
+              disabled={isLoading}
+              onClick={() => onOpenChange(false)}
+            >
+              {cancelBtnText ?? 'Cancel'}
+            </Button>
+            <Button
+              type={form ? 'submit' : 'button'}
+              form={form}
+              onClick={handleConfirm}
+              appearance={destructive ? 'secondary' : 'primary'}
+              className={
+                destructive && !confirmDisabled
+                  ? styles.dangerButton
+                  : undefined
+              }
+              disabled={confirmDisabled}
+            >
+              {confirmText ?? 'Continue'}
+            </Button>
+          </DialogActions>
+        </DialogBody>
+      </DialogSurface>
+    </Dialog>
   )
 }

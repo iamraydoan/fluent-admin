@@ -34,7 +34,7 @@ export function ThemeSwitch() {
         <Button
           appearance='subtle'
           shape='circular'
-          aria-label='Toggle theme'
+          aria-label='Change theme'
           icon={
             resolvedTheme === 'dark' ? (
               <WeatherMoon20Regular />

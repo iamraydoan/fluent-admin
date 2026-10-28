@@ -20,8 +20,9 @@ export type ShellTab = {
   title: string
   url: string
   // Entity icon, matched from navigation-data (same ElementType
-  // nav items use: Fluent bundle icons, Regular at rest, Filled
-  // when active). Not serialised: persistence stores title/url/
+  // nav items use: 20px Regular icons, active and inactive alike;
+  // the active mark is the brand bar + colour, not a Filled glyph).
+  // Not serialised: persistence stores title/url/
   // pinned only and re-hydrates the icon from navigation-data on
   // load, because components cannot be JSON-serialised.
   icon?: React.ElementType

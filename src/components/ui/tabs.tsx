@@ -1,6 +1,19 @@
 // Fluent Tab wrappers, kept under their original names.
-// Pass-through only: no style or behaviour change. Edit this file to
-// change Tab styling system-wide.
+// Edit this file to change Tab styling system-wide.
+//
+// One behaviour change from stock Fluent: TabList defaults
+// reserveSelectedTabSpace to false. Stock Fluent renders every
+// unselected tab's label twice — once visible, once in a
+// reserved-space span that holds the selected (semibold) width —
+// and that duplicate span is not hidden from assistive tech, so
+// an unselected tab's accessible name reads doubled
+// ("AnalyticsAnalytics"). Disabling the reservation removes the
+// duplicate span entirely, so each tab's accessible name is its
+// label exactly once. Cost: tab widths shift by a few px when
+// selection changes (selected text is semibold); the row is
+// left-aligned and the object-tab rows have only two tabs, so
+// nothing after the selected tab is displaced. Callers can still
+// opt back in by passing reserveSelectedTabSpace explicitly.
 import {
   Tab as FluentTab,
   TabList as FluentTabList,
@@ -12,6 +25,14 @@ export function Tab(props: TabProps) {
   return <FluentTab {...props} />
 }
 
-export function TabList(props: TabListProps) {
-  return <FluentTabList {...props} />
+export function TabList({
+  reserveSelectedTabSpace = false,
+  ...rest
+}: TabListProps) {
+  return (
+    <FluentTabList
+      reserveSelectedTabSpace={reserveSelectedTabSpace}
+      {...rest}
+    />
+  )
 }

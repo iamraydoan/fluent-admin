@@ -2,13 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import {
-  bundleIcon,
+  Checkmark20Regular,
   ChevronDown20Regular,
-  ChevronDown24Regular,
-  ChevronLeft24Regular,
-  Dismiss24Regular,
-  Home24Filled,
-  Home24Regular,
+  ChevronLeft20Regular,
+  Dismiss20Regular,
+  Home20Regular,
+  List20Regular,
   Search20Regular,
 } from '@fluentui/react-icons'
 import { sortedTabs, useShellStore, type ShellTab } from '@/stores/shell-store'
@@ -43,9 +42,10 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { HEADER_GREY } from './shell-constants'
 
-// Group 1 icons: first-tab Home is a Fluent bundle — Filled on the
-// active tab, Regular on inactive tabs. Same 24px size/position.
-const HomeIcon = bundleIcon(Home24Filled, Home24Regular)
+// Thinning (2026-10-28): the first-tab Home icon is 20px Regular,
+// like every navigation icon. The active tab is marked by its Chrome
+// shape + semibold label, not by a Filled glyph.
+const HomeIcon = Home20Regular
 
 const useStyles = makeStyles({
   header: {
@@ -364,17 +364,17 @@ function ChromeActiveTab({
         />
       </svg>
       <div className={styles.docTabActiveContent}>
-        {/* Entity icon (Filled on the active tab, as Home was).
-            Every navigation leaf icon is a Fluent bundle, so the
-            filled prop is valid for all of them; tabs with no
-            navigation icon render no icon here. */}
-        {TabIcon && <TabIcon filled />}
+        {/* Entity icon, 20px Regular like the inactive tab and
+            the navigation pane. The active tab is marked by its
+            Chrome shape + semibold label, not by a Filled glyph;
+            tabs with no navigation icon render no icon here. */}
+        {TabIcon && <TabIcon />}
         <Text weight='semibold'>{tab.title}</Text>
         <Tooltip content={`Close tab ${tab.title}`} relationship='label'>
           <Button
             appearance='transparent'
             size='small'
-            icon={<Dismiss24Regular />}
+            icon={<Dismiss20Regular />}
             aria-label={`Close tab ${tab.title}`}
             onClick={(e) => {
               e.stopPropagation()
@@ -407,8 +407,13 @@ export type HeaderProps = {
   onSelectTab: (url: string) => void
   onCloseTab: (url: string) => void
   onBack: () => void
-  headerCollapsed: boolean
-  onExpandHeader: () => void
+  // Whole-header collapse (Expand button in the tab strip, after
+  // the avatar) is LEGACY and currently unused: PageTop no longer
+  // passes these props since 2026-10-28 — it toggles only the
+  // ActionBar via PageTitle. Kept optional for Header reuse; when
+  // omitted, no Expand button renders in the tab strip.
+  headerCollapsed?: boolean
+  onExpandHeader?: () => void
   // Optional account slot (Phase 2F): when a screen supplies it, it
   // REPLACES the unified AU avatar at the right of the strip; when
   // absent (every non-Clerk screen) the avatar renders exactly as
@@ -568,7 +573,7 @@ export default function Header({
           appearance='transparent'
           size='small'
           className={styles.backButton}
-          icon={<ChevronLeft24Regular />}
+          icon={<ChevronLeft20Regular />}
           aria-label='Back'
           onClick={onBack}
         />
@@ -641,17 +646,15 @@ export default function Header({
               aria-hidden='true'
             />
             <span className={styles.docTabInactiveContent}>
-              {/* Entity icon (Regular on inactive tabs). Same
-                  bundle rule as the active tab: every navigation
-                  leaf icon is a bundle, so no filled prop here
-                  renders its Regular variant. */}
+              {/* Entity icon, 20px Regular, same as the active
+                  tab and the navigation pane. */}
               {TabIcon && <TabIcon />}
               <Text weight='regular'>{tab.title}</Text>
               <Tooltip content={`Close tab ${tab.title}`} relationship='label'>
                 <Button
                   appearance='transparent'
                   size='small'
-                  icon={<Dismiss24Regular />}
+                  icon={<Dismiss20Regular />}
                   aria-label={`Close tab ${tab.title}`}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -678,6 +681,51 @@ export default function Header({
         )
       })}
       <div className={styles.docTabRight}>
+        {/* Open-pages dropdown: lists ALL open pages (pinned-first
+            display order, same as the strip) so a page can be
+            activated from the far right without hunting the strip,
+            plus Close All. This sits alongside — and does NOT
+            replace — the per-tab More menu below (Close / Close
+            Others / Close All / Pin) and the right-click tab menu.
+            Clicking a page calls the same onSelectTab the strip
+            tabs use, so activation navigates identically. */}
+        <Menu>
+          <MenuTrigger>
+            <Button
+              appearance='transparent'
+              className={styles.topIconButton}
+              icon={<List20Regular />}
+              aria-label='Open pages'
+              title='Open pages'
+              disabled={displayTabs.length === 0}
+            />
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              {displayTabs.map((tab) => (
+                <MenuItem
+                  key={tab.url}
+                  icon={
+                    tab.url === activeUrl ? <Checkmark20Regular /> : undefined
+                  }
+                  onClick={() => onSelectTab(tab.url)}
+                >
+                  {tab.title}
+                </MenuItem>
+              ))}
+              {displayTabs.length > 0 && (
+                <>
+                  <MenuDivider />
+                  <MenuItem
+                    onClick={() => requestClose('all', activeUrl || '')}
+                  >
+                    Close All
+                  </MenuItem>
+                </>
+              )}
+            </MenuList>
+          </MenuPopover>
+        </Menu>
         {/* More menu for the active tab (same items as the
             right-click menu). No Tooltip wrapper here on purpose:
             Tooltip and MenuTrigger both clone their child, and
@@ -781,7 +829,7 @@ export default function Header({
             <Button
               appearance='transparent'
               className={styles.topIconButton}
-              icon={<ChevronDown24Regular />}
+              icon={<ChevronDown20Regular />}
               aria-label='Expand header'
               onClick={onExpandHeader}
             />
