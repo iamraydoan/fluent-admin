@@ -1,3 +1,4 @@
+import { tokens } from '@fluentui/react-components'
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 
 const data = [
@@ -38,35 +39,39 @@ const data = [
   },
 ]
 
+// Chart greys: no Fluent token equals #888888 or #8a8886, so both map
+// to the nearest token, colorNeutralForeground4 (#707070) — darker by
+// about 24 steps. The two greys were already near-identical, so the
+// axis/series relationship is unchanged.
 export function AnalyticsChart() {
   return (
     <ResponsiveContainer width='100%' height={300}>
       <AreaChart data={data}>
         <XAxis
           dataKey='name'
-          stroke='#888888'
-          fontSize={12}
+          stroke={tokens.colorNeutralForeground4}
+          fontSize={tokens.fontSizeBase200}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
-          stroke='#888888'
-          fontSize={12}
+          stroke={tokens.colorNeutralForeground4}
+          fontSize={tokens.fontSizeBase200}
           tickLine={false}
           axisLine={false}
         />
         <Area
           type='monotone'
           dataKey='clicks'
-          stroke='#0f6cbd'
-          fill='#0f6cbd'
+          stroke={tokens.colorBrandBackground}
+          fill={tokens.colorBrandBackground}
           fillOpacity={0.15}
         />
         <Area
           type='monotone'
           dataKey='uniques'
-          stroke='#8a8886'
-          fill='#8a8886'
+          stroke={tokens.colorNeutralForeground4}
+          fill={tokens.colorNeutralForeground4}
           fillOpacity={0.1}
         />
       </AreaChart>

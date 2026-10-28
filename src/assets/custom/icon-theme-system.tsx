@@ -1,4 +1,5 @@
 import { type SVGProps } from 'react'
+import { tokens } from '@fluentui/react-components'
 
 export function IconThemeSystem({
   className,
@@ -13,9 +14,9 @@ export function IconThemeSystem({
       className={className}
       style={{
         overflow: 'hidden',
-        borderRadius: 6,
-        fill: 'var(--primary)',
-        stroke: 'var(--primary)',
+        borderRadius: tokens.borderRadiusMedium,
+        fill: 'currentColor',
+        stroke: 'currentColor',
         ...style,
       }}
       {...props}

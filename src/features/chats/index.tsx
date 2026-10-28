@@ -161,6 +161,9 @@ const useStyles = makeStyles({
     textAlign: 'center',
     color: tokens.colorNeutralForeground3,
   },
+  // Exception: chat bubbles keep a 16px radius. They are message
+  // bubbles, not a card/input/dialog surface, so the 4px Medium
+  // standard for those surfaces does not apply here.
   bubbleOwn: {
     alignSelf: 'flex-end',
     maxWidth: '288px',
@@ -331,7 +334,7 @@ export function Chats() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
-          borderRadius: tokens.borderRadiusXLarge,
+          borderRadius: tokens.borderRadiusMedium,
           boxShadow: tokens.shadow2,
         }}
       >

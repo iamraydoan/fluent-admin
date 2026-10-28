@@ -69,7 +69,7 @@ const useStyles = makeStyles({
     listStylePosition: 'inside',
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: tokens.spacingVerticalSNudge,
     paddingLeft: '0px',
     marginTop: '0px',
     marginBottom: '0px',
@@ -82,11 +82,16 @@ const useStyles = makeStyles({
   },
   code: {
     backgroundColor: tokens.colorNeutralBackground3,
+    // Exception: 2px radius is kept for this small inline code
+    // element, not a card/input/dialog surface, so the standard
+    // radius does not apply here.
     borderRadius: tokens.borderRadiusSmall,
-    padding: '2px 4px',
+    padding: `${tokens.spacingVerticalXXS} ${tokens.spacingHorizontalXS}`,
     fontSize: tokens.fontSizeBase200,
     fontWeight: tokens.fontWeightBold,
   },
+  // Code-sample colours below are slate (dark code block illustration),
+  // not Fluent theme colours; no Fluent token expresses them, so kept.
   sample: {
     display: 'flex',
     flexDirection: 'column',
@@ -99,6 +104,9 @@ const useStyles = makeStyles({
   },
   samplePre: {
     overflowX: 'auto',
+    // Exception: 2px radius is kept for this small inline code
+    // sample, not a card/input/dialog surface, so the standard
+    // radius does not apply here.
     borderRadius: tokens.borderRadiusSmall,
     backgroundColor: '#0f172a',
     padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,

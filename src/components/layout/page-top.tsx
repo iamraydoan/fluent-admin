@@ -40,7 +40,7 @@ const useStyles = makeStyles({
   // under the active tab white meets white uninterrupted.
   // Stroke token, not a hardcoded colour, so dark mode gets a
   // dark-appropriate stroke automatically. Bottom corners keep
-  // the cards' 8px radius; overflow hidden clips the inner
+  // the cards' Medium (4px) radius (ws6); overflow hidden clips the inner
   // white rows to those corners. Block width:auto means the
   // 1px side borders are absorbed inside the page-column width,
   // so the white card's outer edges align exactly with the tab
@@ -50,7 +50,7 @@ const useStyles = makeStyles({
     borderLeft: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRight: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: `0px 0px ${tokens.borderRadiusXLarge} ${tokens.borderRadiusXLarge}`,
+    borderRadius: `0px 0px ${tokens.borderRadiusMedium} ${tokens.borderRadiusMedium}`,
     overflow: 'hidden',
   },
 })

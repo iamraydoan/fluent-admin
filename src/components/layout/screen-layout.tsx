@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalS,
     // Same geometry as the MES page: no top padding (the screen's
     // own PageTop touches the top edge), 8px on the other sides.
-    padding: '0px 8px 8px 8px',
+    padding: `0 ${tokens.spacingHorizontalS} ${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     backgroundColor: CANVAS,
     overflow: 'hidden',
   },

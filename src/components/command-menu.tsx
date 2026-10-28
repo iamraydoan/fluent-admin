@@ -18,14 +18,14 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: tokens.colorBackgroundOverlay,
     paddingTop: '96px',
     paddingLeft: tokens.spacingHorizontalL,
     paddingRight: tokens.spacingHorizontalL,
   },
   surface: {
     backgroundColor: tokens.colorNeutralBackground1,
-    borderRadius: tokens.borderRadiusLarge,
+    borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow16,
     width: '100%',
     maxWidth: '560px',
@@ -51,7 +51,7 @@ const useStyles = makeStyles({
   group: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px',
+    gap: tokens.spacingVerticalXXS,
   },
   groupTitle: {
     padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,

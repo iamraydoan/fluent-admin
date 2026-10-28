@@ -64,7 +64,7 @@ function RouteComponent() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-          borderRadius: tokens.borderRadiusXLarge,
+          borderRadius: tokens.borderRadiusMedium,
           boxShadow: tokens.shadow2,
         }}
       >

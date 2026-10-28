@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     position: 'fixed',
     inset: '0',
     zIndex: 1000,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: tokens.colorBackgroundOverlay,
   },
   panel: {
     position: 'fixed',
@@ -67,14 +67,14 @@ const useStyles = makeStyles({
   option: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: tokens.spacingHorizontalSNudge,
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
     cursor: 'pointer',
-    // Kept at 13px: no Fluent token at 13px (Base200 12 / Base300 14
-    // are equidistant); tokenising would change the size.
-    fontSize: '13px',
+    // Ws6: tokenised to Base300 (14px, +1px). No 13px token exists;
+    // 14px is chosen over 12px because option labels are body text.
+    fontSize: tokens.fontSizeBase300,
   },
   footer: {
     marginTop: 'auto',
@@ -164,9 +164,8 @@ function SectionTitle({
 export function ConfigDrawer() {
   const styles = useStyles()
   const [open, setOpen] = useState(false)
-  // The old shadcn SidebarProvider is gone; the drawer keeps the
-  // sidebar open/closed choice itself via the sidebar_state cookie,
-  // which the layout worker owns long-term.
+  // The drawer keeps the sidebar open/closed choice itself via the
+  // sidebar_state cookie, which the layout worker owns long-term.
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const { resetDir } = useDirection()
   const { resetTheme } = useTheme()

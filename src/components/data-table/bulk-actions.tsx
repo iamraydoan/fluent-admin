@@ -10,7 +10,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 const useStyles = makeStyles({
   toolbar: {
     position: 'fixed',
-    bottom: '24px',
+    bottom: tokens.spacingVerticalXXL,
     left: '50%',
     transform: 'translateX(-50%)',
     zIndex: 50,
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalS,
     backgroundColor: tokens.colorNeutralBackground1,
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusLarge,
+    borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow16,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalS}`,
   },
@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorBrandBackground,
     color: tokens.colorNeutralForegroundOnBrand,
     borderRadius: tokens.borderRadiusMedium,
-    padding: '2px 8px',
+    padding: `${tokens.spacingVerticalXXS} ${tokens.spacingHorizontalS}`,
     fontSize: tokens.fontSizeBase300,
     fontWeight: tokens.fontWeightSemibold,
     fontVariantNumeric: 'tabular-nums',

@@ -33,13 +33,13 @@ const useStyles = makeStyles({
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: tokens.spacingVerticalSNudge,
   },
   fileInput: {
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: tokens.colorNeutralBackground1,
-    padding: '6px 8px',
+    padding: `${tokens.spacingVerticalSNudge} ${tokens.spacingHorizontalS}`,
     font: 'inherit',
   },
   error: {

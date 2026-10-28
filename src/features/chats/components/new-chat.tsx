@@ -43,7 +43,7 @@ const useStyles = makeStyles({
   list: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px',
+    gap: tokens.spacingVerticalXXS,
     maxHeight: '320px',
     overflowY: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
@@ -59,8 +59,8 @@ const useStyles = makeStyles({
     textAlign: 'start',
     backgroundColor: 'transparent',
     border: 'none',
-    borderRadius: tokens.borderRadiusSmall,
-    padding: '6px 8px',
+    borderRadius: tokens.borderRadiusMedium,
+    padding: `${tokens.spacingVerticalSNudge} ${tokens.spacingHorizontalS}`,
     cursor: 'pointer',
     boxSizing: 'border-box',
     ':hover': {

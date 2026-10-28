@@ -7,7 +7,7 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     color: tokens.colorNeutralForeground1,
     font: 'inherit',
-    padding: '6px 12px',
+    padding: `${tokens.spacingVerticalSNudge} ${tokens.spacingHorizontalM}`,
     width: '240px',
     maxWidth: '100%',
     boxSizing: 'border-box',

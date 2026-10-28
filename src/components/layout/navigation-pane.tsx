@@ -134,14 +134,15 @@ const useStyles = makeStyles({
   },
   badge: {
     backgroundColor: tokens.colorNeutralBackground3,
-    // Nearest radius token to 10px: XLarge 8px (Large 6px is further).
-    borderRadius: tokens.borderRadiusXLarge,
-    padding: '0px 6px',
-    // Kept at 11px / 18px: 11px is equidistant between Base100 (10px)
-    // and Base200 (12px), and 18px between Base200 (16px) and Base300
-    // (20px) line-height; tokenising would change the badge height.
-    fontSize: '11px',
-    lineHeight: '18px',
+    // Fluent 2 checklist mapping (ws6): surfaces use Medium (4px);
+    // Large/XLarge are no longer used for badges.
+    borderRadius: tokens.borderRadiusMedium,
+    padding: `0 ${tokens.spacingHorizontalSNudge}`,
+    // Ws6: tokenised to Base200 (12px, +1px) with its line-height
+    // (16px, -2px); badge height moves 18px to 16px. No 11px token
+    // exists; 12px is chosen over 10px so the badge stays readable.
+    fontSize: tokens.fontSizeBase200,
+    lineHeight: tokens.lineHeightBase200,
     color: tokens.colorNeutralForeground2,
     flexShrink: 0,
   },

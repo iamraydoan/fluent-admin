@@ -176,7 +176,7 @@ export function Apps() {
       <div className={styles.content}>
         <Card
           style={{
-            borderRadius: tokens.borderRadiusXLarge,
+            borderRadius: tokens.borderRadiusMedium,
             boxShadow: tokens.shadow2,
           }}
         >

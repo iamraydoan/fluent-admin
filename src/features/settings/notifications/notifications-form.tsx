@@ -44,14 +44,14 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalL,
     // Nearest stroke token to #edebe9: Stroke2 #e0e0e0 (see header.tsx).
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusXLarge,
+    borderRadius: tokens.borderRadiusMedium,
     padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
     boxSizing: 'border-box',
   },
   emailText: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px',
+    gap: tokens.spacingVerticalXXS,
   },
   mobileRow: {
     display: 'flex',

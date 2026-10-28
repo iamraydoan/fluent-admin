@@ -136,7 +136,7 @@ export function Dashboard() {
       <div className={styles.content}>
         <Card
           style={{
-            borderRadius: tokens.borderRadiusXLarge,
+            borderRadius: tokens.borderRadiusMedium,
             boxShadow: tokens.shadow2,
             // Fill the remaining page height like the Users/Tasks main
             // cards do: grow to fill when the content is short (so no

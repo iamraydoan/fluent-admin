@@ -110,7 +110,7 @@ function UsersScreen() {
         <Card
           className={styles.card}
           style={{
-            borderRadius: tokens.borderRadiusXLarge,
+            borderRadius: tokens.borderRadiusMedium,
             boxShadow: tokens.shadow2,
           }}
         >

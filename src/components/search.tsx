@@ -14,11 +14,14 @@ const useStyles = makeStyles({
   kbd: {
     marginLeft: 'auto',
     border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    // Exception: 2px radius is kept for this small inline kbd hint,
+    // not a card/input/dialog surface, so the standard radius does
+    // not apply here.
     borderRadius: tokens.borderRadiusSmall,
-    padding: '2px 6px',
-    // Kept at 11px: equidistant between Base100 (10px) and Base200
-    // (12px); tokenising would change the kbd hint size.
-    fontSize: '11px',
+    padding: `${tokens.spacingVerticalXXS} ${tokens.spacingHorizontalSNudge}`,
+    // Ws6: tokenised to Base200 (12px, +1px). No 11px token exists;
+    // 12px is chosen over 10px so the kbd hint stays readable.
+    fontSize: tokens.fontSizeBase200,
   },
 })
 

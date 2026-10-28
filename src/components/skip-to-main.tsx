@@ -3,7 +3,7 @@ import { makeStyles, tokens } from '@fluentui/react-components'
 const useStyles = makeStyles({
   link: {
     position: 'fixed',
-    left: '16px',
+    left: tokens.spacingHorizontalL,
     top: '-100px',
     zIndex: 999,
     backgroundColor: tokens.colorBrandBackground,
@@ -17,10 +17,10 @@ const useStyles = makeStyles({
     boxShadow: tokens.shadow8,
     opacity: 0.95,
     ':focus': {
-      top: '12px',
+      top: tokens.spacingVerticalM,
     },
     ':focus-visible': {
-      top: '12px',
+      top: tokens.spacingVerticalM,
     },
   },
 })

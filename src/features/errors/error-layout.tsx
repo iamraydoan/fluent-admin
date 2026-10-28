@@ -25,8 +25,9 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
   },
   code: {
-    // Kept at 112px / 1.1: far above the largest Fluent size token
-    // (Hero1000 68px); no token is within 2px.
+    // Ws6 exception, kept at 112px / 1.1: far above the largest
+    // Fluent size token (Hero1000 68px); no token is within 2px,
+    // and tokenising would shrink the error code by 44px.
     fontSize: '112px',
     lineHeight: '1.1',
     fontWeight: tokens.fontWeightBold,

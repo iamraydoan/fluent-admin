@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { tokens } from '@fluentui/react-components'
 import {
   Checkmark20Regular,
   WeatherMoon20Regular,
@@ -19,7 +20,10 @@ export function ThemeSwitch() {
 
   /* Update theme-color meta tag when theme is updated */
   useEffect(() => {
-    const themeColor = resolvedTheme === 'dark' ? '#020817' : '#fff'
+    const themeColor =
+      resolvedTheme === 'dark'
+        ? tokens.colorNeutralBackgroundInverted
+        : tokens.colorNeutralBackground1
     const metaThemeColor = document.querySelector("meta[name='theme-color']")
     if (metaThemeColor) metaThemeColor.setAttribute('content', themeColor)
   }, [resolvedTheme])

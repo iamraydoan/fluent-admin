@@ -14,16 +14,12 @@ import type { Theme } from '@fluentui/react-components'
  * to the platform sans-serif (Noto Sans on Linux) when Segoe UI
  * is not installed. No other token is changed.
  *
- * Appearance picker (Settings > Appearance, src/config/fonts.ts,
- * src/context/font-provider.tsx) is intentionally NOT wired into
- * this theme: FontProvider only sets an html font-* class, while
- * FluentProvider sets its own font-family on its root element, so
- * the picker class already only affected elements outside the
- * provider (body chrome) before this change, and that behaviour
- * is unchanged. Wiring the picker into fontFamilyBase would make
- * the picker default ('inter') replace the Segoe base app-wide
- * and shift text widths, which is out of scope for a
- * no-layout-change group.
+ * The former appearance picker (Settings > Appearance, the deleted
+ * src/config/fonts.ts and src/context/font-provider.tsx) used to offer
+ * only 'system', which had no CSS rule: FontProvider only set an html
+ * font-* class, while FluentProvider sets its own font-family on its
+ * root element. Both files have since been deleted, so this Segoe
+ * stack is now the single font source; no picker remains to wire in.
  */
 export const FLUENT_FONT_FAMILY_BASE =
   "'Segoe UI Variable Text', 'Segoe UI', 'Segoe UI Web (West European)', " +

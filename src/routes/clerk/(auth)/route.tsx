@@ -27,21 +27,22 @@ const useStyles = makeStyles({
       display: 'flex',
       height: '100%',
       flexDirection: 'column',
-      backgroundColor: '#64748b',
+      backgroundColor: '#64748b', // No Fluent token expresses slate-500; the example auth panel grey is kept, not shifted to brand blue.
       padding: '40px',
       boxSizing: 'border-box',
-      color: '#ffffff',
+      color: tokens.colorNeutralForegroundOnBrand,
     },
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
-    // Kept at 18px: equidistant between Base400 (16px) and Base500
-    // (20px); tokenising would change the size.
-    fontSize: '18px',
+    // Ws6: tokenised to Base400 (16px, -2px). No 18px token exists;
+    // 16px is chosen over 20px so the brand line does not outgrow
+    // the auth panel's body text.
+    fontSize: tokens.fontSizeBase400,
     fontWeight: tokens.fontWeightMedium,
-    color: '#ffffff',
+    color: tokens.colorNeutralForegroundOnBrand,
     textDecoration: 'none',
   },
   logoWrap: {

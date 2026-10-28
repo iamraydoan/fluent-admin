@@ -27,8 +27,9 @@ const useStyles = makeStyles({
   },
   title: {
     margin: '0',
-    // Kept at 36px / 1.2: equidistant between Hero800 (32px) and
-    // Hero900 (40px) and >2px from either; tokenising would change size.
+    // Ws6 exception, kept at 36px / 1.2: equidistant between Hero800
+    // (32px) and Hero900 (40px), 4px from either; tokenising would
+    // visibly shrink or grow the landing title.
     fontSize: '36px',
     fontWeight: tokens.fontWeightBold,
     lineHeight: '1.2',
@@ -55,7 +56,7 @@ export function HelpCenter() {
         className={styles.card}
         style={{
           padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalXXL}`,
-          borderRadius: tokens.borderRadiusXLarge,
+          borderRadius: tokens.borderRadiusMedium,
           boxShadow: tokens.shadow2,
         }}
       >
