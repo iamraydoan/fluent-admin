@@ -22,8 +22,11 @@ jobs:
         with:
           node-version: 20
 
+      # Pin pnpm: unpinned `npm install -g pnpm` pulled pnpm 11/12, which
+      # fails with ERR_PNPM_IGNORED_BUILDS (see pnpm-workspace.yaml).
+      # 12.15.0 is the version this fix was verified against locally.
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@12.15.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

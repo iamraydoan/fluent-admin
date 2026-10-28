@@ -1,0 +1,15 @@
+# pnpm 11+ fails installs with ERR_PNPM_IGNORED_BUILDS when a dependency
+# has a build script that is neither allowed nor denied (strictDepBuilds
+# is true by default). pnpm 10 only warned and exited 0, which is why
+# this only broke in CI when `npm install -g pnpm` started pulling
+# pnpm 11/12. This file is harmless on pnpm 10 (unknown setting ignored)
+# and required on pnpm 11/12. It does NOT change the lockfile.
+#
+# esbuild: true — its postinstall (node install.js) installs the binary
+# if the platform optional dependency is missing; vite 8 depends on it.
+# @clerk/shared: false — its postinstall only prints a telemetry notice
+# and writes a Clerk config file; no functional need, so deny it
+# explicitly instead of letting the install fail on it.
+allowBuilds:
+  "@clerk/shared": false
+  esbuild: true
