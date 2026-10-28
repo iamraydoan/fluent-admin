@@ -3,7 +3,6 @@ import { makeStyles, tokens } from '@fluentui/react-components'
 import { ArrowClockwise24Regular } from '@fluentui/react-icons'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import { Card, CardHeader } from '@/components/ui/card'
-import { Tab, TabList } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import ActionBar from '@/components/layout/action-bar'
 import PageTop from '@/components/layout/page-top'
@@ -90,6 +89,14 @@ const stats = [
   },
 ]
 
+// Page tabs, in the top ribbon above the Action Bar (the screen-layout
+// standard): one tab per Dashboard view. The old in-content TabList and
+// its disabled Reports/Notifications tabs are gone.
+const DASHBOARD_TABS = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'analytics', label: 'Analytics' },
+]
+
 export function Dashboard() {
   const styles = useStyles()
   const [tab, setTab] = useState('overview')
@@ -103,6 +110,9 @@ export function Dashboard() {
     <>
       <PageTop
         title='Dashboard'
+        objectTabs={DASHBOARD_TABS}
+        objectTab={tab}
+        onObjectTabChange={(value) => setTab(value)}
         actionBar={
           <ActionBar
             groups={[
@@ -128,22 +138,15 @@ export function Dashboard() {
           style={{
             borderRadius: tokens.borderRadiusXLarge,
             boxShadow: tokens.shadow2,
+            // Fill the remaining page height like the Users/Tasks main
+            // cards do: grow to fill when the content is short (so no
+            // canvas-grey band is left below the card), but never
+            // shrink below the content height when it is tall, so the
+            // content column still scrolls instead of clipping.
+            flex: '1 0 auto',
           }}
         >
           <div className={styles.cardBody} key={refreshKey}>
-            <TabList
-              selectedValue={tab}
-              onTabSelect={(_, data) => setTab(String(data.value))}
-            >
-              <Tab value='overview'>Overview</Tab>
-              <Tab value='analytics'>Analytics</Tab>
-              <Tab value='reports' disabled>
-                Reports
-              </Tab>
-              <Tab value='notifications' disabled>
-                Notifications
-              </Tab>
-            </TabList>
             {tab === 'overview' && (
               <div className={styles.tabContent}>
                 <div className={styles.statGrid}>

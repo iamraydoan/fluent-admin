@@ -17,7 +17,7 @@ describe('UsersInviteDialog', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Invite User/i,
+      name: /Invite/i,
     })
     const desc = getByText(/Invite new user to join your team/i)
 

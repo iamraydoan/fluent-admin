@@ -298,13 +298,8 @@ export function Chats() {
                     onClick: () =>
                       setNotice('Refreshed (demo data, no API call)'),
                   },
-                ],
-              },
-              {
-                label: 'Actions',
-                actions: [
                   {
-                    label: 'New Chat',
+                    label: 'New',
                     icon: <Compose24Regular />,
                     onClick: () => setCreateConversationDialog(true),
                   },

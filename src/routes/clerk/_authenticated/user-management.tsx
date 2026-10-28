@@ -182,18 +182,13 @@ function ClerkUsersScreen() {
                     icon: <ArrowClockwise24Regular />,
                     onClick: handleRefresh,
                   },
-                ],
-              },
-              {
-                label: 'Actions',
-                actions: [
                   {
-                    label: 'Invite User',
+                    label: 'Invite',
                     icon: <MailAdd24Regular />,
                     onClick: () => setOpen('invite'),
                   },
                   {
-                    label: 'Add User',
+                    label: 'Add',
                     icon: <PersonAdd24Regular />,
                     onClick: () => setOpen('add'),
                   },

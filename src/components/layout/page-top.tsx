@@ -1,6 +1,6 @@
 // PageTop is generic glue, NOT a vendor area: it renders Header +
 // PageTabs + ActionBar + PageTitle, in that screen-layout order.
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { useShellStore } from '@/stores/shell-store'
@@ -69,6 +69,9 @@ export type PageTopProps = {
   objectTabs?: PageTab[]
   objectTab?: string
   onObjectTabChange?: (value: string) => void
+  // Collapse: when all three are omitted (the case for every screen
+  // today), PageTop keeps the state itself and the Page Title row
+  // always shows the ^ collapse button.
   headerCollapsed?: boolean
   onCollapseHeader?: () => void
   onExpandHeader?: () => void
@@ -95,12 +98,24 @@ export default function PageTop({
   objectTabs,
   objectTab,
   onObjectTabChange,
-  headerCollapsed = false,
+  headerCollapsed: headerCollapsedProp,
   onCollapseHeader,
   onExpandHeader,
   accountAction,
 }: PageTopProps) {
   const styles = useStyles()
+  // Collapse is wired by default: every screen gets the ^ button in
+  // the Page Title row (as in the reference bar), even though no
+  // caller passes collapse props today. Callers that pass both
+  // headerCollapsed and the handlers keep full control; callers
+  // that pass only one handler should pass both, or the internal
+  // state below and the caller's handler will disagree.
+  const [internalCollapsed, setInternalCollapsed] = useState(false)
+  const headerCollapsed = headerCollapsedProp ?? internalCollapsed
+  const handleCollapseHeader =
+    onCollapseHeader ?? (() => setInternalCollapsed(true))
+  const handleExpandHeader =
+    onExpandHeader ?? (() => setInternalCollapsed(false))
   const navigate = useNavigate()
   const tabs = useShellStore((state) => state.tabs)
   const activeUrl = useShellStore((state) => state.activeUrl)
@@ -138,7 +153,7 @@ export default function PageTop({
         onCloseTab={handleCloseTab}
         onBack={handleBack}
         headerCollapsed={headerCollapsed}
-        onExpandHeader={onExpandHeader ?? (() => {})}
+        onExpandHeader={handleExpandHeader}
         accountSlot={accountAction}
       />
       {!headerCollapsed && (
@@ -159,7 +174,7 @@ export default function PageTop({
           <PageTitle
             title={title}
             state={titleState}
-            onCollapse={onCollapseHeader}
+            onCollapse={handleCollapseHeader}
           />
         </div>
       )}
